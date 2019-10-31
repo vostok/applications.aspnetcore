@@ -1,0 +1,17 @@
+notests *default:
+  build:
+    target: Vostok.Hosting.AspNetCore.sln
+    configuration: NoTests
+    tool:
+      name: dotnet
+
+  install:
+    - Vostok.Hosting.AspNetCore/bin/Release/netstandard2.0/Vostok.Hosting.AspNetCore.dll
+
+  deps:
+    - vostok.devtools
+
+full-build > notests:
+  build:
+    target: Vostok.Hosting.AspNetCore.sln
+    configuration: Release
