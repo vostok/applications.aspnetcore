@@ -7,8 +7,20 @@ notests *default:
 
   install:
     - Vostok.Hosting.AspNetCore/bin/Release/netstandard2.0/Vostok.Hosting.AspNetCore.dll
+    - module vostok.hosting.abstractions
 
   deps:
+    - vostok.hosting.abstractions
+    - vostok.datacenters
+    - vostok.clusterconfig.client.abstractions
+    - vostok.clusterclient.core
+    - vostok.servicediscovery.abstractions
+    - vostok.hercules.client.abstractions
+    - vostok.configuration.abstractions
+    - vostok.tracing.abstractions
+    - vostok.logging.abstractions
+    - vostok.metrics
+    - vostok.context
     - vostok.devtools
 
 full-build > notests:
