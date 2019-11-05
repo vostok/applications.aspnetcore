@@ -10,6 +10,8 @@ notests *default:
     - module vostok.hosting.abstractions
 
   deps:
+    - vostok.hosting.kontur
+    - vostok.hosting
     - vostok.hosting.abstractions
     - vostok.datacenters
     - vostok.clusterconfig.client.abstractions
@@ -24,6 +26,8 @@ notests *default:
     - vostok.devtools
 
 full-build > notests:
+  deps:
+    - vostok.servicediscovery
   build:
     target: Vostok.Hosting.AspNetCore.sln
     configuration: Release
