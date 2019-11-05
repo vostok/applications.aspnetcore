@@ -2,9 +2,11 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore.Helpers;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Microsoft;
 
 namespace Vostok.Hosting.AspNetCore
 {
@@ -18,6 +20,8 @@ namespace Vostok.Hosting.AspNetCore
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
             var builder = WebHost.CreateDefaultBuilder()
+                .ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders())
+                .ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(new VostokLoggerProvider(environment.Log)))
                 .ConfigureUrl(environment)
                 .AddStartupFilter(new UrlPathStartupFilter(environment));
 

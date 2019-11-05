@@ -10,6 +10,7 @@ notests *default:
     - module vostok.hosting.abstractions
 
   deps:
+    - vostok.logging.microsoft
     - vostok.hosting.kontur
     - vostok.hosting
     - vostok.hosting.abstractions
