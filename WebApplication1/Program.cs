@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Vostok.Clusterclient.Core;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Topology;
+using Vostok.Clusterclient.Transport;
 using Vostok.Context;
 using Vostok.Hosting;
 using Vostok.Hosting.Abstractions;
@@ -32,7 +37,7 @@ namespace WebApplication1
                                 .SetStream("logs_vostoklibs_cloud")
                                 .SetApiKeyProvider(() => setupContext.ClusterConfigClient.Get("app/key").Value))
                             .SetupConsoleLog()
-                            .AddLog(new EchoLog()))
+                            .AddLog(new DummyLog()))
                     .SetupServiceBeacon(
                         serviceBeaconSetup => serviceBeaconSetup
                             .SetupReplicaInfo(
@@ -55,7 +60,7 @@ namespace WebApplication1
             Console.WriteLine($"RunResult: {result.State} {result.Error}");
         }
 
-        internal class EchoLog : ILog
+        internal class DummyLog : ILog
         {
             public void Log(LogEvent @event)
             {
@@ -74,6 +79,23 @@ namespace WebApplication1
             public override IWebHostBuilder ConfigureWebHostBuilder(IWebHostBuilder webHostBuilder, IVostokHostingEnvironment environment)
             {
                 return webHostBuilder.UseStartup<Startup>();
+            }
+
+            public override async Task WarmUpAsync(IVostokHostingEnvironment environment)
+            {
+                var log = environment.Log.ForContext("WarmUp");
+
+                var client = new ClusterClient(
+                    log,
+                    setup =>
+                    {
+                        setup.SetupUniversalTransport();
+                        setup.ClusterProvider = new FixedClusterProvider($"{environment.ServiceBeacon.ReplicaInfo.Replica}");
+                        environment.ClusterClientSetup(setup);
+                    });
+
+                var values = await client.SendAsync(Request.Get("api/values")).ConfigureAwait(false);
+                log.Info("Recieved values: {Values}.", values.Response.Content.ToString());
             }
         }
     }

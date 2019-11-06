@@ -23,6 +23,7 @@ namespace Vostok.Hosting.AspNetCore
                 .ConfigureUrl(environment)
                 .ConfigureUrlPath(environment)
                 .RegisterTypes(environment)
+                .AddMiddleware(new RestoreDistributedContextMiddleware())
                 .AddMiddleware(new LoggingMiddleware(environment.Log, new LoggingMiddlewareSettings()));
 
             builder = ConfigureWebHostBuilder(builder, environment);
