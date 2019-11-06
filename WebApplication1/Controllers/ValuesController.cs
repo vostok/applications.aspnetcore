@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Vostok.Logging.Abstractions;
 
 namespace WebApplication1.Controllers
 {
@@ -10,10 +8,18 @@ namespace WebApplication1.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private readonly ILog log;
+
+        public ValuesController(ILog log)
+        {
+            this.log = log;
+        }
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
+            log.Info("Get values!");
             return new string[] { "value1", "value2" };
         }
 

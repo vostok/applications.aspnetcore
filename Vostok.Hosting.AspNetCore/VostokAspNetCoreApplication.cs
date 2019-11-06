@@ -2,9 +2,12 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore.Helpers;
+using Vostok.Hosting.AspNetCore.Middlewares;
+using Vostok.Hosting.AspNetCore.StartupFilters;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Microsoft;
 
@@ -23,7 +26,9 @@ namespace Vostok.Hosting.AspNetCore
                 .ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders())
                 .ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(new VostokLoggerProvider(environment.Log)))
                 .ConfigureUrl(environment)
-                .AddStartupFilter(new UrlPathStartupFilter(environment));
+                .RegisterTypes(environment)
+                .AddStartupFilter(new UrlPathStartupFilter(environment))
+                .AddMiddleware(new LoggingMiddleware(environment.Log, new LoggingMiddlewareSettings()));
 
             builder = ConfigureWebHostBuilder(builder, environment);
 

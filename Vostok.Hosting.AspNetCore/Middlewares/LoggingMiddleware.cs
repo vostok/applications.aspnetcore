@@ -21,10 +21,10 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         private readonly ILog log;
         private readonly LoggingMiddlewareSettings settings;
 
-        public LoggingMiddleware(ILog log, LoggingMiddlewareSettings settings)
+        public LoggingMiddleware([CanBeNull] ILog log = null, [CanBeNull] LoggingMiddlewareSettings settings = null)
         {
-            this.log = log;
-            this.settings = settings;
+            this.log = log ?? LogProvider.Get();
+            this.settings = settings ?? new LoggingMiddlewareSettings();
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)

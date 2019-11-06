@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Hosting.Abstractions;
+using Vostok.Hosting.AspNetCore.Helpers;
 
-namespace Vostok.Hosting.AspNetCore.Helpers
+namespace Vostok.Hosting.AspNetCore.StartupFilters
 {
     internal class UrlPathStartupFilter : IStartupFilter
     {
