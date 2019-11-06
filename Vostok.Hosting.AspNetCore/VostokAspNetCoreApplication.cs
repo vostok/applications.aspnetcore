@@ -2,14 +2,10 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore.Helpers;
 using Vostok.Hosting.AspNetCore.Middlewares;
-using Vostok.Hosting.AspNetCore.StartupFilters;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.Microsoft;
 
 namespace Vostok.Hosting.AspNetCore
 {
@@ -23,11 +19,10 @@ namespace Vostok.Hosting.AspNetCore
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
             var builder = WebHost.CreateDefaultBuilder()
-                .ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders())
-                .ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(new VostokLoggerProvider(environment.Log)))
+                .ConfigureLog(environment)
                 .ConfigureUrl(environment)
+                .ConfigureUrlPath(environment)
                 .RegisterTypes(environment)
-                .AddStartupFilter(new UrlPathStartupFilter(environment))
                 .AddMiddleware(new LoggingMiddleware(environment.Log, new LoggingMiddlewareSettings()));
 
             builder = ConfigureWebHostBuilder(builder, environment);
@@ -60,7 +55,7 @@ namespace Vostok.Hosting.AspNetCore
             environment.ShutdownToken.Register(
                 () => webHost
                     .StopAsync()
-                    .ContinueWith(t => log.Error(t.Exception), TaskContinuationOptions.OnlyOnFaulted));
+                    .ContinueWith(t => log.Error(t.Exception, "Failed to stop WebHost."), TaskContinuationOptions.OnlyOnFaulted));
 
             log.Info("Starting WebHost.");
             await webHost.StartAsync().ConfigureAwait(false);
