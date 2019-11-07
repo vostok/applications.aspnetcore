@@ -26,7 +26,8 @@ namespace Vostok.Hosting.AspNetCore.Helpers
                 new List<Type>
                 {
                     typeof(ConnectionLogScope),
-                    GetHostingLogScopeType()
+                    GetHostingLogScopeType(),
+                    GetActionLogScopeType()
                 }.Where(t => t != null));
 
         private static Type GetHostingLogScopeType()
@@ -36,6 +37,21 @@ namespace Vostok.Hosting.AspNetCore.Helpers
                 var assembly = Assembly.Load("Microsoft.AspNetCore.Hosting");
                 var type = assembly.GetType("Microsoft.AspNetCore.Hosting.Internal.HostingLoggerExtensions");
                 var nested = type.GetNestedType("HostingLogScope", BindingFlags.NonPublic);
+                return nested;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private static Type GetActionLogScopeType()
+        {
+            try
+            {
+                var assembly = Assembly.Load("Microsoft.AspNetCore.Mvc.Core");
+                var type = assembly.GetType("Microsoft.AspNetCore.Mvc.Internal.MvcCoreLoggerExtensions");
+                var nested = type.GetNestedType("ActionLogScope", BindingFlags.NonPublic);
                 return nested;
             }
             catch (Exception)

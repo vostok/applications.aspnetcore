@@ -28,7 +28,7 @@ namespace Vostok.Hosting.AspNetCore.Helpers
             return seconds.Seconds();
         }
 
-        public static string FormatRequest(this HttpRequest request, bool includeQuery, bool includeHeaders)
+        public static string FormatPath(this HttpRequest request, bool includeQuery)
         {
             var builder = new StringBuilder();
 
@@ -41,16 +41,21 @@ namespace Vostok.Hosting.AspNetCore.Helpers
             {
                 builder.Append(request.QueryString);
             }
+            
+            return builder.ToString();
+        }
 
-            if (includeHeaders && request.Headers != null)
+        public static string FormatHeaders(this HttpRequest request)
+        {
+            var builder = new StringBuilder();
+
+            foreach (var header in request.Headers)
             {
-                foreach (var header in request.Headers)
-                {
-                    builder.AppendLine();
-                    builder.Append(header.Key);
-                    builder.Append(": ");
-                    builder.Append(header.Value);
-                }
+                builder.AppendLine();
+                builder.Append("\t");
+                builder.Append(header.Key);
+                builder.Append(": ");
+                builder.Append(header.Value);
             }
 
             return builder.ToString();

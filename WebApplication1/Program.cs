@@ -44,6 +44,7 @@ namespace WebApplication1
                             .SetupReplicaInfo(
                                 replicaInfoSetup => replicaInfoSetup
                                     .SetPort(5050)
+                                    .SetApplication("vostok-aspnetcore-test")
                                     ))
                     ;
             };
@@ -99,11 +100,11 @@ namespace WebApplication1
                     setup =>
                     {
                         setup.SetupUniversalTransport();
-                        setup.ClusterProvider = new FixedClusterProvider($"{environment.ServiceBeacon.ReplicaInfo.Replica}");
                         environment.ClusterClientSetup(setup);
+                        setup.ClusterProvider = new FixedClusterProvider($"{environment.ServiceBeacon.ReplicaInfo.Replica}");
                     });
 
-                var values = await client.SendAsync(Request.Get("api/values")).ConfigureAwait(false);
+                var values = await client.SendAsync(Request.Get("api/values?a=a123")).ConfigureAwait(false);
                 log.Info("Recieved values: {Values}.", values.Response.Content.ToString());
             }
         }
