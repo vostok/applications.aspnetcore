@@ -12,11 +12,13 @@ namespace Vostok.Hosting.AspNetCore.Builders
     internal class AspNetCoreApplicationBuilder : IVostokAspNetCoreApplicationBuilder
     {
         private readonly LoggingMiddlewareBuilder loggingMiddlewareBuilder;
+        private readonly MicrosoftLogBuilder microsoftLogBuilder;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
 
         private AspNetCoreApplicationBuilder()
         {
             loggingMiddlewareBuilder = new LoggingMiddlewareBuilder();
+            microsoftLogBuilder = new MicrosoftLogBuilder();
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
         }
 
@@ -30,7 +32,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         private IWebHost Build(IVostokHostingEnvironment environment)
         {
             var builder = WebHost.CreateDefaultBuilder()
-                .ConfigureLog(environment)
+                .ConfigureLog(microsoftLogBuilder.Build(environment))
                 .ConfigureUrl(environment)
                 .ConfigureUrlPath(environment)
                 .RegisterTypes(environment)
@@ -54,6 +56,13 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             setup = setup ?? throw new ArgumentNullException(nameof(setup));
             setup(loggingMiddlewareBuilder);
+            return this;
+        }
+
+        public IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog(Action<IVostokMicrosoftLogBuilder> setup)
+        {
+            setup = setup ?? throw new ArgumentNullException(nameof(setup));
+            setup(microsoftLogBuilder);
             return this;
         }
 

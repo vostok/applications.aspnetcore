@@ -4,31 +4,54 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal;
 using Microsoft.Extensions.Logging;
-using Vostok.Logging.Abstractions;
+using Vostok.Commons.Helpers;
+using Vostok.Hosting.Abstractions;
+using Vostok.Hosting.AspNetCore.Setup;
 using Vostok.Logging.Microsoft;
+// ReSharper disable ParameterHidesMember
 
-namespace Vostok.Hosting.AspNetCore.Helpers
+namespace Vostok.Hosting.AspNetCore.Builders
 {
-    internal static class MicrosoftLoggerProvider
+    internal class MicrosoftLogBuilder : IVostokMicrosoftLogBuilder
     {
-        public static ILoggerProvider Get(ILog log)
+        private readonly Customization<VostokLoggerProviderSettings> settingsCustomization;
+
+        public MicrosoftLogBuilder()
         {
-            return new VostokLoggerProvider(
-                log,
-                new VostokLoggerProviderSettings
-                {
-                    DisabledScopes = GetDisabledScopes()
-                });
+            settingsCustomization = new Customization<VostokLoggerProviderSettings>();
         }
 
-        private static HashSet<Type> GetDisabledScopes() =>
+        public ILoggerProvider Build(IVostokHostingEnvironment environment)
+        {
+            var settings = new VostokLoggerProviderSettings
+            {
+                DisabledScopes = GetDisabledScopes()
+            };
+
+            settingsCustomization.Customize(settings);
+
+            return new VostokLoggerProvider(environment.Log, settings);
+        }
+
+        public IVostokMicrosoftLogBuilder CustomizeSettings(Action<VostokLoggerProviderSettings> settingsCustomization)
+        {
+            this.settingsCustomization.AddCustomization(settingsCustomization ?? throw new ArgumentNullException(nameof(settingsCustomization)));
+            return this;
+        }
+
+        private HashSet<Type> GetDisabledScopes() =>
             new HashSet<Type>(
                 new List<Type>
                 {
-                    typeof(ConnectionLogScope),
+                    GetConnectionLogScopeType(),
                     GetHostingLogScopeType(),
                     GetActionLogScopeType()
                 }.Where(t => t != null));
+
+        #region GetScopeTypes
+
+        private static Type GetConnectionLogScopeType() =>
+            typeof(ConnectionLogScope);
 
         private static Type GetHostingLogScopeType()
         {
@@ -59,5 +82,7 @@ namespace Vostok.Hosting.AspNetCore.Helpers
                 return null;
             }
         }
+
+        #endregion
     }
 }

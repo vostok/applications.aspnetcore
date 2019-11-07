@@ -9,10 +9,10 @@ namespace Vostok.Hosting.AspNetCore.Helpers
 {
     internal static class IWebHostBuilderExtensions
     {
-        public static IWebHostBuilder ConfigureLog(this IWebHostBuilder builder, IVostokHostingEnvironment environment) =>
+        public static IWebHostBuilder ConfigureLog(this IWebHostBuilder builder, ILoggerProvider loggerProvider) =>
             builder
                 .ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders())
-                .ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(MicrosoftLoggerProvider.Get(environment.Log)));
+                .ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(loggerProvider));
 
         public static IWebHostBuilder ConfigureUrl(this IWebHostBuilder builder, IVostokHostingEnvironment environment)
         {
