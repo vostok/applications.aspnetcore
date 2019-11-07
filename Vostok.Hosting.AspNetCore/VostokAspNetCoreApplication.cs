@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Hosting.Abstractions;
-using Vostok.Hosting.AspNetCore.Helpers;
-using Vostok.Hosting.AspNetCore.Middlewares;
+using Vostok.Hosting.AspNetCore.Builders;
+using Vostok.Hosting.AspNetCore.Setup;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore
@@ -18,19 +17,11 @@ namespace Vostok.Hosting.AspNetCore
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
-            var builder = WebHost.CreateDefaultBuilder()
-                .ConfigureLog(environment)
-                .ConfigureUrl(environment)
-                .ConfigureUrlPath(environment)
-                .RegisterTypes(environment)
-                .AddMiddleware(new RestoreDistributedContextMiddleware())
-                .AddMiddleware(new LoggingMiddleware(environment.Log, new LoggingMiddlewareSettings()));
+            var setup = Setup(environment);
 
-            builder = ConfigureWebHostBuilder(builder, environment);
+            webHost = AspNetCoreApplicationBuilder.Build(setup, environment);
 
-            webHost = builder.Build();
-
-            await StartWebHost(environment).ConfigureAwait(false);
+            await StartWebHostAsync(environment).ConfigureAwait(false);
 
             await WarmUpAsync(environment).ConfigureAwait(false);
         }
@@ -41,13 +32,13 @@ namespace Vostok.Hosting.AspNetCore
 
             return Task.CompletedTask;
         }
-
-        public abstract IWebHostBuilder ConfigureWebHostBuilder(IWebHostBuilder builder, IVostokHostingEnvironment environment);
+        
+        public abstract VostokAspNetCoreApplicationSetup Setup(IVostokHostingEnvironment environment);
 
         public virtual Task WarmUpAsync(IVostokHostingEnvironment environment)
             => Task.CompletedTask;
 
-        private async Task StartWebHost(IVostokHostingEnvironment environment)
+        private async Task StartWebHostAsync(IVostokHostingEnvironment environment)
         {
             log = environment.Log.ForContext<VostokAspNetCoreApplication>();
 

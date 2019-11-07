@@ -9,6 +9,7 @@ using Vostok.Context;
 using Vostok.Hosting;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore;
+using Vostok.Hosting.AspNetCore.Setup;
 using Vostok.Hosting.Kontur;
 using Vostok.Hosting.Setup;
 using Vostok.Logging.Abstractions;
@@ -76,10 +77,18 @@ namespace WebApplication1
 
         internal class MyApplication : VostokAspNetCoreApplication
         {
-            public override IWebHostBuilder ConfigureWebHostBuilder(IWebHostBuilder webHostBuilder, IVostokHostingEnvironment environment)
-            {
-                return webHostBuilder.UseStartup<Startup>();
-            }
+            public override VostokAspNetCoreApplicationSetup Setup(IVostokHostingEnvironment environment) =>
+                setup => setup
+                    .SetupWebHost(
+                        webHostSetup => webHostSetup
+                            .UseStartup<Startup>())
+                    .SetupLoggingMiddleware(
+                        logSetup => logSetup
+                            .CustomizeSettings(
+                                middlewareSettings =>
+                                {
+                                    middlewareSettings.LogQueryString = true;
+                                }));
 
             public override async Task WarmUpAsync(IVostokHostingEnvironment environment)
             {
