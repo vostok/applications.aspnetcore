@@ -89,6 +89,7 @@ namespace WebApplication1
                                 middlewareSettings =>
                                 {
                                     middlewareSettings.LogQueryString = true;
+                                    middlewareSettings.LogResponseHeaders = true;
                                 }));
 
             public override async Task WarmUpAsync(IVostokHostingEnvironment environment)

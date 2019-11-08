@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
+using Vostok.Clusterclient.Core.Model;
 using Vostok.Commons.Time;
 using Vostok.Hosting.AspNetCore.Helpers;
 using Vostok.Logging.Abstractions;
@@ -24,9 +27,11 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         {
             LogRequest(context.Request);
 
+            var sw = Stopwatch.StartNew();
+
             await next(context).ConfigureAwait(false);
 
-            //LogResponse(context.Response);
+            LogResponse(context.Response, sw.Elapsed);
         }
 
         private void LogRequest(HttpRequest request)
@@ -60,6 +65,29 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             }
             
             log.Info(template.ToString(), parameters.ToArray());
+        }
+
+        private void LogResponse(HttpResponse response, TimeSpan elapsed)
+        {
+            var template = new StringBuilder("Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.");
+            var parameters = new List<object>(5) { (ResponseCode)response.StatusCode, (ResponseCode)response.StatusCode, elapsed.ToPrettyString() };
+
+            var bodySize = response.GetBodySize();
+            if (bodySize != null)
+            {
+                template.Append(" Body size = {BodySize}.");
+                parameters.Add(bodySize);
+            }
+
+            if (settings.LogResponseHeaders)
+            {
+                template.Append("{RequestHeaders}");
+                parameters.Add(response.FormatHeaders());
+            }
+
+            log.Log(new LogEvent(LogLevel.Info, PreciseDateTime.Now, template.ToString())
+                .WithParameters(parameters.ToArray())
+                .WithProperty("ElapsedTimeMs", elapsed.TotalMilliseconds));
         }
     }
 }
