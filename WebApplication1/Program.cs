@@ -78,7 +78,7 @@ namespace WebApplication1
 
         internal class MyApplication : VostokAspNetCoreApplication
         {
-            public override VostokAspNetCoreApplicationSetup Setup(IVostokHostingEnvironment environment) =>
+            public override VostokAspNetCoreApplicationSetup SetupAspNetCore(IVostokHostingEnvironment environment) =>
                 setup => setup
                     .SetupWebHost(
                         webHostSetup => webHostSetup

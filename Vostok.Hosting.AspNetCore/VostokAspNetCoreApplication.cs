@@ -17,7 +17,7 @@ namespace Vostok.Hosting.AspNetCore
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
-            var setup = Setup(environment);
+            var setup = SetupAspNetCore(environment);
 
             webHost = AspNetCoreApplicationBuilder.Build(setup, environment);
 
@@ -33,7 +33,7 @@ namespace Vostok.Hosting.AspNetCore
             return Task.CompletedTask;
         }
         
-        public abstract VostokAspNetCoreApplicationSetup Setup(IVostokHostingEnvironment environment);
+        public abstract VostokAspNetCoreApplicationSetup SetupAspNetCore(IVostokHostingEnvironment environment);
 
         public virtual Task WarmUpAsync(IVostokHostingEnvironment environment)
             => Task.CompletedTask;
