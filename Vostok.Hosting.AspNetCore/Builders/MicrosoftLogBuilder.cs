@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal;
 using Microsoft.Extensions.Logging;
@@ -8,6 +7,7 @@ using Vostok.Commons.Helpers;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore.Setup;
 using Vostok.Logging.Microsoft;
+
 // ReSharper disable ParameterHidesMember
 
 namespace Vostok.Hosting.AspNetCore.Builders
@@ -15,6 +15,9 @@ namespace Vostok.Hosting.AspNetCore.Builders
     internal class MicrosoftLogBuilder : IVostokMicrosoftLogBuilder
     {
         private readonly Customization<VostokLoggerProviderSettings> settingsCustomization;
+        private volatile bool connectionLogScopeEnabled;
+        private volatile bool hostingLogScopeEnabled;
+        private volatile bool actionLogScopeEnabled;
 
         public MicrosoftLogBuilder()
         {
@@ -39,14 +42,43 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return this;
         }
 
-        private HashSet<Type> GetDisabledScopes() =>
-            new HashSet<Type>(
-                new List<Type>
-                {
-                    GetConnectionLogScopeType(),
-                    GetHostingLogScopeType(),
-                    GetActionLogScopeType()
-                }.Where(t => t != null));
+        private HashSet<Type> GetDisabledScopes()
+        {
+            var disabledScopes = new List<Type>();
+
+            if (!actionLogScopeEnabled)
+                disabledScopes.Add(GetActionLogScopeType());
+
+            if (!hostingLogScopeEnabled)
+                disabledScopes.Add(GetHostingLogScopeType());
+
+            if (!connectionLogScopeEnabled)
+                disabledScopes.Add(GetConnectionLogScopeType());
+
+            return new HashSet<Type>(disabledScopes);
+        }
+
+        #region SetScopeEnabled
+
+        public IVostokMicrosoftLogBuilder SetConnectionLogScopeEnabled(bool enabled)
+        {
+            connectionLogScopeEnabled = enabled;
+            return this;
+        }
+
+        public IVostokMicrosoftLogBuilder SetHostingLogScopeEnabled(bool enabled)
+        {
+            hostingLogScopeEnabled = enabled;
+            return this;
+        }
+
+        public IVostokMicrosoftLogBuilder SetActionLogScopeEnabled(bool enabled)
+        {
+            actionLogScopeEnabled = enabled;
+            return this;
+        }
+
+        #endregion
 
         #region GetScopeTypes
 

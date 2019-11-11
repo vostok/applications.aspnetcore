@@ -94,7 +94,10 @@ namespace WebApplication1
                                     {
                                         WhitelistKeys = new []{"b"}
                                     };
-                                }));
+                                }))
+                    .SetupMicrosoftLog(
+                        mSetup => mSetup
+                            .SetActionLogScopeEnabled(false));
             }
 
             public override async Task WarmupAsync(IVostokHostingEnvironment environment)
