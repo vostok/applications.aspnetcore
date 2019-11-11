@@ -15,7 +15,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         /// <para>Whether or not to log parameters of given <see cref="HttpRequest"/>.</para>
         /// </summary>
         [NotNull]
-        public Func<HttpRequest, bool> Enabled { get; set; }
+        public Func<HttpRequest, bool> Enabled { get; }
 
         /// <summary>
         /// <para>Whitelist of parameter keys to be logged.</para>
