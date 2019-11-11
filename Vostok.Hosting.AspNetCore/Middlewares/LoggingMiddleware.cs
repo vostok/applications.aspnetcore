@@ -7,7 +7,9 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Commons.Time;
+using Vostok.Context;
 using Vostok.Hosting.AspNetCore.Helpers;
+using Vostok.Hosting.AspNetCore.Models;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
@@ -36,26 +38,26 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
         private void LogRequest(HttpRequest request)
         {
+            var requestInfo = FlowingContext.Globals.Get<IRequestInfo>();
+
             var template = new StringBuilder("Recieved request '{Request}' from");
             var parameters = new List<object>(5) { request.FormatPath(settings.LogQueryString) };
 
-            var requestFrom = request.GetClientIdentity();
-            if (requestFrom != null)
+            if (requestInfo.ApplicationIdentity != null)
             {
                 template.Append(" '{RequestFrom}' at");
-                parameters.Add(requestFrom);
+                parameters.Add(requestInfo.ApplicationIdentity);
             }
 
             template.Append(" '{RequestConnection}'");
             parameters.Add(request.GetClientConnectionInfo());
 
-            var timeout = request.GetTimeout();
-            if (timeout != null)
+            if (requestInfo.Timeout != null)
             {
                 template.Append(" with timeout {Timeout}");
-                parameters.Add(timeout.Value.ToPrettyString());
+                parameters.Add(requestInfo.Timeout.Value.ToPrettyString());
             }
-
+            
             template.Append(".");
 
             if (settings.LogRequestHeaders.IsEnabledForRequest(request))

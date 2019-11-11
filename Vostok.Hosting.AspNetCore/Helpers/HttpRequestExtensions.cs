@@ -17,9 +17,16 @@ namespace Vostok.Hosting.AspNetCore.Helpers
             return $"{connection.RemoteIpAddress}:{connection.RemotePort}";
         }
 
-        public static string GetClientIdentity(this HttpRequest request)
+        public static string GetApplicationIdentity(this HttpRequest request)
         {
             return request.Headers[HeaderNames.ApplicationIdentity];
+        }
+
+        public static RequestPriority? GetPriority(this HttpRequest request)
+        {
+            if (Enum.TryParse(request.Headers[HeaderNames.RequestPriority], out RequestPriority priority))
+                return priority;
+            return null;
         }
 
         public static TimeSpan? GetTimeout(this HttpRequest request)
