@@ -31,7 +31,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
             await next(context).ConfigureAwait(false);
 
-            LogResponse(context.Response, sw.Elapsed);
+            LogResponse(context.Request, context.Response, sw.Elapsed);
         }
 
         private void LogRequest(HttpRequest request)
@@ -58,16 +58,16 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
             template.Append(".");
 
-            if (settings.LogRequestHeaders)
+            if (settings.LogRequestHeaders.IsEnabledForRequest(request))
             {
                 template.Append("{RequestHeaders}");
-                parameters.Add(request.FormatHeaders());
+                parameters.Add(request.FormatHeaders(settings.LogRequestHeaders));
             }
             
             log.Info(template.ToString(), parameters.ToArray());
         }
 
-        private void LogResponse(HttpResponse response, TimeSpan elapsed)
+        private void LogResponse(HttpRequest request, HttpResponse response, TimeSpan elapsed)
         {
             var template = new StringBuilder("Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.");
             var parameters = new List<object>(5) { (ResponseCode)response.StatusCode, (ResponseCode)response.StatusCode, elapsed.ToPrettyString() };
@@ -79,10 +79,10 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
                 parameters.Add(bodySize);
             }
 
-            if (settings.LogResponseHeaders)
+            if (settings.LogResponseHeaders.IsEnabledForRequest(request))
             {
                 template.Append("{RequestHeaders}");
-                parameters.Add(response.FormatHeaders());
+                parameters.Add(response.FormatHeaders(settings.LogResponseHeaders));
             }
 
             log.Log(new LogEvent(LogLevel.Info, PreciseDateTime.Now, template.ToString())

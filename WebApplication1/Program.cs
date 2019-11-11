@@ -9,6 +9,7 @@ using Vostok.Context;
 using Vostok.Hosting;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore;
+using Vostok.Hosting.AspNetCore.Middlewares;
 using Vostok.Hosting.AspNetCore.Setup;
 using Vostok.Hosting.Kontur;
 using Vostok.Hosting.Setup;
@@ -78,8 +79,9 @@ namespace WebApplication1
 
         internal class MyApplication : VostokAspNetCoreApplication
         {
-            public override VostokAspNetCoreApplicationSetup SetupAspNetCore(IVostokHostingEnvironment environment) =>
-                setup => setup
+            public override void Setup(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
+            {
+                builder
                     .SetupWebHost(
                         webHostSetup => webHostSetup
                             .UseStartup<Startup>())
@@ -88,13 +90,16 @@ namespace WebApplication1
                             .CustomizeSettings(
                                 middlewareSettings =>
                                 {
-                                    middlewareSettings.LogQueryString = true;
-                                    middlewareSettings.LogResponseHeaders = true;
+                                    middlewareSettings.LogQueryString = new LoggingCollectionMiddlewareSettings(_ => true)
+                                    {
+                                        WhitelistKeys = new []{"b"}
+                                    };
                                 }));
+            }
 
-            public override async Task WarmUpAsync(IVostokHostingEnvironment environment)
+            public override async Task WarmupAsync(IVostokHostingEnvironment environment)
             {
-                var log = environment.Log.ForContext("WarmUp");
+                var log = environment.Log.ForContext("Warmup");
 
                 var client = new ClusterClient(
                     log,
@@ -105,7 +110,7 @@ namespace WebApplication1
                         setup.ClusterProvider = new FixedClusterProvider($"{environment.ServiceBeacon.ReplicaInfo.Replica}");
                     });
 
-                var values = await client.SendAsync(Request.Get("api/values?a=a123")).ConfigureAwait(false);
+                var values = await client.SendAsync(Request.Get("api/values?a=a123&b=bb&c=ccc")).ConfigureAwait(false);
                 log.Info("Recieved values: {Values}.", values.Response.Content.ToString());
             }
         }

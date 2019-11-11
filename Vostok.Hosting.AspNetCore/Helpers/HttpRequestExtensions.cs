@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Commons.Time;
+using Vostok.Hosting.AspNetCore.Middlewares;
 
 namespace Vostok.Hosting.AspNetCore.Helpers
 {
@@ -28,7 +30,7 @@ namespace Vostok.Hosting.AspNetCore.Helpers
             return seconds.Seconds();
         }
 
-        public static string FormatPath(this HttpRequest request, bool includeQuery)
+        public static string FormatPath(this HttpRequest request, LoggingCollectionMiddlewareSettings logQueryStringSettings)
         {
             var builder = new StringBuilder();
 
@@ -37,20 +39,37 @@ namespace Vostok.Hosting.AspNetCore.Helpers
 
             builder.Append(request.Path);
 
-            if (includeQuery)
+            if (logQueryStringSettings.IsEnabledForRequest(request))
             {
-                builder.Append(request.QueryString);
+                if (logQueryStringSettings.IsEnabledForAllKeys())
+                {
+                    builder.Append(request.QueryString);
+                }
+                else
+                {
+                    var filtered = request.Query.Where(kvp => logQueryStringSettings.IsEnabledForKey(kvp.Key)).ToList();
+
+                    for (var i = 0; i < filtered.Count; i++)
+                    {
+                        if (i == 0)
+                            builder.Append("?");
+                        builder.Append($"{filtered[i].Key}={filtered[i].Value}");
+                    }
+                }
             }
             
             return builder.ToString();
         }
 
-        public static string FormatHeaders(this HttpRequest request)
+        public static string FormatHeaders(this HttpRequest request, LoggingCollectionMiddlewareSettings settingsLogRequestHeaders)
         {
             var builder = new StringBuilder();
 
             foreach (var header in request.Headers)
             {
+                if (!settingsLogRequestHeaders.IsEnabledForKey(header.Key))
+                    continue;
+
                 builder.AppendLine();
                 builder.Append("\t");
                 builder.Append(header.Key);

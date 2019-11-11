@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Http;
 using Vostok.Clusterclient.Core.Model;
+using Vostok.Hosting.AspNetCore.Middlewares;
 
 namespace Vostok.Hosting.AspNetCore.Helpers
 {
@@ -13,12 +14,15 @@ namespace Vostok.Hosting.AspNetCore.Helpers
             return null;
         }
 
-        public static string FormatHeaders(this HttpResponse response)
+        public static string FormatHeaders(this HttpResponse response, LoggingCollectionMiddlewareSettings settingsLogResponseHeaders)
         {
             var builder = new StringBuilder();
 
             foreach (var header in response.Headers)
             {
+                if (!settingsLogResponseHeaders.IsEnabledForKey(header.Key))
+                    continue;
+
                 builder.AppendLine();
                 builder.Append("\t");
                 builder.Append(header.Key);

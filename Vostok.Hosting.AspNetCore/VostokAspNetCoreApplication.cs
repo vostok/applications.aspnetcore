@@ -17,13 +17,15 @@ namespace Vostok.Hosting.AspNetCore
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
-            var setup = SetupAspNetCore(environment);
+            var builder = new AspNetCoreApplicationBuilder();
 
-            webHost = AspNetCoreApplicationBuilder.Build(setup, environment);
+            Setup(builder, environment);
+
+            webHost = builder.Build(environment);
 
             await StartWebHostAsync(environment).ConfigureAwait(false);
 
-            await WarmUpAsync(environment).ConfigureAwait(false);
+            await WarmupAsync(environment).ConfigureAwait(false);
         }
 
         public Task RunAsync(IVostokHostingEnvironment environment)
@@ -32,10 +34,10 @@ namespace Vostok.Hosting.AspNetCore
 
             return Task.CompletedTask;
         }
-        
-        public abstract VostokAspNetCoreApplicationSetup SetupAspNetCore(IVostokHostingEnvironment environment);
 
-        public virtual Task WarmUpAsync(IVostokHostingEnvironment environment)
+        public abstract void Setup(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment);
+
+        public virtual Task WarmupAsync(IVostokHostingEnvironment environment)
             => Task.CompletedTask;
 
         private async Task StartWebHostAsync(IVostokHostingEnvironment environment)
