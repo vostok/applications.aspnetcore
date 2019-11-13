@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Vostok.Logging.Abstractions;
 
 namespace WebApplication1.Controllers
@@ -10,7 +11,7 @@ namespace WebApplication1.Controllers
     {
         private readonly ILog log;
 
-        public ValuesController(ILog log)
+        public ValuesController(ILog log, IConfiguration config)
         {
             this.log = log;
         }

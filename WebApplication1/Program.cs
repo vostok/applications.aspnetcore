@@ -5,6 +5,7 @@ using Vostok.Clusterclient.Core;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Transport;
+using Vostok.Configuration.Sources.Object;
 using Vostok.Context;
 using Vostok.Hosting;
 using Vostok.Hosting.Abstractions;
@@ -48,6 +49,9 @@ namespace WebApplication1
                                     .SetPort(5050)
                                     .SetApplication("vostok-aspnetcore-test")
                                     ))
+                    .SetupConfiguration(
+                        configurationSetup => configurationSetup
+                            .AddSource(new ObjectSource(new MySettings {SomeString = "some string value"})))
                     ;
             };
 
@@ -117,6 +121,11 @@ namespace WebApplication1
                 var values = await client.SendAsync(Request.Get("api/values?a=a123&b=bb&c=ccc")).ConfigureAwait(false);
                 log.Info("Recieved values: {Values}.", values.Response.Content.ToString());
             }
+        }
+
+        internal class MySettings
+        {
+            public string SomeString { get; set; }
         }
     }
 }

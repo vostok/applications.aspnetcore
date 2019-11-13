@@ -33,6 +33,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Vostok.Hosting.Abstractions">
@@ -82,6 +83,10 @@
     <Reference Include="Vostok.Logging.Microsoft">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.logging.microsoft\Vostok.Logging.Microsoft\bin\Release\netstandard2.0\Vostok.Logging.Microsoft.dll</HintPath>
+    </Reference>
+    <Reference Include="Vostok.Configuration.Microsoft">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.configuration.microsoft\Vostok.Configuration.Microsoft\bin\Release\netstandard2.0\Vostok.Configuration.Microsoft.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

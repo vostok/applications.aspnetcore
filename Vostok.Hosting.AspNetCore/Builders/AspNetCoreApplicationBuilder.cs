@@ -15,6 +15,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         private readonly FillRequestInfoMiddlewareBuilder fillRequestInfoMiddlewareBuilder;
         private readonly DenyRequestsMiddlewareBuilder denyRequestsMiddlewareBuilder;
         private readonly MicrosoftLogBuilder microsoftLogBuilder;
+        private readonly MicrosoftConfigurationBuilder microsoftConfigurationBuilder;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
 
         public AspNetCoreApplicationBuilder()
@@ -23,15 +24,17 @@ namespace Vostok.Hosting.AspNetCore.Builders
             fillRequestInfoMiddlewareBuilder = new FillRequestInfoMiddlewareBuilder();
             denyRequestsMiddlewareBuilder = new DenyRequestsMiddlewareBuilder();
             microsoftLogBuilder = new MicrosoftLogBuilder();
+            microsoftConfigurationBuilder = new MicrosoftConfigurationBuilder();
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
         }
 
         public IWebHost Build(IVostokHostingEnvironment environment)
         {
             var builder = WebHost.CreateDefaultBuilder()
-                .ConfigureLog(microsoftLogBuilder.Build(environment))
-                .ConfigureUrl(environment)
-                .ConfigureUrlPath(environment)
+                .UseLog(microsoftLogBuilder.Build(environment))
+                .AddConfigurationSource(microsoftConfigurationBuilder.Build(environment))
+                .UseUrl(environment)
+                .UseUrlPath(environment)
                 .RegisterTypes(environment)
                 .AddMiddleware(fillRequestInfoMiddlewareBuilder.Build(environment))
                 .AddMiddleware(new RestoreDistributedContextMiddleware())

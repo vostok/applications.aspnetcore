@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Vostok.Hosting.Abstractions;
@@ -9,12 +10,16 @@ namespace Vostok.Hosting.AspNetCore.Helpers
 {
     internal static class IWebHostBuilderExtensions
     {
-        public static IWebHostBuilder ConfigureLog(this IWebHostBuilder builder, ILoggerProvider loggerProvider) =>
+        public static IWebHostBuilder UseLog(this IWebHostBuilder builder, ILoggerProvider loggerProvider) =>
             builder
                 .ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders())
                 .ConfigureLogging(loggingBuilder => loggingBuilder.AddProvider(loggerProvider));
 
-        public static IWebHostBuilder ConfigureUrl(this IWebHostBuilder builder, IVostokHostingEnvironment environment)
+        public static IWebHostBuilder AddConfigurationSource(this IWebHostBuilder builder, IConfigurationSource configurationSource) =>
+            builder
+                .ConfigureAppConfiguration(c => c.Add(configurationSource));
+
+        public static IWebHostBuilder UseUrl(this IWebHostBuilder builder, IVostokHostingEnvironment environment)
         {
             var url = environment.ServiceBeacon.ReplicaInfo.GetUrl();
 
@@ -24,7 +29,7 @@ namespace Vostok.Hosting.AspNetCore.Helpers
             return builder;
         }
 
-        public static IWebHostBuilder ConfigureUrlPath(this IWebHostBuilder builder, IVostokHostingEnvironment environment) =>
+        public static IWebHostBuilder UseUrlPath(this IWebHostBuilder builder, IVostokHostingEnvironment environment) =>
             builder.AddStartupFilter(new UrlPathStartupFilter(environment));
 
         private static IWebHostBuilder AddStartupFilter(this IWebHostBuilder builder, IStartupFilter startupFilter) =>

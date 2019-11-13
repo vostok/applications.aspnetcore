@@ -10,6 +10,7 @@ notests *default:
     - module vostok.hosting.abstractions
 
   deps:
+    - vostok.configuration.microsoft
     - vostok.logging.microsoft@disable-scopes
     - vostok.hosting.kontur
     - vostok.hosting
@@ -28,6 +29,7 @@ notests *default:
 
 full-build > notests:
   deps:
+    - vostok.configuration.sources
     - vostok.clusterclient.transport
     - vostok.servicediscovery
   build:

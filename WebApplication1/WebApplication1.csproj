@@ -78,6 +78,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.clusterclient.transport\Vostok.ClusterClient.Transport\bin\Release\netstandard2.0\Vostok.ClusterClient.Transport.dll</HintPath>
     </Reference>
+    <Reference Include="Vostok.Configuration.Sources">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.configuration.sources\Vostok.Configuration.Sources\bin\Release\netstandard2.0\Vostok.Configuration.Sources.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Update="appsettings.json">
