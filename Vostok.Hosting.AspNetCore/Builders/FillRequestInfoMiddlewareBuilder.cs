@@ -3,6 +3,7 @@ using Vostok.Commons.Helpers;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore.Middlewares;
 using Vostok.Hosting.AspNetCore.Setup;
+// ReSharper disable ParameterHidesMember
 
 namespace Vostok.Hosting.AspNetCore.Builders
 {

@@ -3,6 +3,7 @@ using Vostok.Commons.Helpers;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore.Middlewares;
 using Vostok.Hosting.AspNetCore.Setup;
+
 // ReSharper disable ParameterHidesMember
 
 namespace Vostok.Hosting.AspNetCore.Builders
@@ -15,7 +16,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             settingsCustomization = new Customization<LoggingMiddlewareSettings>();
         }
-
+        
         public IVostokLoggingMiddlewareBuilder CustomizeSettings(Action<LoggingMiddlewareSettings> settingsCustomization)
         {
             this.settingsCustomization.AddCustomization(settingsCustomization ?? throw new ArgumentNullException(nameof(settingsCustomization)));
@@ -24,11 +25,11 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         public LoggingMiddleware Build(IVostokHostingEnvironment environment)
         {
-            var settings = new LoggingMiddlewareSettings();
+            var settings = new LoggingMiddlewareSettings(environment.Log);
 
             settingsCustomization.Customize(settings);
 
-            return new LoggingMiddleware(environment.Log, settings);
+            return new LoggingMiddleware(settings);
         }
     }
 }

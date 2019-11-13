@@ -39,7 +39,8 @@ namespace WebApplication1
                                 .SetStream("logs_vostoklibs_cloud")
                                 .SetApiKeyProvider(() => setupContext.ClusterConfigClient.Get("app/key").Value))
                             .SetupConsoleLog()
-                            .AddLog(new DummyLog()))
+                            .AddLog(new DummyLog())
+                            .CustomizeLog(l => l.WithMinimumLevel(LogLevel.Info)))
                     .SetupServiceBeacon(
                         serviceBeaconSetup => serviceBeaconSetup
                             .SetupReplicaInfo(
@@ -90,14 +91,14 @@ namespace WebApplication1
                             .CustomizeSettings(
                                 middlewareSettings =>
                                 {
-                                    middlewareSettings.LogQueryString = new LoggingCollectionMiddlewareSettings(_ => true)
-                                    {
-                                        WhitelistKeys = new []{"b"}
-                                    };
+                                    middlewareSettings.LogQueryString.WhitelistKeys = new []{"b"};
                                 }))
                     .SetupMicrosoftLog(
                         mSetup => mSetup
-                            .SetActionLogScopeEnabled(false));
+                            .SetActionLogScopeEnabled(false))
+                    .SetupDenyRequestsMiddleware(
+                        denyRequests => denyRequests
+                            .DenyRequestsIfNotInActiveDatacenter());
             }
 
             public override async Task WarmupAsync(IVostokHostingEnvironment environment)

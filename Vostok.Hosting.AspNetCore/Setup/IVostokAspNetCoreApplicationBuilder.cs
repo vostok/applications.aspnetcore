@@ -11,6 +11,8 @@ namespace Vostok.Hosting.AspNetCore.Setup
 
         IVostokAspNetCoreApplicationBuilder SetupLoggingMiddleware([NotNull] Action<IVostokLoggingMiddlewareBuilder> setup);
 
+        IVostokAspNetCoreApplicationBuilder SetupDenyRequestsMiddleware([NotNull] Action<IVostokDenyRequestsMiddlewareBuilder> setup);
+
         IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog([NotNull] Action<IVostokMicrosoftLogBuilder> setup);
     }
 }

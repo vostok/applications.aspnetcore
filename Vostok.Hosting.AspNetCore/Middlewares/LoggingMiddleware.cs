@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Commons.Time;
@@ -16,13 +15,11 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 {
     internal class LoggingMiddleware : IMiddleware
     {
-        private readonly ILog log;
         private readonly LoggingMiddlewareSettings settings;
 
-        public LoggingMiddleware([CanBeNull] ILog log = null, [CanBeNull] LoggingMiddlewareSettings settings = null)
+        public LoggingMiddleware(LoggingMiddlewareSettings settings)
         {
-            this.log = log ?? LogProvider.Get();
-            this.settings = settings ?? new LoggingMiddlewareSettings();
+            this.settings = settings;
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -66,7 +63,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
                 parameters.Add(request.FormatHeaders(settings.LogRequestHeaders));
             }
             
-            log.Info(template.ToString(), parameters.ToArray());
+            settings.Log.Info(template.ToString(), parameters.ToArray());
         }
 
         private void LogResponse(HttpRequest request, HttpResponse response, TimeSpan elapsed)
@@ -87,7 +84,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
                 parameters.Add(response.FormatHeaders(settings.LogResponseHeaders));
             }
 
-            log.Log(new LogEvent(LogLevel.Info, PreciseDateTime.Now, template.ToString())
+            settings.Log.Log(new LogEvent(LogLevel.Info, PreciseDateTime.Now, template.ToString())
                 .WithParameters(parameters.ToArray())
                 .WithProperty("ElapsedTimeMs", elapsed.TotalMilliseconds));
         }

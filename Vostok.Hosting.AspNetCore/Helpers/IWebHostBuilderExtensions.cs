@@ -35,12 +35,14 @@ namespace Vostok.Hosting.AspNetCore.Helpers
 
         public static IWebHostBuilder AddMiddleware<T>(this IWebHostBuilder builder, T middleware)
             where T : class, IMiddleware =>
-            builder.ConfigureServices(
-                    services =>
-                        services
-                            .AddSingleton(middleware)
-                )
-                .AddStartupFilter(new AddMiddlewareStartupFilter<T>());
+            middleware == null
+                ? builder
+                : builder.ConfigureServices(
+                        services =>
+                            services
+                                .AddSingleton(middleware)
+                    )
+                    .AddStartupFilter(new AddMiddlewareStartupFilter<T>());
 
         public static IWebHostBuilder RegisterTypes(this IWebHostBuilder builder, IVostokHostingEnvironment environment) =>
             builder.ConfigureServices(

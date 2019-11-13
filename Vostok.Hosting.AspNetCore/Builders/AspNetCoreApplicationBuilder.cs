@@ -13,6 +13,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
     {
         private readonly LoggingMiddlewareBuilder loggingMiddlewareBuilder;
         private readonly FillRequestInfoMiddlewareBuilder fillRequestInfoMiddlewareBuilder;
+        private readonly DenyRequestsMiddlewareBuilder denyRequestsMiddlewareBuilder;
         private readonly MicrosoftLogBuilder microsoftLogBuilder;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
 
@@ -20,6 +21,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             loggingMiddlewareBuilder = new LoggingMiddlewareBuilder();
             fillRequestInfoMiddlewareBuilder = new FillRequestInfoMiddlewareBuilder();
+            denyRequestsMiddlewareBuilder = new DenyRequestsMiddlewareBuilder();
             microsoftLogBuilder = new MicrosoftLogBuilder();
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
         }
@@ -31,9 +33,10 @@ namespace Vostok.Hosting.AspNetCore.Builders
                 .ConfigureUrl(environment)
                 .ConfigureUrlPath(environment)
                 .RegisterTypes(environment)
-                .AddMiddleware(new RestoreDistributedContextMiddleware())
                 .AddMiddleware(fillRequestInfoMiddlewareBuilder.Build(environment))
-                .AddMiddleware(loggingMiddlewareBuilder.Build(environment));
+                .AddMiddleware(new RestoreDistributedContextMiddleware())
+                .AddMiddleware(loggingMiddlewareBuilder.Build(environment))
+                .AddMiddleware(denyRequestsMiddlewareBuilder.Build(environment));
 
             webHostBuilderCustomization.Customize(builder);
 
@@ -52,6 +55,13 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             setup = setup ?? throw new ArgumentNullException(nameof(setup));
             setup(loggingMiddlewareBuilder);
+            return this;
+        }
+
+        public IVostokAspNetCoreApplicationBuilder SetupDenyRequestsMiddleware(Action<IVostokDenyRequestsMiddlewareBuilder> setup)
+        {
+            setup = setup ?? throw new ArgumentNullException(nameof(setup));
+            setup(denyRequestsMiddlewareBuilder);
             return this;
         }
 

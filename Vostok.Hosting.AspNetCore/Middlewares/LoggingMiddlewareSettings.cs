@@ -1,5 +1,6 @@
 ﻿using System;
 using JetBrains.Annotations;
+using Vostok.Logging.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
@@ -9,6 +10,17 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         private LoggingCollectionMiddlewareSettings logQueryString = false;
         private LoggingCollectionMiddlewareSettings logRequestHeaders = false;
         private LoggingCollectionMiddlewareSettings logResponseHeaders = false;
+
+        public LoggingMiddlewareSettings([NotNull] ILog log)
+        {
+            Log = log ?? throw new ArgumentNullException(nameof(log));
+        }
+
+        /// <summary>
+        /// Log, which will be used for requests and responses.
+        /// </summary>
+        [NotNull]
+        public ILog Log { get; }
 
         /// <summary>
         /// <para>Whether or not to log query parameters.</para>
