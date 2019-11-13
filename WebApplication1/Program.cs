@@ -102,7 +102,9 @@ namespace WebApplication1
                             .SetActionLogScopeEnabled(false))
                     .SetupDenyRequestsMiddleware(
                         denyRequests => denyRequests
-                            .DenyRequestsIfNotInActiveDatacenter());
+                            .DenyRequestsIfNotInActiveDatacenter())
+                    .SetupPingApiMiddleware(
+                        pingApiBuilder => pingApiBuilder.SetCommitHashProvider(() => "hello"));
             }
 
             public override async Task WarmupAsync(IVostokHostingEnvironment environment)

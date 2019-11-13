@@ -14,6 +14,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         private readonly LoggingMiddlewareBuilder loggingMiddlewareBuilder;
         private readonly FillRequestInfoMiddlewareBuilder fillRequestInfoMiddlewareBuilder;
         private readonly DenyRequestsMiddlewareBuilder denyRequestsMiddlewareBuilder;
+        private readonly PingApiMiddlewareBuilder pingApiMiddlewareBuilder;
         private readonly MicrosoftLogBuilder microsoftLogBuilder;
         private readonly MicrosoftConfigurationBuilder microsoftConfigurationBuilder;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
@@ -23,6 +24,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
             loggingMiddlewareBuilder = new LoggingMiddlewareBuilder();
             fillRequestInfoMiddlewareBuilder = new FillRequestInfoMiddlewareBuilder();
             denyRequestsMiddlewareBuilder = new DenyRequestsMiddlewareBuilder();
+            pingApiMiddlewareBuilder = new PingApiMiddlewareBuilder();
             microsoftLogBuilder = new MicrosoftLogBuilder();
             microsoftConfigurationBuilder = new MicrosoftConfigurationBuilder();
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
@@ -39,7 +41,8 @@ namespace Vostok.Hosting.AspNetCore.Builders
                 .AddMiddleware(fillRequestInfoMiddlewareBuilder.Build(environment))
                 .AddMiddleware(new RestoreDistributedContextMiddleware())
                 .AddMiddleware(loggingMiddlewareBuilder.Build(environment))
-                .AddMiddleware(denyRequestsMiddlewareBuilder.Build(environment));
+                .AddMiddleware(denyRequestsMiddlewareBuilder.Build(environment))
+                .AddMiddleware(pingApiMiddlewareBuilder.Build(environment));
 
             webHostBuilderCustomization.Customize(builder);
 
@@ -65,6 +68,14 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             setup = setup ?? throw new ArgumentNullException(nameof(setup));
             setup(denyRequestsMiddlewareBuilder);
+            return this;
+        }
+
+        public IVostokAspNetCoreApplicationBuilder SetupPingApiMiddleware(Action<IVostokPingApiMiddlewareBuilder> setup)
+        {
+            setup = setup ?? throw new ArgumentNullException(nameof(setup));
+            pingApiMiddlewareBuilder.Enable();
+            setup(pingApiMiddlewareBuilder);
             return this;
         }
 
