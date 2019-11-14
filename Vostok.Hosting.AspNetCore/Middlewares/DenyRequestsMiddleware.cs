@@ -6,6 +6,9 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
+    /// <summary>
+    /// Middleware that denies all incoming requests in case of non-healthy application status.
+    /// </summary>
     internal class DenyRequestsMiddleware : IMiddleware
     {
         private readonly DenyRequestsMiddlewareSettings settings;
@@ -19,7 +22,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            if (settings.DeniedProvider())
+            if (settings.Enabled())
             {
                 context.Response.StatusCode = settings.ResponseCode;
 

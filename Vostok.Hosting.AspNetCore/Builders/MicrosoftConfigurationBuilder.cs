@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Vostok.Configuration.Microsoft;
 using Vostok.Hosting.Abstractions;
-using Vostok.Hosting.AspNetCore.Setup;
 
 namespace Vostok.Hosting.AspNetCore.Builders
 {
-    internal class MicrosoftConfigurationBuilder : IVostokMicrosoftConfigurationBuilder
+    internal class MicrosoftConfigurationBuilder
     {
         public IConfigurationSource Build(IVostokHostingEnvironment environment)
         {

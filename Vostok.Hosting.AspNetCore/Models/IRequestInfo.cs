@@ -6,7 +6,7 @@ using Vostok.Clusterclient.Core.Model;
 namespace Vostok.Hosting.AspNetCore.Models
 {
     /// <summary>
-    /// Represents incoming HTTP request information.
+    /// Represents an incoming HTTP request information.
     /// </summary>
     [PublicAPI]
     public interface IRequestInfo

@@ -5,9 +5,13 @@ using Microsoft.AspNetCore.Http;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Hosting.AspNetCore.Helpers;
 using Vostok.Hosting.AspNetCore.Models;
+#pragma warning disable 1584,1581,1580, 1574
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
+    /// <summary>
+    /// Configuration of the <see cref="FillRequestInfoMiddleware"/>.
+    /// </summary>
     [PublicAPI]
     public class FillRequestInfoMiddlewareSettings
     {
@@ -34,7 +38,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
         /// <summary>
         /// <para>A delegate that obtains <see cref="IRequestInfo.ClientIpAddress"/> from <see cref="HttpRequest"/>.</para>
-        /// <para>By default, returns value from <c>HttpContext.Connection.RemoteIpAddress/></c>.</para>
+        /// <para>By default, returns value from <see cref="HttpContext.Connection.RemoteIpAddress"/>.</para>
         /// </summary>
         [CanBeNull]
         public Func<HttpRequest, IPAddress> ClientIpAddressProvider { get; set; } = request => request.GetClientIpAddress();

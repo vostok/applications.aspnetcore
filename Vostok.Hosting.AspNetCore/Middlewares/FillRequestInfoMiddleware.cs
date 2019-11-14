@@ -7,6 +7,9 @@ using Vostok.Hosting.AspNetCore.Models;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
+    /// <summary>
+    /// Middleware that obtains <see cref="IRequestInfo"/> from request and stores it to <see cref="FlowingContext.Globals"/>.
+    /// </summary>
     internal class FillRequestInfoMiddleware : IMiddleware
     {
         private readonly FillRequestInfoMiddlewareSettings settings;

@@ -13,6 +13,9 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
+    /// <summary>
+    /// Middleware that logs all requests and responses.
+    /// </summary>
     internal class LoggingMiddleware : IMiddleware
     {
         private readonly LoggingMiddlewareSettings settings;

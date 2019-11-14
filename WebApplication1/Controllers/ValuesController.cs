@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Vostok.Logging.Abstractions;
@@ -21,6 +22,7 @@ namespace WebApplication1.Controllers
         public ActionResult<IEnumerable<string>> Get()
         {
             log.Info("Get values!");
+            //throw new Exception("Test Error.");
             return new string[] { "value1", "value2" };
         }
 

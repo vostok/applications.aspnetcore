@@ -3,19 +3,22 @@ using JetBrains.Annotations;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
+    /// <summary>
+    /// Configuration of the <see cref="DenyRequestsMiddleware"/>.
+    /// </summary>
     [PublicAPI]
     public class DenyRequestsMiddlewareSettings
     {
-        public DenyRequestsMiddlewareSettings([NotNull] Func<bool> deniedProvider)
+        public DenyRequestsMiddlewareSettings([NotNull] Func<bool> enabled)
         {
-            DeniedProvider = deniedProvider;
+            Enabled = enabled;
         }
 
         /// <summary>
-        /// <para>A delegate that checks whether or not to deny all incoming requests.</para>
+        /// A delegate that decides whether or not to deny all incoming requests.
         /// </summary>
         [NotNull]
-        public Func<bool> DeniedProvider { get; }
+        public Func<bool> Enabled { get; }
 
         /// <summary>
         /// Response code, that will be returned for denied requests.

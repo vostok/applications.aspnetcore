@@ -4,6 +4,9 @@ using Vostok.Tracing.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
+    /// <summary>
+    /// Configuration of the <see cref="TracingMiddleware"/>.
+    /// </summary>
     [PublicAPI]
     public class TracingMiddlewareSettings
     {
@@ -12,9 +15,15 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             Tracer = tracer ?? throw new ArgumentNullException(nameof(tracer));
         }
 
+        /// <summary>
+        /// <see cref="ITracer"/> that will be used for span creation.
+        /// </summary>
         [NotNull]
         public ITracer Tracer { get; }
 
+        /// <summary>
+        /// If filled, trace id will be written to response header.
+        /// </summary>
         [CanBeNull]
         public string ResponseTraceIdHeader { get; set; }
     }

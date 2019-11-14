@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
+    /// <summary>
+    /// Configuration of the <see cref="LoggingMiddlewareSettings.LogQueryString"/>, <see cref="LoggingMiddlewareSettings.LogRequestHeaders"/> and <see cref="LoggingMiddlewareSettings.LogResponseHeaders"/>.
+    /// </summary>
     [PublicAPI]
     public class LoggingCollectionMiddlewareSettings
     {
@@ -12,7 +15,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             Enabled = enabled ?? throw new ArgumentNullException(nameof(enabled));
 
         /// <summary>
-        /// <para>Whether or not to log parameters of given <see cref="HttpRequest"/>.</para>
+        /// A delegate that decides whether or not to log parameters of given <see cref="HttpRequest"/>.
         /// </summary>
         [NotNull]
         public Func<HttpRequest, bool> Enabled { get; }

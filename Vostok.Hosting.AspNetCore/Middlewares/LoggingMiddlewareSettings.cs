@@ -4,6 +4,9 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
+    /// <summary>
+    /// Configuration of the <see cref="LoggingMiddleware"/>.
+    /// </summary>
     [PublicAPI]
     public class LoggingMiddlewareSettings
     {
@@ -17,7 +20,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         }
 
         /// <summary>
-        /// Log, which will be used for requests and responses.
+        /// <see cref="ILog"/> that will be used for requests and responses logging.
         /// </summary>
         [NotNull]
         public ILog Log { get; }

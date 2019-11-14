@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
+    /// <summary>
+    /// Middleware that handles '_status/ping' and '/_status/version' requests.
+    /// </summary>
     internal class PingApiMiddleware : IMiddleware
     {
         private readonly PingApiMiddlewareSettings settings;
