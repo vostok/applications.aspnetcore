@@ -104,7 +104,10 @@ namespace WebApplication1
                         denyRequests => denyRequests
                             .DenyRequestsIfNotInActiveDatacenter())
                     .SetupPingApiMiddleware(
-                        pingApiBuilder => pingApiBuilder.SetCommitHashProvider(() => "hello"));
+                        pingApiBuilder => pingApiBuilder.SetCommitHashProvider(() => "hello"))
+                    .SetupTracingMiddleware(
+                        tracing => tracing
+                            .CustomizeSettings(tracingSettings => tracingSettings.ResponseTraceIdHeader = "TraceId"));
             }
 
             public override async Task WarmupAsync(IVostokHostingEnvironment environment)

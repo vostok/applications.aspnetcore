@@ -40,10 +40,10 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             var template = new StringBuilder("Recieved request '{Request}' from");
             var parameters = new List<object>(5) { request.FormatPath(settings.LogQueryString) };
 
-            if (requestInfo.ApplicationIdentity != null)
+            if (requestInfo.ClientApplicationIdentity != null)
             {
                 template.Append(" '{RequestFrom}' at");
-                parameters.Add(requestInfo.ApplicationIdentity);
+                parameters.Add(requestInfo.ClientApplicationIdentity);
             }
 
             template.Append(" '{RequestConnection}'");

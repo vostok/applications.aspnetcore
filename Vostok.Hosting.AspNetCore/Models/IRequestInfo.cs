@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using JetBrains.Annotations;
 using Vostok.Clusterclient.Core.Model;
 
@@ -26,6 +27,12 @@ namespace Vostok.Hosting.AspNetCore.Models
         /// Application name of request sender.
         /// </summary>
         [CanBeNull]
-        string ApplicationIdentity { get; }
+        string ClientApplicationIdentity { get; }
+
+        /// <summary>
+        /// Ip address of request sender.
+        /// </summary>
+        [CanBeNull]
+        IPAddress ClientIpAddress { get; }
     }
 }

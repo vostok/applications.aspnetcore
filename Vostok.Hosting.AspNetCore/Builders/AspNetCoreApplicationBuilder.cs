@@ -12,6 +12,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
     internal class AspNetCoreApplicationBuilder : IVostokAspNetCoreApplicationBuilder
     {
         private readonly LoggingMiddlewareBuilder loggingMiddlewareBuilder;
+        private readonly TracingMiddlewareBuilder tracingMiddlewareBuilder;
         private readonly FillRequestInfoMiddlewareBuilder fillRequestInfoMiddlewareBuilder;
         private readonly DenyRequestsMiddlewareBuilder denyRequestsMiddlewareBuilder;
         private readonly PingApiMiddlewareBuilder pingApiMiddlewareBuilder;
@@ -22,6 +23,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         public AspNetCoreApplicationBuilder()
         {
             loggingMiddlewareBuilder = new LoggingMiddlewareBuilder();
+            tracingMiddlewareBuilder = new TracingMiddlewareBuilder();
             fillRequestInfoMiddlewareBuilder = new FillRequestInfoMiddlewareBuilder();
             denyRequestsMiddlewareBuilder = new DenyRequestsMiddlewareBuilder();
             pingApiMiddlewareBuilder = new PingApiMiddlewareBuilder();
@@ -39,7 +41,9 @@ namespace Vostok.Hosting.AspNetCore.Builders
                 .UseUrlPath(environment)
                 .RegisterTypes(environment)
                 .AddMiddleware(fillRequestInfoMiddlewareBuilder.Build(environment))
+                // TODO(kungurtsev): throttling middleware should go here.
                 .AddMiddleware(new RestoreDistributedContextMiddleware())
+                .AddMiddleware(tracingMiddlewareBuilder.Build(environment))
                 .AddMiddleware(loggingMiddlewareBuilder.Build(environment))
                 .AddMiddleware(denyRequestsMiddlewareBuilder.Build(environment))
                 .AddMiddleware(pingApiMiddlewareBuilder.Build(environment));
@@ -61,6 +65,13 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             setup = setup ?? throw new ArgumentNullException(nameof(setup));
             setup(loggingMiddlewareBuilder);
+            return this;
+        }
+
+        public IVostokAspNetCoreApplicationBuilder SetupTracingMiddleware(Action<IVostokTracingMiddlewareBuilder> setup)
+        {
+            setup = setup ?? throw new ArgumentNullException(nameof(setup));
+            setup(tracingMiddlewareBuilder);
             return this;
         }
 

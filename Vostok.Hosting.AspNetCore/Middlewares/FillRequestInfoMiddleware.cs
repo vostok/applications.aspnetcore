@@ -21,7 +21,8 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             IRequestInfo requestInfo = new RequestInfo(
                 settings.TimeoutProvider?.Invoke(context.Request),
                 settings.PriorityProvider?.Invoke(context.Request),
-                settings.ApplicationIdentityProvider?.Invoke(context.Request));
+                settings.ClientApplicationIdentityProvider?.Invoke(context.Request),
+                settings.ClientIpAddressProvider?.Invoke(context.Request));
 
             FlowingContext.Globals.Set(requestInfo);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Vostok.Clusterclient.Core.Model;
@@ -11,13 +12,16 @@ namespace Vostok.Hosting.AspNetCore.Helpers
 {
     internal static class HttpRequestExtensions
     {
+        public static IPAddress GetClientIpAddress(this HttpRequest request) =>
+            request.HttpContext.Connection.RemoteIpAddress;
+
         public static string GetClientConnectionInfo(this HttpRequest request)
         {
             var connection = request.HttpContext.Connection;
             return $"{connection.RemoteIpAddress}:{connection.RemotePort}";
         }
 
-        public static string GetApplicationIdentity(this HttpRequest request)
+        public static string GetClientApplicationIdentity(this HttpRequest request)
         {
             return request.Headers[HeaderNames.ApplicationIdentity];
         }

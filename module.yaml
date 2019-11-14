@@ -10,6 +10,7 @@ notests *default:
     - module vostok.hosting.abstractions
 
   deps:
+    - vostok.tracing.extensions
     - vostok.configuration.microsoft
     - vostok.logging.microsoft@disable-scopes
     - vostok.hosting.kontur
