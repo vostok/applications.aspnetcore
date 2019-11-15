@@ -64,7 +64,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
                 return;
 
             throw new Exception("Application url should be configured via ServiceBeacon instead of WebHostBuilder.\n" +
-                                $"ServiceBeacon url: {urlsBefore}. WebHostBuilder urls: {urlsAfter}.");
+                                $"ServiceBeacon url: '{urlsBefore}'. WebHostBuilder urls: '{urlsAfter}'.");
         }
 
         #region SetupComponents
