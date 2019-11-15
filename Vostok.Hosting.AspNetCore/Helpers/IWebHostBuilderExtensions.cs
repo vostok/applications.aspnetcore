@@ -24,7 +24,7 @@ namespace Vostok.Hosting.AspNetCore.Helpers
             var url = environment.ServiceBeacon.ReplicaInfo.GetUrl();
 
             if (url != null)
-                builder = builder.UseUrls($"http://*:{url.Port}/");
+                builder = builder.UseUrls($"{url.Scheme}://*:{url.Port}/");
 
             return builder;
         }

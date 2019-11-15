@@ -89,7 +89,9 @@ namespace WebApplication1
                 builder
                     .SetupWebHost(
                         webHostSetup => webHostSetup
-                            .UseStartup<Startup>())
+                            .UseStartup<Startup>()
+                            //.UseUrls($"http://*:42222/")
+                    )
                     .SetupLoggingMiddleware(
                         logSetup => logSetup
                             .CustomizeSettings(

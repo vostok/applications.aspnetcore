@@ -16,7 +16,7 @@ namespace Vostok.Hosting.AspNetCore.Setup
     /// <para>Doing the following:</para>
     /// <list type="bullet">
     ///     <item><description>Configures url and url path from <see cref="IServiceBeacon"/>.</description></item>
-    ///     <item><description>Registers Vostok <see cref="ILog"/> as Microsoft <see cref="ILoggerProvider"/>.</description></item>
+    ///     <item><description>Registers Vostok <see cref="ILog"/> as Microsoft <see cref="ILogger"/>.</description></item>
     ///     <item><description>Registers Vostok <see cref="Configuration.Abstractions.IConfigurationSource"/> as Microsoft <see cref="Microsoft.Extensions.Configuration.IConfigurationSource"/>.</description></item>
     ///     <item><description>Registers all the fields from <see cref="IVostokHostingEnvironment"/> to <see cref="IServiceCollection"/>.</description></item>
     ///     <item><description>Adds <see cref="FillRequestInfoMiddleware"/>.</description></item>

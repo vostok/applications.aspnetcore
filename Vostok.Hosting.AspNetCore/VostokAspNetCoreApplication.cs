@@ -14,7 +14,7 @@ namespace Vostok.Hosting.AspNetCore
     /// <para>On <see cref="IVostokApplication.InitializeAsync"/> phase:</para>
     /// <list type="bullet">
     ///     <item><description>Calls <see cref="Setup"/> method, that should be implemented and setup <see cref="IVostokAspNetCoreApplicationBuilder"/>.</description></item>
-    ///     <item><description>Builds and run <see cref="IWebHostBuilder"/>.</description></item>
+    ///     <item><description>Builds and starts <see cref="IWebHostBuilder"/>.</description></item>
     ///     <item><description>Calls optional <see cref="WarmupAsync"/>.</description></item>
     /// </list>
     /// <para>On <see cref="IVostokApplication.RunAsync"/> phase:</para>

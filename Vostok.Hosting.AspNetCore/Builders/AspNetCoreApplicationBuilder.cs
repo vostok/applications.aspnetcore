@@ -48,9 +48,23 @@ namespace Vostok.Hosting.AspNetCore.Builders
                 .AddMiddleware(denyRequestsMiddlewareBuilder.Build(environment))
                 .AddMiddleware(pingApiMiddlewareBuilder.Build(environment));
 
+            var urlsBefore = builder.GetSetting(WebHostDefaults.ServerUrlsKey);
+
             webHostBuilderCustomization.Customize(builder);
 
+            var urlsAfter = builder.GetSetting(WebHostDefaults.ServerUrlsKey);
+            EnsureNotChanged(urlsBefore, urlsAfter);
+
             return builder.Build();
+        }
+
+        private void EnsureNotChanged(string urlsBefore, string urlsAfter)
+        {
+            if (urlsAfter.Contains(urlsBefore))
+                return;
+
+            throw new Exception("Application url should be configured via ServiceBeacon instead of WebHostBuilder.\n" +
+                                $"ServiceBeacon url: {urlsBefore}. WebHostBuilder urls: {urlsAfter}.");
         }
 
         #region SetupComponents
