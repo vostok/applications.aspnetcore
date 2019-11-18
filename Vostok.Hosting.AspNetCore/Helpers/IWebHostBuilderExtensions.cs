@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,8 +24,10 @@ namespace Vostok.Hosting.AspNetCore.Helpers
         {
             var url = environment.ServiceBeacon.ReplicaInfo.GetUrl();
 
-            if (url != null)
-                builder = builder.UseUrls($"{url.Scheme}://*:{url.Port}/");
+            if (url == null)
+                throw new Exception("Port or url should be configured in ServiceBeacon using VostokHostingEnvironmentSetup.");
+            
+            builder = builder.UseUrls($"{url.Scheme}://*:{url.Port}/");
 
             return builder;
         }

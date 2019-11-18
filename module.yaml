@@ -30,6 +30,7 @@ notests *default:
 
 full-build > notests:
   deps:
+    - vostok.tracing.hercules
     - vostok.configuration.sources
     - vostok.clusterclient.transport
     - vostok.servicediscovery

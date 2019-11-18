@@ -63,7 +63,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
             if (urlsAfter.Contains(urlsBefore))
                 return;
 
-            throw new Exception("Application url should be configured via ServiceBeacon instead of WebHostBuilder.\n" +
+            throw new Exception("Application url should be configured in ServiceBeacon instead of WebHostBuilder.\n" +
                                 $"ServiceBeacon url: '{urlsBefore}'. WebHostBuilder urls: '{urlsAfter}'.");
         }
 

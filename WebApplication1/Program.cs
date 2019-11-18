@@ -10,7 +10,6 @@ using Vostok.Context;
 using Vostok.Hosting;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore;
-using Vostok.Hosting.AspNetCore.Middlewares;
 using Vostok.Hosting.AspNetCore.Setup;
 using Vostok.Hosting.Kontur;
 using Vostok.Hosting.Setup;
@@ -46,12 +45,13 @@ namespace WebApplication1
                         serviceBeaconSetup => serviceBeaconSetup
                             .SetupReplicaInfo(
                                 replicaInfoSetup => replicaInfoSetup
-                                    .SetPort(5050)
+                                    //.SetPort(5050)
                                     .SetApplication("vostok-aspnetcore-test")
                                     ))
                     .SetupConfiguration(
                         configurationSetup => configurationSetup
                             .AddSource(new ObjectSource(new MySettings {SomeString = "some string value"})))
+                    .SetupHerculesSink(x => x.EnableVerboseLogging());
                     ;
             };
 
