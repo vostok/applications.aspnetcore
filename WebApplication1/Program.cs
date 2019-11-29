@@ -9,8 +9,10 @@ using Vostok.Configuration.Sources.Object;
 using Vostok.Context;
 using Vostok.Hosting;
 using Vostok.Hosting.Abstractions;
+using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Hosting.AspNetCore;
 using Vostok.Hosting.AspNetCore.Setup;
+using Vostok.Hosting.Extensions.Houston;
 using Vostok.Hosting.Kontur;
 using Vostok.Hosting.Setup;
 using Vostok.Logging.Abstractions;
@@ -45,13 +47,14 @@ namespace WebApplication1
                         serviceBeaconSetup => serviceBeaconSetup
                             .SetupReplicaInfo(
                                 replicaInfoSetup => replicaInfoSetup
-                                    //.SetPort(5050)
+                                    .SetPort(5050)
                                     .SetApplication("vostok-aspnetcore-test")
                                     ))
                     .SetupConfiguration(
                         configurationSetup => configurationSetup
                             .AddSource(new ObjectSource(new MySettings {SomeString = "some string value"})))
-                    .SetupHerculesSink(x => x.EnableVerboseLogging());
+                    .SetupHerculesSink(x => x.EnableVerboseLogging())
+                    //.SetupHostExtensions(SetupHostExtensions);
                     ;
             };
 
@@ -128,6 +131,11 @@ namespace WebApplication1
                 var values = await client.SendAsync(Request.Get("api/values?a=a123&b=bb&c=ccc")).ConfigureAwait(false);
                 log.Info("Recieved values: {Values}.", values.Response.Content.ToString());
             }
+        }
+
+        internal class MyState
+        {
+            
         }
 
         internal class MySettings

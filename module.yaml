@@ -13,9 +13,9 @@ notests *default:
     - vostok.tracing.extensions
     - vostok.configuration.microsoft
     - vostok.logging.microsoft@disable-scopes
-    - vostok.hosting.kontur
-    - vostok.hosting
-    - vostok.hosting.abstractions
+    - vostok.hosting.kontur@step2
+    - vostok.hosting@step2
+    - vostok.hosting.abstractions@step2
     - vostok.datacenters
     - vostok.clusterconfig.client.abstractions
     - vostok.clusterclient.core
@@ -30,6 +30,7 @@ notests *default:
 
 full-build > notests:
   deps:
+    - vostok.hosting.extensions.houston@step2
     - vostok.tracing.hercules
     - vostok.configuration.sources
     - vostok.clusterclient.transport

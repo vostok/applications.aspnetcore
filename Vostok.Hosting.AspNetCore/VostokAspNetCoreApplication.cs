@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Hosting.Abstractions;
+using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Hosting.AspNetCore.Builders;
 using Vostok.Hosting.AspNetCore.Setup;
 using Vostok.Logging.Abstractions;
@@ -23,6 +24,7 @@ namespace Vostok.Hosting.AspNetCore
     /// </list>
     /// </summary>
     [PublicAPI]
+    [RequiresPort]
     public abstract class VostokAspNetCoreApplication : IVostokApplication
     {
         private IApplicationLifetime lifetime;

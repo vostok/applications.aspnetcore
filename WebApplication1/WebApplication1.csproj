@@ -86,10 +86,19 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.tracing.hercules\Vostok.Tracing.Hercules\bin\Release\netstandard2.0\Vostok.Tracing.Hercules.dll</HintPath>
     </Reference>
+    <Reference Include="Vostok.Hosting.Extensions.Houston">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.hosting.extensions.houston\Vostok.Hosting.Extensions.Houston\bin\Release\netstandard2.0\Vostok.Hosting.Extensions.Houston.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="WebApplication1.nuspec">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
