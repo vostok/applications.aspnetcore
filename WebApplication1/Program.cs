@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Clusterclient.Core;
@@ -27,6 +28,9 @@ namespace WebApplication1
         {
             var application = new MyApplication();
 
+            var type = application.GetType();
+            var a = type.GetCustomAttribute<RequiresPort>(true);
+
             VostokHostingEnvironmentSetup environmentSetup = setup =>
             {
                 setup
@@ -47,12 +51,13 @@ namespace WebApplication1
                         serviceBeaconSetup => serviceBeaconSetup
                             .SetupReplicaInfo(
                                 replicaInfoSetup => replicaInfoSetup
-                                    .SetPort(5050)
+                                    //.SetPort(5050)
                                     .SetApplication("vostok-aspnetcore-test")
                                     ))
                     .SetupConfiguration(
                         configurationSetup => configurationSetup
-                            .AddSource(new ObjectSource(new MySettings {SomeString = "some string value"})))
+                            .AddSource(new ObjectSource(new MySettings {A = "public A"}))
+                            .AddSecretSource(new ObjectSource(new MySettings { B = "secret B" })))
                     .SetupHerculesSink(x => x.EnableVerboseLogging())
                     //.SetupHostExtensions(SetupHostExtensions);
                     ;
@@ -85,6 +90,8 @@ namespace WebApplication1
                 new SourceContextWrapper(this, context);
         }
 
+        [RequiresConfiguration(typeof(MySettings), "")]
+        [RequiresSecretConfiguration(typeof(MySecretSettings), "")]
         internal class MyApplication : VostokAspNetCoreApplication
         {
             public override void Setup(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
@@ -130,6 +137,11 @@ namespace WebApplication1
 
                 var values = await client.SendAsync(Request.Get("api/values?a=a123&b=bb&c=ccc")).ConfigureAwait(false);
                 log.Info("Recieved values: {Values}.", values.Response.Content.ToString());
+
+                var settings = environment.ConfigurationProvider.Get<MySettings>();
+                log.Info($"Settings: {settings.A}/{settings.B}");
+                var secretSettings = environment.ConfigurationProvider.Get<MySecretSettings>();
+                log.Info($"Secret settings: {secretSettings.A}/{secretSettings.B}");
             }
         }
 
@@ -140,7 +152,14 @@ namespace WebApplication1
 
         internal class MySettings
         {
-            public string SomeString { get; set; }
+            public string A { get; set; }
+            public string B { get; set; }
+        }
+
+        internal class MySecretSettings
+        {
+            public string A { get; set; }
+            public string B { get; set; }
         }
     }
 }

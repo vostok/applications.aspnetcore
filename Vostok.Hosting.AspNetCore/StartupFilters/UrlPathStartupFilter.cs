@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Hosting.Abstractions;
-using Vostok.Hosting.AspNetCore.Helpers;
+using Vostok.ServiceDiscovery.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.StartupFilters
 {
@@ -13,12 +13,13 @@ namespace Vostok.Hosting.AspNetCore.StartupFilters
 
         public UrlPathStartupFilter(IVostokHostingEnvironment environment)
         {
-            urlPath = environment.ServiceBeacon.ReplicaInfo.GetUrl()?.AbsolutePath;
+            if (environment.ServiceBeacon.ReplicaInfo.TryGetUrl(out var url))
+                urlPath = url.AbsolutePath;
         }
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
-            if (urlPath == Slash)
+            if (string.IsNullOrEmpty(urlPath) || urlPath == Slash)
                 return next;
 
             return app =>

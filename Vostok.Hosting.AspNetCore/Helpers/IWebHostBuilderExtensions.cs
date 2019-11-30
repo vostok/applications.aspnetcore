@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore.StartupFilters;
+using Vostok.ServiceDiscovery.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Helpers
 {
@@ -22,9 +23,7 @@ namespace Vostok.Hosting.AspNetCore.Helpers
 
         public static IWebHostBuilder UseUrl(this IWebHostBuilder builder, IVostokHostingEnvironment environment)
         {
-            var url = environment.ServiceBeacon.ReplicaInfo.GetUrl();
-
-            if (url == null)
+            if (!environment.ServiceBeacon.ReplicaInfo.TryGetUrl(out var url))
                 throw new Exception("Port or url should be configured in ServiceBeacon using VostokHostingEnvironmentSetup.");
             
             builder = builder.UseUrls($"{url.Scheme}://*:{url.Port}/");
