@@ -131,7 +131,6 @@ namespace WebApplication1
                     setup =>
                     {
                         setup.SetupUniversalTransport();
-                        environment.ClusterClientSetup(setup);
                         setup.ClusterProvider = new FixedClusterProvider($"{environment.ServiceBeacon.ReplicaInfo.Replica}");
                     });
 

@@ -72,7 +72,6 @@ namespace Vostok.Hosting.AspNetCore.Helpers
                         .AddSingleton(environment.ContextGlobals)
                         .AddSingleton(environment.ContextProperties)
                         .AddSingleton(environment.ContextConfiguration)
-                        .AddSingleton(environment.ClusterClientSetup)
                         .AddSingleton(environment.Datacenters)
                         .AddSingleton(environment.HostExtensions);
 
