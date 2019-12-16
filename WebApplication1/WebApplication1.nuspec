@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Vostok.AspNetCore.Test</id>
-    <version>0.0.1</version>
+    <version>0.0.3</version>
     <title>Vostok.AspNetCore.Test</title>
     <authors>infra</authors>
     <owners>infra</owners>

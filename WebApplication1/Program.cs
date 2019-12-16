@@ -6,6 +6,7 @@ using Vostok.Clusterclient.Core;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Transport;
+using Vostok.Configuration.Sources;
 using Vostok.Configuration.Sources.Object;
 using Vostok.Context;
 using Vostok.Hosting;
@@ -59,7 +60,7 @@ namespace WebApplication1
                             .AddSource(new ObjectSource(new MySettings {A = "public A"}))
                             .AddSecretSource(new ObjectSource(new MySettings { B = "secret B" })))
                     .SetupHerculesSink(x => x.EnableVerboseLogging())
-                    //.SetupHostExtensions(SetupHostExtensions);
+                    .SetupHostExtensions(he => he.Add("xxx", new MyClass()));
                     ;
             };
 
@@ -90,8 +91,9 @@ namespace WebApplication1
                 new SourceContextWrapper(this, context);
         }
 
-        [RequiresConfiguration(typeof(MySettings), "")]
-        [RequiresSecretConfiguration(typeof(MySecretSettings), "")]
+        [RequiresConfiguration(typeof(MySettings))]
+        [RequiresSecretConfiguration(typeof(MySecretSettings))]
+        [RequiresHostExtension(typeof(MyClass), "xxx")]
         internal class MyApplication : VostokAspNetCoreApplication
         {
             public override void Setup(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
@@ -131,7 +133,7 @@ namespace WebApplication1
                     setup =>
                     {
                         setup.SetupUniversalTransport();
-                        environment.ClusterClientSetup(setup);
+                        //environment.ClusterClientSetup(setup);
                         setup.ClusterProvider = new FixedClusterProvider($"{environment.ServiceBeacon.ReplicaInfo.Replica}");
                     });
 
@@ -140,8 +142,10 @@ namespace WebApplication1
 
                 var settings = environment.ConfigurationProvider.Get<MySettings>();
                 log.Info($"Settings: {settings.A}/{settings.B}");
-                var secretSettings = environment.ConfigurationProvider.Get<MySecretSettings>();
+                var secretSettings = environment.SecretConfigurationProvider.Get<MySecretSettings>();
                 log.Info($"Secret settings: {secretSettings.A}/{secretSettings.B}");
+
+                var c = environment.HostExtensions.Get<MyClass>("xxx");
             }
         }
 
@@ -160,6 +164,11 @@ namespace WebApplication1
         {
             public string A { get; set; }
             public string B { get; set; }
+        }
+
+        internal class MyClass
+        {
+            public string Value = "hello";
         }
     }
 }

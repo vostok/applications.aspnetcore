@@ -6,7 +6,7 @@ notests *default:
       name: dotnet
 
   install:
-    - Vostok.Hosting.AspNetCore/bin/Release/netstandard2.0/Vostok.Hosting.AspNetCore.dll
+    - Vostok.Hosting.AspNetCore/bin/Release/netcoreapp3.1/Vostok.Hosting.AspNetCore.dll
     - module vostok.hosting.abstractions
 
   deps:
@@ -30,11 +30,7 @@ notests *default:
 
 full-build > notests:
   deps:
-    - vostok.hosting.extensions.houston@step2
-    - vostok.tracing.hercules
-    - vostok.configuration.sources
-    - vostok.clusterclient.transport
-    - vostok.servicediscovery
+    
   build:
     target: Vostok.Hosting.AspNetCore.sln
     configuration: Release

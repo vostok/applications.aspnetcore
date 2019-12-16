@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.AspNetCore.Server.Kestrel.Core.Internal;
 using Microsoft.Extensions.Logging;
 using Vostok.Commons.Helpers;
 using Vostok.Hosting.Abstractions;
@@ -52,8 +51,8 @@ namespace Vostok.Hosting.AspNetCore.Builders
             if (!hostingLogScopeEnabled)
                 disabledScopes.Add(GetHostingLogScopeType());
 
-            if (!connectionLogScopeEnabled)
-                disabledScopes.Add(GetConnectionLogScopeType());
+            //if (!connectionLogScopeEnabled)
+            //    disabledScopes.Add(GetConnectionLogScopeType());
 
             return new HashSet<Type>(disabledScopes);
         }
@@ -82,8 +81,8 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         #region GetScopeTypes
 
-        private static Type GetConnectionLogScopeType() =>
-            typeof(ConnectionLogScope);
+        //private static Type GetConnectionLogScopeType() =>
+        //    typeof(ConnectionLogScope);
 
         private static Type GetHostingLogScopeType()
         {
