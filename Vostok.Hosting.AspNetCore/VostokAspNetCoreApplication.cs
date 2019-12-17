@@ -6,6 +6,7 @@ using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Hosting.AspNetCore.Builders;
 using Vostok.Hosting.AspNetCore.Setup;
 using Vostok.Logging.Abstractions;
+using Microsoft.Extensions.Hosting;
 
 namespace Vostok.Hosting.AspNetCore
 {
@@ -27,7 +28,7 @@ namespace Vostok.Hosting.AspNetCore
     [RequiresPort]
     public abstract class VostokAspNetCoreApplication : IVostokApplication
     {
-        private IApplicationLifetime lifetime;
+        private IHostApplicationLifetime lifetime;
         private ILog log;
         private IWebHost webHost;
 
@@ -66,7 +67,7 @@ namespace Vostok.Hosting.AspNetCore
         {
             log = environment.Log.ForContext<VostokAspNetCoreApplication>();
 
-            lifetime = (IApplicationLifetime)webHost.Services.GetService(typeof(IApplicationLifetime));
+            lifetime = (IHostApplicationLifetime)webHost.Services.GetService(typeof(IHostApplicationLifetime));
 
             environment.ShutdownToken.Register(
                 () => webHost
