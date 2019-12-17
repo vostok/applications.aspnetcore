@@ -32,14 +32,14 @@ AspNetCore vostok application template.
 
 ## Local testing
 
-### Add reference to `vostok.hosting` module
+#### Add reference to `vostok.hosting` module
 
 	cm ref add vostok.hosting MyProject/MyProject.csproj
 
-### Add reference to `vostok.hosting.kontur` module (optional)
+#### Add reference to `vostok.hosting.kontur` module (optional)
 	cm ref add vostok.hosting.kontur MyProject/MyProject.csproj
 
-### Use VostokHost and setup environemnt
+#### Use VostokHost and setup environemnt
 
 	public static async Task Main()
 	{
@@ -70,7 +70,7 @@ AspNetCore vostok application template.
 		await runner.RunAsync();
 	}
 
-### Run
+#### Run
 
 	dotnet run -p MyProject/MyProject.csproj
 
