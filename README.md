@@ -18,7 +18,13 @@ AspNetCore vostok application template.
 
 #### Add reference to `vostok.hosting.aspnetcore` module
     
+Cement
+	
     cm ref add vostok.hosting.aspnetcore MyProject/MyProject.csproj
+	
+NuGet
+
+	dotnet add MyProject/MyProject.csproj package Vostok.Hosting.AspNetCore
 
 #### Write vostok AspNetCore application
 
@@ -34,10 +40,23 @@ AspNetCore vostok application template.
 
 #### Add reference to `vostok.hosting` module
 
+Cement
+
     cm ref add vostok.hosting MyProject/MyProject.csproj
+    
+NuGet
+
+    dotnet add MyProject/MyProject.csproj package Vostok.Hosting
 
 #### Add reference to `vostok.hosting.kontur` module (optional)
+
+Cement
+
     cm ref add vostok.hosting.kontur MyProject/MyProject.csproj
+    
+NuGet
+
+    dotnet add MyProject/MyProject.csproj package Vostok.Hosting.Kontur
 
 #### Setup environment and run VostokHost 
 
