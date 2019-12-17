@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Vostok.Commons.Helpers;
 using Vostok.Hosting.Abstractions;
+using Vostok.Hosting.AspNetCore.Helpers;
 using Vostok.Hosting.AspNetCore.Setup;
 using Vostok.Logging.Microsoft;
 
@@ -41,20 +41,20 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return this;
         }
 
-        private HashSet<Type> GetDisabledScopes()
+        private HashSet<string> GetDisabledScopes()
         {
-            var disabledScopes = new List<Type>();
+            var disabledScopes = new List<string>();
 
             if (!actionLogScopeEnabled)
-                disabledScopes.Add(GetActionLogScopeType());
+                disabledScopes.Add(MicrosoftConstants.ActionLogScope);
 
             if (!hostingLogScopeEnabled)
-                disabledScopes.Add(GetHostingLogScopeType());
+                disabledScopes.Add(MicrosoftConstants.HostingLogScope);
 
-            //if (!connectionLogScopeEnabled)
-            //    disabledScopes.Add(GetConnectionLogScopeType());
+            if (!connectionLogScopeEnabled)
+                disabledScopes.Add(MicrosoftConstants.ConnectionLogScope);
 
-            return new HashSet<Type>(disabledScopes);
+            return new HashSet<string>(disabledScopes);
         }
 
         #region SetScopeEnabled
@@ -75,43 +75,6 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             actionLogScopeEnabled = enabled;
             return this;
-        }
-
-        #endregion
-
-        #region GetScopeTypes
-
-        //private static Type GetConnectionLogScopeType() =>
-        //    typeof(ConnectionLogScope);
-
-        private static Type GetHostingLogScopeType()
-        {
-            try
-            {
-                var assembly = Assembly.Load("Microsoft.AspNetCore.Hosting");
-                var type = assembly.GetType("Microsoft.AspNetCore.Hosting.Internal.HostingLoggerExtensions");
-                var nested = type.GetNestedType("HostingLogScope", BindingFlags.NonPublic);
-                return nested;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        private static Type GetActionLogScopeType()
-        {
-            try
-            {
-                var assembly = Assembly.Load("Microsoft.AspNetCore.Mvc.Core");
-                var type = assembly.GetType("Microsoft.AspNetCore.Mvc.Internal.MvcCoreLoggerExtensions");
-                var nested = type.GetNestedType("ActionLogScope", BindingFlags.NonPublic);
-                return nested;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
         }
 
         #endregion
