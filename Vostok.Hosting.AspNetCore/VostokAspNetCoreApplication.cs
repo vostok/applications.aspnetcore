@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Hosting.AspNetCore.Builders;
@@ -13,18 +12,9 @@ using Microsoft.Extensions.Hosting;
 namespace Vostok.Hosting.AspNetCore
 {
     /// <summary>
-    /// <para><see cref="VostokAspNetCoreApplication"/> is the abstract class developers implement in order to create Vostok-compatible AspNetCore service.</para>
-    /// <para>Doing the following operations:</para>
-    /// <para>On <see cref="IVostokApplication.InitializeAsync"/> phase:</para>
-    /// <list type="bullet">
-    ///     <item><description>Calls <see cref="Setup"/> method, that should be implemented and setup <see cref="IVostokAspNetCoreApplicationBuilder"/>.</description></item>
-    ///     <item><description>Builds and starts <see cref="IWebHostBuilder"/>.</description></item>
-    ///     <item><description>Calls optional <see cref="WarmupAsync"/>.</description></item>
-    /// </list>
-    /// <para>On <see cref="IVostokApplication.RunAsync"/> phase:</para>
-    /// <list type="bullet">
-    ///     <item><description>Waits for the <see cref="IVostokHostingEnvironment.ShutdownToken"/> cancellation, and performs gracefully shutdown in this case.</description></item>
-    /// </list>
+    /// <para><see cref="VostokAspNetCoreApplication"/> is the abstract class developers inherit from in order to create Vostok-compatible AspNetCore service.</para>
+    /// <para>Implement <see cref="Setup"/> method to configure <see cref="IWebHostBuilder"/> and customize built-in middlewares (see <see cref="IVostokAspNetCoreApplicationBuilder"/>).</para>
+    /// <para>Override <see cref="WarmupAsync"/> method to perform any additional initialization before the app gets registered in service discovery.</para>
     /// </summary>
     [PublicAPI]
     [RequiresPort]
