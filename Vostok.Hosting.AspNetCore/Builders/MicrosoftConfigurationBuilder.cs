@@ -8,6 +8,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
     {
         public IConfigurationSource Build(IVostokHostingEnvironment environment)
         {
+            // CR(iloktionov): Надо не забыть про SecretConfigurationSource.
             return new VostokConfigurationSource(environment.ConfigurationSource);
         }
     }

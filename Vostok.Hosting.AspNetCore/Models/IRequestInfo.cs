@@ -11,6 +11,7 @@ namespace Vostok.Hosting.AspNetCore.Models
     [PublicAPI]
     public interface IRequestInfo
     {
+        // CR(iloktionov): Кажется, бюджет удобнее, чем таймаут. Иначе всем самим придётся трекать, сколько осталось. Можно дополнить просто свойством RemainingTimeout, например.
         /// <summary>
         /// Request timeout.
         /// </summary>
@@ -29,6 +30,7 @@ namespace Vostok.Hosting.AspNetCore.Models
         [CanBeNull]
         string ClientApplicationIdentity { get; }
 
+        // CR(iloktionov): А как этого может не быть?
         /// <summary>
         /// Ip address of request sender.
         /// </summary>

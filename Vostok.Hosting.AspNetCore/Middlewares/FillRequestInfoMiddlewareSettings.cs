@@ -15,6 +15,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
     [PublicAPI]
     public class FillRequestInfoMiddlewareSettings
     {
+        // CR(iloktionov): Неудобно комбинировать (надо не забыть перевызвать старый func).
         /// <summary>
         /// <para>A delegate that obtains <see cref="IRequestInfo.Timeout"/> from <see cref="HttpRequest"/>.</para>
         /// <para>By default, parses value from <see cref="HeaderNames.RequestTimeout"/> header.</para>
@@ -36,6 +37,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         [CanBeNull]
         public Func<HttpRequest, string> ClientApplicationIdentityProvider { get; set; } = request => request.GetClientApplicationIdentity();
 
+        // CR(iloktionov): Зачем это?
         /// <summary>
         /// <para>A delegate that obtains <see cref="IRequestInfo.ClientIpAddress"/> from <see cref="HttpRequest"/>.</para>
         /// <para>By default, returns value from <see cref="HttpContext.Connection.RemoteIpAddress"/>.</para>

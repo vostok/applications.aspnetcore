@@ -19,6 +19,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             Log = log ?? throw new ArgumentNullException(nameof(log));
         }
 
+        // CR(iloktionov): Зачем это здесь торчит в паблик?
         /// <summary>
         /// <see cref="ILog"/> that will be used for requests and responses logging.
         /// </summary>

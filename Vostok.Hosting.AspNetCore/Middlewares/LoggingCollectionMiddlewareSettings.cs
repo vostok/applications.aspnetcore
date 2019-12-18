@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
+    // CR(iloktionov): 1. Оч. длинное имя, давай сократим.
+    // CR(iloktionov): 2. Почему нельзя сделать blacklist, а не whitelist?
+
     /// <summary>
     /// Configuration of the <see cref="LoggingMiddlewareSettings.LogQueryString"/>, <see cref="LoggingMiddlewareSettings.LogRequestHeaders"/> and <see cref="LoggingMiddlewareSettings.LogResponseHeaders"/>.
     /// </summary>

@@ -36,11 +36,12 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             LogResponse(context.Request, context.Response, sw.Elapsed);
         }
 
+        // CR(iloktionov): Может, заюзаем StringBuilderCache из vostok.commons.formatting, чтобы не сорить?
         private void LogRequest(HttpRequest request)
         {
             var requestInfo = FlowingContext.Globals.Get<IRequestInfo>();
 
-            var template = new StringBuilder("Recieved request '{Request}' from");
+            var template = new StringBuilder("Received request '{Request}' from");
             var parameters = new List<object>(5) { request.FormatPath(settings.LogQueryString) };
 
             if (requestInfo.ClientApplicationIdentity != null)
@@ -62,6 +63,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
             if (settings.LogRequestHeaders.IsEnabledForRequest(request))
             {
+                // CR(iloktionov): Нужно дать понять, что это хедеры. Например, так: "Request headers: ...".
                 template.Append("{RequestHeaders}");
                 parameters.Add(request.FormatHeaders(settings.LogRequestHeaders));
             }
@@ -83,10 +85,14 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
             if (settings.LogResponseHeaders.IsEnabledForRequest(request))
             {
+                // CR(iloktionov): 1. Нужно дать понять, что это хедеры. Например, так: "Response headers: ...".
+                // CR(iloktionov): 2. Это всё-таки response headers, копипаста.
+
                 template.Append("{RequestHeaders}");
                 parameters.Add(response.FormatHeaders(settings.LogResponseHeaders));
             }
 
+            // CR(iloktionov): А не лучше заменить на log.Info(...) с типизированным объектом properties?
             settings.Log.Log(new LogEvent(LogLevel.Info, PreciseDateTime.Now, template.ToString())
                 .WithParameters(parameters.ToArray())
                 .WithProperty("ElapsedTimeMs", elapsed.TotalMilliseconds));

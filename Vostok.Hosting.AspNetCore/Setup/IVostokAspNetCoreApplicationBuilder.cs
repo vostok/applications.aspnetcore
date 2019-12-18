@@ -10,6 +10,19 @@ using Vostok.ServiceDiscovery.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Setup
 {
+    // CR(iloktionov): 1. Нет смысла перечислять всё, что это штука делает, в xml-доке. Есть смысл описать, как ей правильно пользоваться.
+
+    // CR(iloktionov): 2. Если единственный обязательный шаг здесь — указать Startup, то, может, сделаем так, чтобы этого нельзя было случайно избежать?
+    // CR(iloktionov):    Можно, например, сделать его generic-параметром нашего базового класса и регать самим, если забить на сценарий доставания из внешней сборки.
+    // CR(iloktionov):    Или просто попытаться автоматически найти Startup в сборке: если он один, то зарегать его.
+    // CR(iloktionov):    Кстати, я обнаружил, что в Startup можно инжектить через конструктор IVostokHostingEnvironment: неочевидная вещь и полезный совет.
+
+    // CR(iloktionov): 3. Интерфейсы билдеров для каждого middleware выглядят избыточными и порождают двойную вложенность лямбд, которой можно и избежать.
+    // CR(iloktionov):    Некоторые из них совсем тривиальные (SetupLoggingMiddleware, SetupTracingMiddleware).
+    // CR(iloktionov):    Может, заменить их паттерном Action<Settings> для упрощения кода?
+
+    // CR(iloktionov): 4. У нас местами очень длинные названия. Например, из названий методов Setup можно безопасно убрать слово Middleware :)
+
     /// <summary>
     /// <para>Represents a configuration of <see cref="VostokAspNetCoreApplication"/> builder which must be filled during <see cref="VostokAspNetCoreApplication.Setup"/>.</para>
     /// <para>It is required to setup <see cref="IWebHostBuilder"/> with custom <see cref="IStartup"/> class.</para>
@@ -51,6 +64,9 @@ namespace Vostok.Hosting.AspNetCore.Setup
         /// </summary>
         IVostokAspNetCoreApplicationBuilder AllowRequestsIfNotInActiveDatacenter();
 
+        // CR(iloktionov): 1. Здесь каноничный код — 503.
+        // CR(iloktionov): 2. Давай это будет не generic middleware, который отсекает что угодно по Func'у, а именно штука про дата-центры?
+        // CR(iloktionov): 3. Зачем нам и allow, и deny? Каково умолчание?
         /// <summary>
         /// Denies request processing, if current datacenter is not active.
         /// </summary>

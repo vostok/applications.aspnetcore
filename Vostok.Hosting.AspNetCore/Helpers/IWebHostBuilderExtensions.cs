@@ -10,6 +10,8 @@ using Vostok.ServiceDiscovery.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Helpers
 {
+    // CR(iloktionov): Зачем нам экстеншны, которые все используются ровно в одном месте? Почему это просто не helper-методы в нужных классах?
+    // CR(iloktionov): Такая нелокальность несколько усложняет чтение кода. Тот же вопрос у меня про HttpRequestExtension, HttpResponseExtensions.
     internal static class IWebHostBuilderExtensions
     {
         public static IWebHostBuilder UseLog(this IWebHostBuilder builder, ILoggerProvider loggerProvider) =>
@@ -40,6 +42,7 @@ namespace Vostok.Hosting.AspNetCore.Helpers
                     services
                         .AddTransient(_ => startupFilter));
 
+        // CR(iloktionov): Зачем много фильтров? Можно, казалось бы, сделать один, регающий все наши middleware.
         public static IWebHostBuilder AddMiddleware<T>(this IWebHostBuilder builder, T middleware)
             where T : class, IMiddleware =>
             middleware == null

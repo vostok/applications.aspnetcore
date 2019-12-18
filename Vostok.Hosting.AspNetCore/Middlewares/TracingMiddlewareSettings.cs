@@ -15,12 +15,14 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             Tracer = tracer ?? throw new ArgumentNullException(nameof(tracer));
         }
 
+        // CR(iloktionov): Зачем это здесь торчит в паблик?
         /// <summary>
         /// <see cref="ITracer"/> that will be used for span creation.
         /// </summary>
         [NotNull]
         public ITracer Tracer { get; }
 
+        // CR(iloktionov): Почему нет дефолта?
         /// <summary>
         /// If filled, trace id will be written to response header.
         /// </summary>
