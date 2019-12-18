@@ -47,9 +47,14 @@ namespace Vostok.Hosting.AspNetCore.Setup
         IVostokAspNetCoreApplicationBuilder SetupTracingMiddleware([NotNull] Action<IVostokTracingMiddlewareBuilder> setup);
 
         /// <summary>
-        /// Delegate which configures <see cref="IVostokDenyRequestsMiddlewareBuilder"/>.
+        /// Allows request processing, even if current datacenter is not active.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupDenyRequestsMiddleware([NotNull] Action<IVostokDenyRequestsMiddlewareBuilder> setup);
+        IVostokAspNetCoreApplicationBuilder AllowRequestsIfNotInActiveDatacenter();
+
+        /// <summary>
+        /// Denies request processing, if current datacenter is not active.
+        /// </summary>
+        IVostokAspNetCoreApplicationBuilder DenyRequestsIfNotInActiveDatacenter(int denyResponseCode = (int)Clusterclient.Core.Model.ResponseCode.Gone);
 
         /// <summary>
         /// Delegate which configures <see cref="IVostokPingApiMiddlewareBuilder"/>.

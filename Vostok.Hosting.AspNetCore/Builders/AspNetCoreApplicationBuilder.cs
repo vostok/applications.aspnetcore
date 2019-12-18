@@ -90,10 +90,15 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupDenyRequestsMiddleware(Action<IVostokDenyRequestsMiddlewareBuilder> setup)
+        public IVostokAspNetCoreApplicationBuilder AllowRequestsIfNotInActiveDatacenter()
         {
-            setup = setup ?? throw new ArgumentNullException(nameof(setup));
-            setup(denyRequestsMiddlewareBuilder);
+            denyRequestsMiddlewareBuilder.AllowRequestsIfNotInActiveDatacenter();
+            return this;
+        }
+
+        public IVostokAspNetCoreApplicationBuilder DenyRequestsIfNotInActiveDatacenter(int denyResponseCode)
+        {
+            denyRequestsMiddlewareBuilder.DenyRequestsIfNotInActiveDatacenter(denyResponseCode);
             return this;
         }
 

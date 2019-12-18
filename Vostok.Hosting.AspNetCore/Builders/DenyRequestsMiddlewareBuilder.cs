@@ -9,44 +9,29 @@ using Vostok.Hosting.AspNetCore.Setup;
 
 namespace Vostok.Hosting.AspNetCore.Builders
 {
-    internal class DenyRequestsMiddlewareBuilder : IVostokDenyRequestsMiddlewareBuilder
+    internal class DenyRequestsMiddlewareBuilder
     {
-        private readonly Customization<DenyRequestsMiddlewareSettings> settingsCustomization;
-        private volatile bool denyRequestsIfNotInActiveDatacenter;
-
-        public DenyRequestsMiddlewareBuilder()
+        private int? denyResponseCode;
+        
+        public void AllowRequestsIfNotInActiveDatacenter()
         {
-            settingsCustomization = new Customization<DenyRequestsMiddlewareSettings>();
+            denyResponseCode = null;
         }
 
-        public IVostokDenyRequestsMiddlewareBuilder CustomizeSettings(Action<DenyRequestsMiddlewareSettings> settingsCustomization)
+        public void DenyRequestsIfNotInActiveDatacenter(int denyResponseCode)
         {
-            this.settingsCustomization.AddCustomization(settingsCustomization ?? throw new ArgumentNullException(nameof(settingsCustomization)));
-            return this;
-        }
-
-        public IVostokDenyRequestsMiddlewareBuilder AllowRequestsIfNotInActiveDatacenter()
-        {
-            denyRequestsIfNotInActiveDatacenter = false;
-            return this;
-        }
-
-        public IVostokDenyRequestsMiddlewareBuilder DenyRequestsIfNotInActiveDatacenter()
-        {
-            denyRequestsIfNotInActiveDatacenter = true;
-            return this;
+            this.denyResponseCode = denyResponseCode;
         }
 
         public DenyRequestsMiddleware Build(IVostokHostingEnvironment environment)
         {
-            if (!denyRequestsIfNotInActiveDatacenter)
+            if (denyResponseCode == null)
                 return null;
 
             var settings = new DenyRequestsMiddlewareSettings(
-                () => !environment.Datacenters.LocalDatacenterIsActive());
-
-            settingsCustomization.Customize(settings);
-
+                () => !environment.Datacenters.LocalDatacenterIsActive(),
+                denyResponseCode.Value);
+            
             return new DenyRequestsMiddleware(settings, environment.Log);
         }
     }

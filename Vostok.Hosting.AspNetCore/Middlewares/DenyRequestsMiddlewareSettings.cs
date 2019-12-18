@@ -6,12 +6,12 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
     /// <summary>
     /// Configuration of the <see cref="DenyRequestsMiddleware"/>.
     /// </summary>
-    [PublicAPI]
-    public class DenyRequestsMiddlewareSettings
+    internal class DenyRequestsMiddlewareSettings
     {
-        public DenyRequestsMiddlewareSettings([NotNull] Func<bool> enabled)
+        public DenyRequestsMiddlewareSettings([NotNull] Func<bool> enabled, int responseCode)
         {
             Enabled = enabled;
+            ResponseCode = responseCode;
         }
 
         /// <summary>
@@ -23,6 +23,6 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         /// <summary>
         /// Response code, that will be returned for denied requests.
         /// </summary>
-        public int ResponseCode { get; set; } = (int)Clusterclient.Core.Model.ResponseCode.Gone;
+        public int ResponseCode { get; }
     }
 }
