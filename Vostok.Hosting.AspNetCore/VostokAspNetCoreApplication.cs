@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Hosting.AspNetCore.Builders;
@@ -41,8 +43,8 @@ namespace Vostok.Hosting.AspNetCore
             webHost = builder.Build(environment);
 
             await StartWebHostAsync(environment).ConfigureAwait(false);
-
-            await WarmupAsync(environment).ConfigureAwait(false);
+            
+            await WarmupAsync(environment, webHost.Services).ConfigureAwait(false);
         }
 
         public Task RunAsync(IVostokHostingEnvironment environment)
@@ -60,8 +62,8 @@ namespace Vostok.Hosting.AspNetCore
         /// <summary>
         /// Warmup <see cref="VostokAspNetCoreApplication"/> before <see cref="IVostokHostingEnvironment.ServiceBeacon"/> will be started.
         /// </summary>
-        public virtual Task WarmupAsync(IVostokHostingEnvironment environment)
-            => Task.CompletedTask;
+        public virtual Task WarmupAsync(IVostokHostingEnvironment environment, IServiceProvider serviceProvider) =>
+            Task.CompletedTask;
 
         private async Task StartWebHostAsync(IVostokHostingEnvironment environment)
         {
