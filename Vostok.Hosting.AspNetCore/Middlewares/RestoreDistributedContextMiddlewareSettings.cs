@@ -14,6 +14,6 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         /// Additional action that will be executed during distributed context restoring.
         /// </summary>
         [CanBeNull]
-        public Action<HttpRequest> AdditionalRestoreDistributedContextAction { get; }
+        public Action<HttpRequest> AdditionalRestoreDistributedContextAction { get; set; }
     }
 }
