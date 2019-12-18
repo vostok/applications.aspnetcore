@@ -33,8 +33,11 @@ namespace Vostok.Hosting.AspNetCore.Builders
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
         }
 
+        // CR(iloktionov): 1. В 3-м Asp.NET Core, вроде, принято использовать IHost, а не IWebHost. Почему у нас по-прежнему IWebHost?
+        // CR(iloktionov): 2. Не вижу здесь возможности переопределить DI-контейнер (сделать так, чтобы IServiceProvider был на основе любимого контейнера разработчика).
         public IWebHost Build(IVostokHostingEnvironment environment)
         {
+
             var builder = WebHost.CreateDefaultBuilder()
                 .UseLog(microsoftLogBuilder.Build(environment))
                 .AddConfigurationSource(microsoftConfigurationBuilder.Build(environment))

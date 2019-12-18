@@ -2,19 +2,20 @@
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Hosting.AspNetCore.Builders;
 using Vostok.Hosting.AspNetCore.Setup;
 using Vostok.Logging.Abstractions;
-using Microsoft.Extensions.Hosting;
 
 namespace Vostok.Hosting.AspNetCore
 {
     /// <summary>
     /// <para><see cref="VostokAspNetCoreApplication"/> is the abstract class developers inherit from in order to create Vostok-compatible AspNetCore service.</para>
-    /// <para>Implement <see cref="Setup"/> method to configure <see cref="IWebHostBuilder"/> and customize built-in middlewares (see <see cref="IVostokAspNetCoreApplicationBuilder"/>).</para>
-    /// <para>Override <see cref="WarmupAsync"/> method to perform any additional initialization before the app gets registered in service discovery.</para>
+    /// <para>Implement <see cref="Setup"/> method to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middlewares (see <see cref="IVostokAspNetCoreApplicationBuilder"/>).</para>
+    /// <para>Override <see cref="WarmupAsync"/> method to perform any additional initialization after the DI container gets built but before the app gets registered in service discovery.</para>
     /// </summary>
     [PublicAPI]
     [RequiresPort]
@@ -30,10 +31,13 @@ namespace Vostok.Hosting.AspNetCore
 
             Setup(builder, environment);
 
+            // CR(iloktionov): Что будет, если вылетит исключение, а webHost не задиспоузится? Может ли остаться включенным HTTP-сервер?
+            // CR(iloktionov): Это касается и метода RunAsync. Можно, например, решить это, сделав весь класс IDisposable, а VostokHost научить диспоузить приложение.
             webHost = builder.Build(environment);
 
             await StartWebHostAsync(environment).ConfigureAwait(false);
-            
+
+            // CR(iloktionov): А почему warmup вызывается после того, как приложение уже начало слушать порт? Оно может быть ещё не готово к этому.
             await WarmupAsync(environment, webHost.Services).ConfigureAwait(false);
         }
 
@@ -45,14 +49,14 @@ namespace Vostok.Hosting.AspNetCore
         }
 
         /// <summary>
-        /// Setup <see cref="IVostokAspNetCoreApplicationBuilder"/> using given <see cref="IVostokHostingEnvironment"/>.
+        /// Implement this method to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middleware components.
         /// </summary>
-        public abstract void Setup(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment);
+        public abstract void Setup([NotNull] IVostokAspNetCoreApplicationBuilder builder, [NotNull] IVostokHostingEnvironment environment);
 
         /// <summary>
-        /// Warmup <see cref="VostokAspNetCoreApplication"/> before <see cref="IVostokHostingEnvironment.ServiceBeacon"/> will be started.
+        /// Override this method to perform any initialization that needs to happen after DI container is built, but before registering in service discovery.
         /// </summary>
-        public virtual Task WarmupAsync(IVostokHostingEnvironment environment, IServiceProvider serviceProvider) =>
+        public virtual Task WarmupAsync([NotNull] IVostokHostingEnvironment environment, [NotNull] IServiceProvider serviceProvider) =>
             Task.CompletedTask;
 
         private async Task StartWebHostAsync(IVostokHostingEnvironment environment)
@@ -61,13 +65,18 @@ namespace Vostok.Hosting.AspNetCore
 
             lifetime = (IHostApplicationLifetime)webHost.Services.GetService(typeof(IHostApplicationLifetime));
 
+            // CR(iloktionov): Результат вот этой регистрации по-хорошему тоже надо диспоузить в конце.
             environment.ShutdownToken.Register(
                 () => webHost
                     .StopAsync()
                     .ContinueWith(t => log.Error(t.Exception, "Failed to stop WebHost."), TaskContinuationOptions.OnlyOnFaulted));
 
             log.Info("Starting WebHost.");
+
+            // CR(iloktionov): А почему в StartAsync не передается ShutdownToken?
             await webHost.StartAsync().ConfigureAwait(false);
+
+            // CR(iloktionov): Давай сделаем асинхронно. Какой-нибудь экстеншн с TaskCompletionSource, например. Относится и к остальным таким местам.
             lifetime.ApplicationStarted.WaitHandle.WaitOne();
             log.Info("WebHost started.");
         }
