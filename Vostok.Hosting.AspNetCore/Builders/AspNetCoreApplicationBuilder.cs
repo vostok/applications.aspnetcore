@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Vostok.Commons.Helpers;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore.Helpers;
-using Vostok.Hosting.AspNetCore.Middlewares;
 using Vostok.Hosting.AspNetCore.Setup;
 
 namespace Vostok.Hosting.AspNetCore.Builders
@@ -14,6 +13,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         private readonly LoggingMiddlewareBuilder loggingMiddlewareBuilder;
         private readonly TracingMiddlewareBuilder tracingMiddlewareBuilder;
         private readonly FillRequestInfoMiddlewareBuilder fillRequestInfoMiddlewareBuilder;
+        private readonly RestoreDistributedContextMiddlewareBuilder restoreDistributedContextMiddlewareBuilder;
         private readonly DenyRequestsMiddlewareBuilder denyRequestsMiddlewareBuilder;
         private readonly PingApiMiddlewareBuilder pingApiMiddlewareBuilder;
         private readonly MicrosoftLogBuilder microsoftLogBuilder;
@@ -25,6 +25,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
             loggingMiddlewareBuilder = new LoggingMiddlewareBuilder();
             tracingMiddlewareBuilder = new TracingMiddlewareBuilder();
             fillRequestInfoMiddlewareBuilder = new FillRequestInfoMiddlewareBuilder();
+            restoreDistributedContextMiddlewareBuilder = new RestoreDistributedContextMiddlewareBuilder();
             denyRequestsMiddlewareBuilder = new DenyRequestsMiddlewareBuilder();
             pingApiMiddlewareBuilder = new PingApiMiddlewareBuilder();
             microsoftLogBuilder = new MicrosoftLogBuilder();
@@ -42,7 +43,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
                 .RegisterTypes(environment)
                 .AddMiddleware(fillRequestInfoMiddlewareBuilder.Build(environment))
                 // TODO(kungurtsev): throttling middleware should go here.
-                .AddMiddleware(new RestoreDistributedContextMiddleware())
+                .AddMiddleware(restoreDistributedContextMiddlewareBuilder.Build(environment))
                 .AddMiddleware(tracingMiddlewareBuilder.Build(environment))
                 .AddMiddleware(loggingMiddlewareBuilder.Build(environment))
                 .AddMiddleware(denyRequestsMiddlewareBuilder.Build(environment))
@@ -101,6 +102,20 @@ namespace Vostok.Hosting.AspNetCore.Builders
             setup = setup ?? throw new ArgumentNullException(nameof(setup));
             pingApiMiddlewareBuilder.Enable();
             setup(pingApiMiddlewareBuilder);
+            return this;
+        }
+
+        public IVostokAspNetCoreApplicationBuilder SetupFillRequestInfoMiddleware(Action<IVostokFillRequestInfoMiddlewareBuilder> setup)
+        {
+            setup = setup ?? throw new ArgumentNullException(nameof(setup));
+            setup(fillRequestInfoMiddlewareBuilder);
+            return this;
+        }
+
+        public IVostokAspNetCoreApplicationBuilder SetupRestoreDistributedContextMiddleware(Action<IVostokRestoreDistributedContextMiddlewareBuilder> setup)
+        {
+            setup = setup ?? throw new ArgumentNullException(nameof(setup));
+            setup(restoreDistributedContextMiddlewareBuilder);
             return this;
         }
 

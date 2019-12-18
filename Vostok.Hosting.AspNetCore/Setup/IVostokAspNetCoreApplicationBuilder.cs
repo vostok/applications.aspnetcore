@@ -57,6 +57,16 @@ namespace Vostok.Hosting.AspNetCore.Setup
         IVostokAspNetCoreApplicationBuilder SetupPingApiMiddleware([NotNull] Action<IVostokPingApiMiddlewareBuilder> setup);
 
         /// <summary>
+        /// Delegate which configures <see cref="IVostokFillRequestInfoMiddlewareBuilder"/>.
+        /// </summary>
+        IVostokAspNetCoreApplicationBuilder SetupFillRequestInfoMiddleware([NotNull] Action<IVostokFillRequestInfoMiddlewareBuilder> setup);
+
+        /// <summary>
+        /// Delegate which configures <see cref="IVostokRestoreDistributedContextMiddlewareBuilder"/>.
+        /// </summary>
+        IVostokAspNetCoreApplicationBuilder SetupRestoreDistributedContextMiddleware([NotNull] Action<IVostokRestoreDistributedContextMiddlewareBuilder> setup);
+
+        /// <summary>
         /// Delegate which configures <see cref="IVostokMicrosoftLogBuilder"/>.
         /// </summary>
         IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog([NotNull] Action<IVostokMicrosoftLogBuilder> setup);
