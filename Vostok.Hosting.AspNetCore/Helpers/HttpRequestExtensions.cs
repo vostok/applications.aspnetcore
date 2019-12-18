@@ -28,7 +28,7 @@ namespace Vostok.Hosting.AspNetCore.Helpers
 
         public static RequestPriority? GetPriority(this HttpRequest request)
         {
-            if (Enum.TryParse(request.Headers[HeaderNames.RequestPriority], out RequestPriority priority))
+            if (Enum.TryParse(request.Headers[HeaderNames.RequestPriority], true, out RequestPriority priority))
                 return priority;
             return null;
         }

@@ -25,6 +25,16 @@ Cement
 NuGet
 
 	dotnet add MyProject/MyProject.csproj package Vostok.Hosting.AspNetCore
+	
+#### Add reference to `vostok.hosting.aspnetcore.kontur` module (optional)
+    
+Cement
+	
+    cm ref add vostok.hosting.aspnetcore.kontur MyProject/MyProject.csproj
+	
+NuGet
+
+	dotnet add MyProject/MyProject.csproj package Vostok.Hosting.AspNetCore.Kontur
 
 #### Write vostok AspNetCore application
 
@@ -32,7 +42,7 @@ NuGet
     {
         public override void Setup(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
-            builder.SetupWebHost(webHostBuilder => webHostBuilder.UseStartup<Startup>());
+            builder.SetupWebHost(webHostBuilder => webHostBuilder.UseStartup<Startup>()).SetupForKontur();
         }
     }
 
