@@ -25,7 +25,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
                 settings.TimeoutProvider?.Invoke(context.Request),
                 settings.PriorityProvider?.Invoke(context.Request),
                 settings.ClientApplicationIdentityProvider?.Invoke(context.Request),
-                settings.ClientIpAddressProvider?.Invoke(context.Request));
+                context.Request.HttpContext.Connection.RemoteIpAddress);
 
             FlowingContext.Globals.Set(requestInfo);
 

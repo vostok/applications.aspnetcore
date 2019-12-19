@@ -16,19 +16,19 @@ namespace Vostok.Hosting.AspNetCore.Setup
         /// <para>Sets whether or not to log ConnectionLogScope.</para>
         /// <para>Disabled by default.</para>
         /// </summary>
-        IVostokMicrosoftLogBuilder SetConnectionLogScopeEnabled(bool enabled);
+        IVostokMicrosoftLogBuilder SetConnectionLogScopeIgnored(bool enabled);
 
         /// <summary>
         /// <para>Sets whether or not to log HostingLogScope.</para>
         /// <para>Disabled by default.</para>
         /// </summary>
-        IVostokMicrosoftLogBuilder SetHostingLogScopeEnabled(bool enabled);
+        IVostokMicrosoftLogBuilder SetHostingLogScopeIgnored(bool enabled);
 
         /// <summary>
         /// <para>Sets whether or not to log ActionLogScope.</para>
         /// <para>Disabled by default.</para>
         /// </summary>
-        IVostokMicrosoftLogBuilder SetActionLogScopeEnabled(bool enabled);
+        IVostokMicrosoftLogBuilder SetActionLogScopeIgnored(bool enabled);
 
         /// <summary>
         /// Delegate which configures <see cref="VostokLoggerProviderSettings"/>.

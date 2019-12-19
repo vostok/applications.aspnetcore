@@ -27,7 +27,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             var settings = new VostokLoggerProviderSettings
             {
-                DisabledScopes = GetDisabledScopes()
+                IgnoredScopes = GetIgnoredScopes()
             };
 
             settingsCustomization.Customize(settings);
@@ -41,37 +41,37 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return this;
         }
 
-        private HashSet<string> GetDisabledScopes()
+        private HashSet<string> GetIgnoredScopes()
         {
-            var disabledScopes = new List<string>();
+            var ignoredScopes = new List<string>();
 
             if (!actionLogScopeEnabled)
-                disabledScopes.Add(MicrosoftConstants.ActionLogScope);
+                ignoredScopes.Add(MicrosoftConstants.ActionLogScope);
 
             if (!hostingLogScopeEnabled)
-                disabledScopes.Add(MicrosoftConstants.HostingLogScope);
+                ignoredScopes.Add(MicrosoftConstants.HostingLogScope);
 
             if (!connectionLogScopeEnabled)
-                disabledScopes.Add(MicrosoftConstants.ConnectionLogScope);
+                ignoredScopes.Add(MicrosoftConstants.ConnectionLogScope);
 
-            return new HashSet<string>(disabledScopes);
+            return new HashSet<string>(ignoredScopes);
         }
 
         #region SetScopeEnabled
 
-        public IVostokMicrosoftLogBuilder SetConnectionLogScopeEnabled(bool enabled)
+        public IVostokMicrosoftLogBuilder SetConnectionLogScopeIgnored(bool enabled)
         {
             connectionLogScopeEnabled = enabled;
             return this;
         }
 
-        public IVostokMicrosoftLogBuilder SetHostingLogScopeEnabled(bool enabled)
+        public IVostokMicrosoftLogBuilder SetHostingLogScopeIgnored(bool enabled)
         {
             hostingLogScopeEnabled = enabled;
             return this;
         }
 
-        public IVostokMicrosoftLogBuilder SetActionLogScopeEnabled(bool enabled)
+        public IVostokMicrosoftLogBuilder SetActionLogScopeIgnored(bool enabled)
         {
             actionLogScopeEnabled = enabled;
             return this;

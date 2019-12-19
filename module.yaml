@@ -22,7 +22,7 @@ notests *default:
     - vostok.hercules.client.abstractions
     - vostok.hosting.abstractions@step2
     - vostok.logging.abstractions
-    - vostok.logging.microsoft@disable-scopes
+    - vostok.logging.microsoft
     - vostok.metrics
     - vostok.servicediscovery.abstractions
     - vostok.tracing.abstractions

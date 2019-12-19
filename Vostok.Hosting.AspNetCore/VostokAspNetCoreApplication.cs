@@ -23,7 +23,7 @@ namespace Vostok.Hosting.AspNetCore
     {
         private IHostApplicationLifetime lifetime;
         private ILog log;
-        private IWebHost webHost;
+        private IHost webHost;
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
