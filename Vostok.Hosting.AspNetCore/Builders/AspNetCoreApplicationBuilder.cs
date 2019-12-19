@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Vostok.Commons.Helpers;
+using Vostok.Configuration.Microsoft;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore.Setup;
 using Vostok.Hosting.AspNetCore.StartupFilters;
@@ -22,7 +23,6 @@ namespace Vostok.Hosting.AspNetCore.Builders
         private readonly DenyRequestsMiddlewareBuilder denyRequestsMiddlewareBuilder;
         private readonly PingApiMiddlewareBuilder pingApiMiddlewareBuilder;
         private readonly MicrosoftLogBuilder microsoftLogBuilder;
-        private readonly MicrosoftConfigurationBuilder microsoftConfigurationBuilder;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
 
         public AspNetCoreApplicationBuilder()
@@ -34,7 +34,6 @@ namespace Vostok.Hosting.AspNetCore.Builders
             denyRequestsMiddlewareBuilder = new DenyRequestsMiddlewareBuilder();
             pingApiMiddlewareBuilder = new PingApiMiddlewareBuilder();
             microsoftLogBuilder = new MicrosoftLogBuilder();
-            microsoftConfigurationBuilder = new MicrosoftConfigurationBuilder();
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
         }
 
@@ -49,7 +48,8 @@ namespace Vostok.Hosting.AspNetCore.Builders
                         .ClearProviders().AddProvider(microsoftLogBuilder.Build(environment)))
                 .ConfigureAppConfiguration(
                     configurationBuilder => configurationBuilder
-                        .Add(microsoftConfigurationBuilder.Build(environment)))
+                        .AddVostok(environment.ConfigurationSource)
+                        .AddVostok(environment.SecretConfigurationSource))
                 .ConfigureWebHostDefaults(
                     webHostBuilder =>
                     {
