@@ -19,7 +19,7 @@ namespace Vostok.Hosting.AspNetCore
     /// </summary>
     [PublicAPI]
     [RequiresPort]
-    public abstract class VostokAspNetCoreApplication : IVostokApplication
+    public abstract class VostokAspNetCoreApplication : IVostokApplication, IDisposable
     {
         private IHostApplicationLifetime lifetime;
         private ILog log;
@@ -31,8 +31,6 @@ namespace Vostok.Hosting.AspNetCore
 
             Setup(builder, environment);
 
-            // CR(iloktionov): Что будет, если вылетит исключение, а webHost не задиспоузится? Может ли остаться включенным HTTP-сервер?
-            // CR(iloktionov): Это касается и метода RunAsync. Можно, например, решить это, сделав весь класс IDisposable, а VostokHost научить диспоузить приложение.
             webHost = builder.Build(environment);
 
             await StartWebHostAsync(environment).ConfigureAwait(false);
@@ -90,6 +88,11 @@ namespace Vostok.Hosting.AspNetCore
             log.Info("WebHost stopped.");
 
             webHost.Dispose();
+        }
+
+        public void Dispose()
+        {
+            webHost?.Dispose();
         }
     }
 }
