@@ -38,9 +38,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
         }
 
-        // CR(iloktionov): 1. В 3-м Asp.NET Core, вроде, принято использовать IHost, а не IWebHost. Почему у нас по-прежнему IWebHost?
         // CR(iloktionov): 2. Не вижу здесь возможности переопределить DI-контейнер (сделать так, чтобы IServiceProvider был на основе любимого контейнера разработчика).
-        // CR(iloktionov): 3. Предлагаю самим убедиться, что у пользователя нормальный Kestrel: .UseKestrel().UseSockets()
         // CR(iloktionov): 4. Тут можно настраивать UseShutdownTimeout (время на drain запросов). Может, будем настраивать? Что там по умолчанию?
         // CR(iloktionov): 5. А есть смысл положить environment из нашей application identity в environment здесь, или это что-то сломает?
         public IHost Build(IVostokHostingEnvironment environment)
@@ -68,6 +66,8 @@ namespace Vostok.Hosting.AspNetCore.Builders
                             loggingMiddlewareBuilder.Build(environment),
                             denyRequestsMiddlewareBuilder.Build(environment),
                             pingApiMiddlewareBuilder.Build(environment));
+
+                        webHostBuilder.UseKestrel().UseSockets();
 
                         webHostBuilderCustomization.Customize(webHostBuilder);
 
