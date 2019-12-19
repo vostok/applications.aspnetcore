@@ -69,10 +69,10 @@ namespace Vostok.Hosting.AspNetCore.Builders
             if (urlsAfter.Contains(urlsBefore))
                 return;
 
-            // CR(iloktionov): В тексте ошибки стоит объяснить, где именно правильно сконфигурировать (как это делать через ServiceBeacon?).
-            // CR(iloktionov): В самом тексте совсем не очевидно, что это нужно делать при настройке environment'а в хосте (и какими методами).
             throw new Exception("Application url should be configured in ServiceBeacon instead of WebHostBuilder.\n" +
-                                $"ServiceBeacon url: '{urlsBefore}'. WebHostBuilder urls: '{urlsAfter}'.");
+                                $"ServiceBeacon url: '{urlsBefore}'. WebHostBuilder urls: '{urlsAfter}'.\n" +
+                                "To configure application port (without url) use VostokHostingEnvironmentSetup extension: `vostokHostingEnvironmentSetup.SetPort(...)`.\n" +
+                                "To configure application url use VostokHostingEnvironmentSetup: `vostokHostingEnvironmentSetup.SetupServiceBeacon(serviceBeaconBuilder => serviceBeaconBuilder.SetupReplicaInfo(replicaInfo => replicaInfo.SetUrl(...)))`.");
         }
 
         #region SetupComponents
