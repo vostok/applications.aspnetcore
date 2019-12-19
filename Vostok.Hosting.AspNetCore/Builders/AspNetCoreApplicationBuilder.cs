@@ -38,6 +38,8 @@ namespace Vostok.Hosting.AspNetCore.Builders
         }
 
         // CR(iloktionov): 2. Не вижу здесь возможности переопределить DI-контейнер (сделать так, чтобы IServiceProvider был на основе любимого контейнера разработчика).
+        // CR(kungurtsev): Насколько я понял, это можно сделать внутри Startup.ConfigureServices
+
         // CR(iloktionov): 4. Тут можно настраивать UseShutdownTimeout (время на drain запросов). Может, будем настраивать? Что там по умолчанию?
         // CR(iloktionov): 5. А есть смысл положить environment из нашей application identity в environment здесь, или это что-то сломает?
         public IHost Build(IVostokHostingEnvironment environment)

@@ -5,16 +5,13 @@ using Microsoft.AspNetCore.Http;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
-    // CR(iloktionov): 1. Оч. длинное имя, давай сократим.
-    // CR(iloktionov): 2. Почему нельзя сделать blacklist, а не whitelist?
-
     /// <summary>
     /// Configuration of the <see cref="LoggingMiddlewareSettings.LogQueryString"/>, <see cref="LoggingMiddlewareSettings.LogRequestHeaders"/> and <see cref="LoggingMiddlewareSettings.LogResponseHeaders"/>.
     /// </summary>
     [PublicAPI]
-    public class LoggingCollectionMiddlewareSettings
+    public class LoggingCollectionSettings
     {
-        public LoggingCollectionMiddlewareSettings([NotNull] Func<HttpRequest, bool> enabled) =>
+        public LoggingCollectionSettings([NotNull] Func<HttpRequest, bool> enabled) =>
             Enabled = enabled ?? throw new ArgumentNullException(nameof(enabled));
 
         /// <summary>
@@ -29,8 +26,16 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         /// </summary>
         [CanBeNull]
         public IReadOnlyCollection<string> WhitelistKeys { get; set; }
-        
-        public static implicit operator LoggingCollectionMiddlewareSettings(bool enabled) =>
-            new LoggingCollectionMiddlewareSettings(_ => enabled);
+
+        /// <summary>
+        /// <para>Blacklist of parameter keys to be logged.</para>
+        /// <para>Will be applied, if <see cref="WhitelistKeys"/> is <c>null</c>.</para>
+        /// <para><c>null</c> value allows all keys.</para>
+        /// </summary>
+        [CanBeNull]
+        public IReadOnlyCollection<string> BlacklistKeys { get; set; }
+
+        public static implicit operator LoggingCollectionSettings(bool enabled) =>
+            new LoggingCollectionSettings(_ => enabled);
     }
 }

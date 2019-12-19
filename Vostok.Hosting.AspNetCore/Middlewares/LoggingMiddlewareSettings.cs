@@ -10,9 +10,9 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
     [PublicAPI]
     public class LoggingMiddlewareSettings
     {
-        private LoggingCollectionMiddlewareSettings logQueryString = false;
-        private LoggingCollectionMiddlewareSettings logRequestHeaders = false;
-        private LoggingCollectionMiddlewareSettings logResponseHeaders = false;
+        private LoggingCollectionSettings logQueryString = false;
+        private LoggingCollectionSettings logRequestHeaders = false;
+        private LoggingCollectionSettings logResponseHeaders = false;
 
         public LoggingMiddlewareSettings([NotNull] ILog log)
         {
@@ -31,7 +31,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         /// <para>Disabled by default.</para>
         /// </summary>
         [NotNull]
-        public LoggingCollectionMiddlewareSettings LogQueryString
+        public LoggingCollectionSettings LogQueryString
         {
             get =>
                 logQueryString;
@@ -44,7 +44,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         /// <para>Disabled by default.</para>
         /// </summary>
         [NotNull]
-        public LoggingCollectionMiddlewareSettings LogRequestHeaders
+        public LoggingCollectionSettings LogRequestHeaders
         {
             get =>
                 logRequestHeaders;
@@ -57,7 +57,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         /// <para>Disabled by default.</para>
         /// </summary>
         [NotNull]
-        public LoggingCollectionMiddlewareSettings LogResponseHeaders
+        public LoggingCollectionSettings LogResponseHeaders
         {
             get =>
                 logResponseHeaders;

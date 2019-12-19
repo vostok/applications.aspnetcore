@@ -104,7 +104,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             return $"{connection.RemoteIpAddress}:{connection.RemotePort}";
         }
 
-        private static string FormatPath(HttpRequest request, LoggingCollectionMiddlewareSettings logQueryStringSettings)
+        private static string FormatPath(HttpRequest request, LoggingCollectionSettings logQueryStringSettings)
         {
             var builder = new StringBuilder();
 
@@ -135,7 +135,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             return builder.ToString();
         }
 
-        private static string FormatRequestHeaders(HttpRequest request, LoggingCollectionMiddlewareSettings settings)
+        private static string FormatRequestHeaders(HttpRequest request, LoggingCollectionSettings settings)
         {
             var builder = new StringBuilder();
 
@@ -154,7 +154,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             return builder.ToString();
         }
 
-        private static string FormatResponseHeaders(HttpResponse response, LoggingCollectionMiddlewareSettings settings)
+        private static string FormatResponseHeaders(HttpResponse response, LoggingCollectionSettings settings)
         {
             var builder = new StringBuilder();
 
