@@ -63,8 +63,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
             if (settings.LogRequestHeaders.IsEnabledForRequest(request))
             {
-                // CR(iloktionov): Нужно дать понять, что это хедеры. Например, так: "Request headers: ...".
-                template.Append("{RequestHeaders}");
+                template.Append("\nRequest headers:{RequestHeaders}");
                 parameters.Add(FormatRequestHeaders(request, settings.LogRequestHeaders));
             }
             
@@ -85,14 +84,12 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
             if (settings.LogResponseHeaders.IsEnabledForRequest(request))
             {
-                // CR(iloktionov): 1. Нужно дать понять, что это хедеры. Например, так: "Response headers: ...".
-                // CR(iloktionov): 2. Это всё-таки response headers, копипаста.
-
-                template.Append("{RequestHeaders}");
+                template.Append("\nResponse headers:{ResponseHeaders}");
                 parameters.Add(FormatResponseHeaders(response, settings.LogResponseHeaders));
             }
 
             // CR(iloktionov): А не лучше заменить на log.Info(...) с типизированным объектом properties?
+            // CR(kungurtsev): Не будет ли типизированный объект добавлять значения к пустым полям?
             settings.Log.Log(new LogEvent(LogLevel.Info, PreciseDateTime.Now, template.ToString())
                 .WithParameters(parameters.ToArray())
                 .WithProperty("ElapsedTimeMs", elapsed.TotalMilliseconds));
