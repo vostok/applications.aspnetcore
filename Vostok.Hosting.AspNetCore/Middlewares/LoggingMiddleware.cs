@@ -53,10 +53,11 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             template.Append(" '{RequestConnection}'");
             parameters.Add(GetClientConnectionInfo(request));
 
-            if (requestInfo.Timeout != null)
+            var timeout = requestInfo.RemainingTimeout;
+            if (timeout != null)
             {
                 template.Append(" with timeout {Timeout}");
-                parameters.Add(requestInfo.Timeout.Value.ToPrettyString());
+                parameters.Add(timeout.Value.ToPrettyString());
             }
             
             template.Append(".");
