@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Hosting.AspNetCore.Builders;
 using Vostok.Logging.Abstractions;
+using Vostok.Commons.Helpers.Extensions;
 
 namespace Vostok.Hosting.AspNetCore
 {
@@ -22,7 +23,8 @@ namespace Vostok.Hosting.AspNetCore
     {
         private IHostApplicationLifetime lifetime;
         private ILog log;
-        private IHost webHost;
+        private IHost host;
+        private CancellationTokenRegistration shutdownTokenRegistration;
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
@@ -30,21 +32,18 @@ namespace Vostok.Hosting.AspNetCore
 
             Setup(builder, environment);
 
-            webHost = builder.Build(environment);
+            host = builder.Build(environment);
 
-            await StartWebHostAsync(environment).ConfigureAwait(false);
+            await StartHostAsync(environment).ConfigureAwait(false);
 
             // CR(iloktionov): А почему warmup вызывается после того, как приложение уже начало слушать порт? Оно может быть ещё не готово к этому.
             // CR(kungurtsev): Чтобы иметь возможность подёргать за контроллеры и прогреть их.
-            await WarmupAsync(environment, webHost.Services).ConfigureAwait(false);
+            // CR(kungurtsev): Для всего остального есть Startup.
+            await WarmupAsync(environment, host.Services).ConfigureAwait(false);
         }
 
-        public Task RunAsync(IVostokHostingEnvironment environment)
-        {
-            RunWebHost();
-
-            return Task.CompletedTask;
-        }
+        public Task RunAsync(IVostokHostingEnvironment environment) =>
+            RunHostAsync();
 
         /// <summary>
         /// Implement this method to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middleware components.
@@ -57,42 +56,40 @@ namespace Vostok.Hosting.AspNetCore
         public virtual Task WarmupAsync([NotNull] IVostokHostingEnvironment environment, [NotNull] IServiceProvider serviceProvider) =>
             Task.CompletedTask;
 
-        private async Task StartWebHostAsync(IVostokHostingEnvironment environment)
+        private async Task StartHostAsync(IVostokHostingEnvironment environment)
         {
             log = environment.Log.ForContext<VostokAspNetCoreApplication>();
 
-            lifetime = (IHostApplicationLifetime)webHost.Services.GetService(typeof(IHostApplicationLifetime));
+            lifetime = (IHostApplicationLifetime)host.Services.GetService(typeof(IHostApplicationLifetime));
 
-            // CR(iloktionov): Результат вот этой регистрации по-хорошему тоже надо диспоузить в конце.
-            environment.ShutdownToken.Register(
-                () => webHost
+            shutdownTokenRegistration = environment.ShutdownToken.Register(
+                () => host
                     .StopAsync()
-                    .ContinueWith(t => log.Error(t.Exception, "Failed to stop WebHost."), TaskContinuationOptions.OnlyOnFaulted));
+                    .ContinueWith(t => log.Error(t.Exception, "Failed to stop Host."), TaskContinuationOptions.OnlyOnFaulted));
 
-            log.Info("Starting WebHost.");
+            log.Info("Starting Host.");
 
-            // CR(iloktionov): А почему в StartAsync не передается ShutdownToken?
-            await webHost.StartAsync().ConfigureAwait(false);
+            await host.StartAsync(environment.ShutdownToken).ConfigureAwait(false);
 
-            // CR(iloktionov): Давай сделаем асинхронно. Какой-нибудь экстеншн с TaskCompletionSource, например. Относится и к остальным таким местам.
-            lifetime.ApplicationStarted.WaitHandle.WaitOne();
-            log.Info("WebHost started.");
+            await lifetime.ApplicationStarted.WaitAsync();
+            log.Info("Host started.");
         }
 
-        private void RunWebHost()
+        private async Task RunHostAsync()
         {
-            lifetime.ApplicationStopping.WaitHandle.WaitOne();
-            log.Info("Stopping WebHost.");
+            await lifetime.ApplicationStopping.WaitAsync();
+            log.Info("Stopping Host.");
 
-            lifetime.ApplicationStopped.WaitHandle.WaitOne();
-            log.Info("WebHost stopped.");
+            await lifetime.ApplicationStopped.WaitAsync();
+            log.Info("Host stopped.");
 
-            webHost.Dispose();
+            host.Dispose();
         }
 
         public void Dispose()
         {
-            webHost?.Dispose();
+            shutdownTokenRegistration.Dispose();
+            host?.Dispose();
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -70,7 +71,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
                     configurationBuilder => configurationBuilder
                         .AddVostok(environment.ConfigurationSource)
                         .AddVostok(environment.SecretConfigurationSource))
-                .ConfigureWebHostDefaults(
+                .ConfigureWebHost(
                     webHostBuilder =>
                     {
                         ConfigureUrl(webHostBuilder, environment);
@@ -235,11 +236,20 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         #region SetupComponents
 
-        public IVostokAspNetCoreApplicationBuilder SetupWebHost(Action<IWebHostBuilder> setup)
+        public IVostokAspNetCoreApplicationBuilder ConfigureWebHost(Action<IWebHostBuilder> setup)
         {
             webHostBuilderCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
             return this;
         }
+
+        public IVostokAspNetCoreApplicationBuilder ConfigureLogging(Action<ILoggingBuilder> setup) =>
+            throw new NotImplementedException();
+
+        public IVostokAspNetCoreApplicationBuilder ConfigureAppConfiguration(Action<IConfigurationBuilder> setup) =>
+            throw new NotImplementedException();
+
+        public IVostokAspNetCoreApplicationBuilder ConfigureContainer<TContainerBuilder>(Action<TContainerBuilder> setup) =>
+            throw new NotImplementedException();
 
         public IVostokAspNetCoreApplicationBuilder DenyRequestsIfNotInActiveDatacenter(int denyResponseCode)
         {

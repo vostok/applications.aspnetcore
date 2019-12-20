@@ -1,7 +1,9 @@
 ﻿using System;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore.Middlewares;
@@ -48,7 +50,22 @@ namespace Vostok.Hosting.AspNetCore
         /// <summary>
         /// Delegate which configures <see cref="IWebHostBuilder"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupWebHost([NotNull] Action<IWebHostBuilder> setup);
+        IVostokAspNetCoreApplicationBuilder ConfigureWebHost([NotNull] Action<IWebHostBuilder> setup);
+
+        /// <summary>
+        /// Delegate which configures <see cref="ILoggingBuilder"/>.
+        /// </summary>
+        IVostokAspNetCoreApplicationBuilder ConfigureLogging([NotNull] Action<ILoggingBuilder> setup);
+
+        /// <summary>
+        /// Delegate which configures <see cref="IConfigurationBuilder"/>.
+        /// </summary>
+        IVostokAspNetCoreApplicationBuilder ConfigureAppConfiguration([NotNull] Action<IConfigurationBuilder> setup);
+        
+        /// <summary>
+        /// Delegate which configures container.
+        /// </summary>
+        IVostokAspNetCoreApplicationBuilder ConfigureContainer<TContainerBuilder>([NotNull] Action<TContainerBuilder> setup);
 
         /// <summary>
         /// Delegate which configures <see cref="LoggingMiddlewareSettings"/>.
