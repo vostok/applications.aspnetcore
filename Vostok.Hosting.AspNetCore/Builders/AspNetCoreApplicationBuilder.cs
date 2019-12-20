@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,7 +17,8 @@ using Vostok.ServiceDiscovery.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Builders
 {
-    internal class AspNetCoreApplicationBuilder : IVostokAspNetCoreApplicationBuilder
+    internal class AspNetCoreApplicationBuilder<TStartup> : IVostokAspNetCoreApplicationBuilder
+        where TStartup : class
     {
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
         private readonly Customization<FillRequestInfoMiddlewareSettings> fillRequestInfoCustomization;
@@ -54,12 +54,12 @@ namespace Vostok.Hosting.AspNetCore.Builders
                     middlewares.Select(m => m.GetType()).ToArray()));
         }
 
-        // CR(iloktionov): 2. Не вижу здесь возможности переопределить DI-контейнер (сделать так, чтобы IServiceProvider был на основе любимого контейнера разработчика).
-        // CR(kungurtsev): Насколько я понял, это можно сделать внутри Startup.ConfigureServices
-        // CR(kungurtsev): .ConfigureContainer()
-
         // CR(iloktionov): 4. Тут можно настраивать UseShutdownTimeout (время на drain запросов). Может, будем настраивать? Что там по умолчанию?
+        // CR(kungurtsev): По умолчанию 5 секунд, как и в хосте. Из хоста сюда никак не прокинуть его.
+
         // CR(iloktionov): 5. А есть смысл положить environment из нашей application identity в environment здесь, или это что-то сломает?
+        // CR(kungurtsev): Ломаются все файлы с настройками, IsDevelopment, и так далее.
+
         public IHost Build(IVostokHostingEnvironment environment)
         {
             var hostBuilder = Host.CreateDefaultBuilder()
@@ -91,6 +91,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
                         webHostBuilder.UseKestrel().UseSockets();
 
+                        webHostBuilder.UseStartup<TStartup>();
                         webHostBuilderCustomization.Customize(webHostBuilder);
 
                         var urlsAfter = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);

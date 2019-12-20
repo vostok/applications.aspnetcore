@@ -4,22 +4,23 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Vostok.Commons.Helpers.Extensions;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Hosting.AspNetCore.Builders;
 using Vostok.Logging.Abstractions;
-using Vostok.Commons.Helpers.Extensions;
 
 namespace Vostok.Hosting.AspNetCore
 {
     /// <summary>
-    /// <para><see cref="VostokAspNetCoreApplication"/> is the abstract class developers inherit from in order to create Vostok-compatible AspNetCore service.</para>
+    /// <para><see cref="VostokAspNetCoreApplication{TStartup}"/> is the abstract class developers inherit from in order to create Vostok-compatible AspNetCore service.</para>
     /// <para>Implement <see cref="Setup"/> method to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middlewares (see <see cref="IVostokAspNetCoreApplicationBuilder"/>).</para>
     /// <para>Override <see cref="WarmupAsync"/> method to perform any additional initialization after the DI container gets built but before the app gets registered in service discovery.</para>
     /// </summary>
     [PublicAPI]
     [RequiresPort]
-    public abstract class VostokAspNetCoreApplication : IVostokApplication, IDisposable
+    public abstract class VostokAspNetCoreApplication<TStartup> : IVostokApplication, IDisposable
+        where TStartup : class
     {
         private IHostApplicationLifetime lifetime;
         private ILog log;
@@ -28,7 +29,7 @@ namespace Vostok.Hosting.AspNetCore
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
-            var builder = new AspNetCoreApplicationBuilder();
+            var builder = new AspNetCoreApplicationBuilder<TStartup>();
 
             Setup(builder, environment);
 
@@ -46,9 +47,11 @@ namespace Vostok.Hosting.AspNetCore
             RunHostAsync();
 
         /// <summary>
-        /// Implement this method to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middleware components.
+        /// Override this method to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middleware components.
         /// </summary>
-        public abstract void Setup([NotNull] IVostokAspNetCoreApplicationBuilder builder, [NotNull] IVostokHostingEnvironment environment);
+        public virtual void Setup([NotNull] IVostokAspNetCoreApplicationBuilder builder, [NotNull] IVostokHostingEnvironment environment)
+        {
+        }
 
         /// <summary>
         /// Override this method to perform any initialization that needs to happen after DI container is built, but before registering in service discovery.
@@ -56,9 +59,15 @@ namespace Vostok.Hosting.AspNetCore
         public virtual Task WarmupAsync([NotNull] IVostokHostingEnvironment environment, [NotNull] IServiceProvider serviceProvider) =>
             Task.CompletedTask;
 
+        public void Dispose()
+        {
+            shutdownTokenRegistration.Dispose();
+            host?.Dispose();
+        }
+
         private async Task StartHostAsync(IVostokHostingEnvironment environment)
         {
-            log = environment.Log.ForContext<VostokAspNetCoreApplication>();
+            log = environment.Log.ForContext<VostokAspNetCoreApplication<TStartup>>();
 
             lifetime = (IHostApplicationLifetime)host.Services.GetService(typeof(IHostApplicationLifetime));
 
@@ -84,12 +93,6 @@ namespace Vostok.Hosting.AspNetCore
             log.Info("Host stopped.");
 
             host.Dispose();
-        }
-
-        public void Dispose()
-        {
-            shutdownTokenRegistration.Dispose();
-            host?.Dispose();
         }
     }
 }
