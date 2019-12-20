@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,37 +9,53 @@ using Microsoft.Extensions.Logging;
 using Vostok.Commons.Helpers;
 using Vostok.Configuration.Microsoft;
 using Vostok.Hosting.Abstractions;
-using Vostok.Hosting.AspNetCore.Setup;
+using Vostok.Hosting.AspNetCore.Helpers;
+using Vostok.Hosting.AspNetCore.Middlewares;
 using Vostok.Hosting.AspNetCore.StartupFilters;
+using Vostok.Logging.Microsoft;
 using Vostok.ServiceDiscovery.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Builders
 {
     internal class AspNetCoreApplicationBuilder : IVostokAspNetCoreApplicationBuilder
     {
-        private readonly LoggingMiddlewareBuilder loggingMiddlewareBuilder;
-        private readonly TracingMiddlewareBuilder tracingMiddlewareBuilder;
-        private readonly FillRequestInfoMiddlewareBuilder fillRequestInfoMiddlewareBuilder;
-        private readonly RestoreDistributedContextMiddlewareBuilder restoreDistributedContextMiddlewareBuilder;
-        private readonly DenyRequestsMiddlewareBuilder denyRequestsMiddlewareBuilder;
-        private readonly PingApiMiddlewareBuilder pingApiMiddlewareBuilder;
-        private readonly MicrosoftLogBuilder microsoftLogBuilder;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
+        private readonly Customization<FillRequestInfoMiddlewareSettings> fillRequestInfoMiddlewareCustomization;
+        private readonly Customization<TracingMiddlewareSettings> tracingMiddlewareCustomization;
+        private readonly Customization<LoggingMiddlewareSettings> loggingMiddlewareCustomization;
+        private readonly Customization<RestoreDistributedContextMiddlewareSettings> contextMiddlewareCustomization;
+        private readonly Customization<PingApiMiddlewareSettings> pingApiMiddlewareCustomization;
+        private readonly Customization<VostokLoggerProviderSettings> microsoftLogCustomization;
+
+        private Action<DenyRequestsIfNotInActiveDatacenterMiddlewareSettings> denyRequestsMiddlewareCustomization;
 
         public AspNetCoreApplicationBuilder()
         {
-            loggingMiddlewareBuilder = new LoggingMiddlewareBuilder();
-            tracingMiddlewareBuilder = new TracingMiddlewareBuilder();
-            fillRequestInfoMiddlewareBuilder = new FillRequestInfoMiddlewareBuilder();
-            restoreDistributedContextMiddlewareBuilder = new RestoreDistributedContextMiddlewareBuilder();
-            denyRequestsMiddlewareBuilder = new DenyRequestsMiddlewareBuilder();
-            pingApiMiddlewareBuilder = new PingApiMiddlewareBuilder();
-            microsoftLogBuilder = new MicrosoftLogBuilder();
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
+            fillRequestInfoMiddlewareCustomization = new Customization<FillRequestInfoMiddlewareSettings>();
+            tracingMiddlewareCustomization = new Customization<TracingMiddlewareSettings>();
+            loggingMiddlewareCustomization = new Customization<LoggingMiddlewareSettings>();
+            contextMiddlewareCustomization = new Customization<RestoreDistributedContextMiddlewareSettings>();
+            pingApiMiddlewareCustomization = new Customization<PingApiMiddlewareSettings>();
+            microsoftLogCustomization = new Customization<VostokLoggerProviderSettings>();
+        }
+
+        public static void AddMiddlewares(IWebHostBuilder builder, params IMiddleware[] middlewares)
+        {
+            middlewares = middlewares.Where(m => m != null).ToArray();
+
+            foreach (var middleware in middlewares)
+                builder.ConfigureServices(services => services.AddSingleton(middleware.GetType(), middleware));
+
+            AddStartupFilter(
+                builder,
+                new AddMiddlewaresStartupFilter(
+                    middlewares.Select(m => m.GetType()).ToArray()));
         }
 
         // CR(iloktionov): 2. Не вижу здесь возможности переопределить DI-контейнер (сделать так, чтобы IServiceProvider был на основе любимого контейнера разработчика).
         // CR(kungurtsev): Насколько я понял, это можно сделать внутри Startup.ConfigureServices
+        // CR(kungurtsev): .ConfigureContainer()
 
         // CR(iloktionov): 4. Тут можно настраивать UseShutdownTimeout (время на drain запросов). Может, будем настраивать? Что там по умолчанию?
         // CR(iloktionov): 5. А есть смысл положить environment из нашей application identity в environment здесь, или это что-то сломает?
@@ -47,7 +64,8 @@ namespace Vostok.Hosting.AspNetCore.Builders
             var hostBuilder = Host.CreateDefaultBuilder()
                 .ConfigureLogging(
                     loggingBuilder => loggingBuilder
-                        .ClearProviders().AddProvider(microsoftLogBuilder.Build(environment)))
+                        .ClearProviders()
+                        .AddProvider(CreateMicrosoftLog(environment)))
                 .ConfigureAppConfiguration(
                     configurationBuilder => configurationBuilder
                         .AddVostok(environment.ConfigurationSource)
@@ -60,14 +78,15 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
                         RegisterTypes(webHostBuilder, environment);
 
-                        AddMiddlewares(webHostBuilder,
-                            fillRequestInfoMiddlewareBuilder.Build(environment),
+                        AddMiddlewares(
+                            webHostBuilder,
+                            CreateFillRequestInfoMiddleware(),
                             // TODO(kungurtsev): throttling middleware should go here.
-                            restoreDistributedContextMiddlewareBuilder.Build(environment),
-                            tracingMiddlewareBuilder.Build(environment),
-                            loggingMiddlewareBuilder.Build(environment),
-                            denyRequestsMiddlewareBuilder.Build(environment),
-                            pingApiMiddlewareBuilder.Build(environment));
+                            CreateRestoreDistributedContextMiddleware(),
+                            CreateTracingMiddleware(environment),
+                            CreateLoggingMiddleware(environment),
+                            CreateDenyRequestsIfNotInActiveDatacenterMiddleware(environment),
+                            CreatePingApiMiddleware(environment));
 
                         webHostBuilder.UseKestrel().UseSockets();
 
@@ -77,22 +96,9 @@ namespace Vostok.Hosting.AspNetCore.Builders
                         EnsureUrlsNotChanged(urlsBefore, urlsAfter);
                     });
 
-
             return hostBuilder.Build();
         }
 
-        private void EnsureUrlsNotChanged(string urlsBefore, string urlsAfter)
-        {
-            if (urlsAfter.Contains(urlsBefore))
-                return;
-
-            throw new Exception(
-                "Application url should be configured in ServiceBeacon instead of WebHostBuilder.\n" +
-                $"ServiceBeacon url: '{urlsBefore}'. WebHostBuilder urls: '{urlsAfter}'.\n" +
-                "To configure application port (without url) use VostokHostingEnvironmentSetup extension: `vostokHostingEnvironmentSetup.SetPort(...)`.\n" +
-                "To configure application url use VostokHostingEnvironmentSetup: `vostokHostingEnvironmentSetup.SetupServiceBeacon(serviceBeaconBuilder => serviceBeaconBuilder.SetupReplicaInfo(replicaInfo => replicaInfo.SetUrl(...)))`.");
-        }
-        
         private static void ConfigureUrl(IWebHostBuilder builder, IVostokHostingEnvironment environment)
         {
             if (!environment.ServiceBeacon.ReplicaInfo.TryGetUrl(out var url))
@@ -101,17 +107,6 @@ namespace Vostok.Hosting.AspNetCore.Builders
             builder = builder.UseUrls($"{url.Scheme}://*:{url.Port}/");
 
             AddStartupFilter(builder, new UrlPathStartupFilter(environment));
-        }
-
-        public static void AddMiddlewares(IWebHostBuilder builder, params IMiddleware[] middlewares)
-        {
-            middlewares = middlewares.Where(m => m != null).ToArray();
-
-            foreach (var middleware in middlewares)
-                builder.ConfigureServices(services => services.AddSingleton(middleware.GetType(), middleware));
-
-            AddStartupFilter(builder, new AddMiddlewaresStartupFilter(
-                middlewares.Select(m => m.GetType()).ToArray()));
         }
 
         private static void RegisterTypes(IWebHostBuilder builder, IVostokHostingEnvironment environment) =>
@@ -150,6 +145,94 @@ namespace Vostok.Hosting.AspNetCore.Builders
                     services
                         .AddTransient(_ => startupFilter));
 
+        private void EnsureUrlsNotChanged(string urlsBefore, string urlsAfter)
+        {
+            if (urlsAfter.Contains(urlsBefore))
+                return;
+
+            throw new Exception(
+                "Application url should be configured in ServiceBeacon instead of WebHostBuilder.\n" +
+                $"ServiceBeacon url: '{urlsBefore}'. WebHostBuilder urls: '{urlsAfter}'.\n" +
+                "To configure application port (without url) use VostokHostingEnvironmentSetup extension: `vostokHostingEnvironmentSetup.SetPort(...)`.\n" +
+                "To configure application url use VostokHostingEnvironmentSetup: `vostokHostingEnvironmentSetup.SetupServiceBeacon(serviceBeaconBuilder => serviceBeaconBuilder.SetupReplicaInfo(replicaInfo => replicaInfo.SetUrl(...)))`.");
+        }
+
+        #region CreateComponents
+
+        private IMiddleware CreateDenyRequestsIfNotInActiveDatacenterMiddleware(IVostokHostingEnvironment environment)
+        {
+            if (denyRequestsMiddlewareCustomization == null)
+                return null;
+
+            var settings = new DenyRequestsIfNotInActiveDatacenterMiddlewareSettings(environment.Datacenters);
+            denyRequestsMiddlewareCustomization(settings);
+            return new DenyRequestsIfNotInActiveDatacenterMiddleware(settings, environment.Log);
+        }
+
+        private IMiddleware CreateFillRequestInfoMiddleware()
+        {
+            var settings = new FillRequestInfoMiddlewareSettings();
+
+            fillRequestInfoMiddlewareCustomization.Customize(settings);
+
+            return new FillRequestInfoMiddleware(settings);
+        }
+
+        public IMiddleware CreateRestoreDistributedContextMiddleware()
+        {
+            var settings = new RestoreDistributedContextMiddlewareSettings();
+
+            contextMiddlewareCustomization.Customize(settings);
+
+            return new RestoreDistributedContextMiddleware(settings);
+        }
+
+        public IMiddleware CreateTracingMiddleware(IVostokHostingEnvironment environment)
+        {
+            var settings = new TracingMiddlewareSettings(environment.Tracer);
+
+            tracingMiddlewareCustomization.Customize(settings);
+
+            return new TracingMiddleware(settings);
+        }
+
+        public IMiddleware CreateLoggingMiddleware(IVostokHostingEnvironment environment)
+        {
+            var settings = new LoggingMiddlewareSettings(environment.Log);
+
+            loggingMiddlewareCustomization.Customize(settings);
+
+            return new LoggingMiddleware(settings);
+        }
+
+        public IMiddleware CreatePingApiMiddleware(IVostokHostingEnvironment environment)
+        {
+            var settings = new PingApiMiddlewareSettings();
+
+            pingApiMiddlewareCustomization.Customize(settings);
+
+            return new PingApiMiddleware(settings);
+        }
+
+        public ILoggerProvider CreateMicrosoftLog(IVostokHostingEnvironment environment)
+        {
+            var settings = new VostokLoggerProviderSettings
+            {
+                IgnoredScopes = new HashSet<string>
+                {
+                    MicrosoftConstants.ActionLogScope, 
+                    MicrosoftConstants.HostingLogScope, 
+                    MicrosoftConstants.ConnectionLogScope
+                }
+            };
+
+            microsoftLogCustomization.Customize(settings);
+
+            return new VostokLoggerProvider(environment.Log, settings);
+        }
+
+        #endregion
+
         #region SetupComponents
 
         public IVostokAspNetCoreApplicationBuilder SetupWebHost(Action<IWebHostBuilder> setup)
@@ -158,58 +241,51 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupLoggingMiddleware(Action<IVostokLoggingMiddlewareBuilder> setup)
-        {
-            setup = setup ?? throw new ArgumentNullException(nameof(setup));
-            setup(loggingMiddlewareBuilder);
-            return this;
-        }
-
-        public IVostokAspNetCoreApplicationBuilder SetupTracingMiddleware(Action<IVostokTracingMiddlewareBuilder> setup)
-        {
-            setup = setup ?? throw new ArgumentNullException(nameof(setup));
-            setup(tracingMiddlewareBuilder);
-            return this;
-        }
-
-        public IVostokAspNetCoreApplicationBuilder AllowRequestsIfNotInActiveDatacenter()
-        {
-            denyRequestsMiddlewareBuilder.AllowRequestsIfNotInActiveDatacenter();
-            return this;
-        }
-
         public IVostokAspNetCoreApplicationBuilder DenyRequestsIfNotInActiveDatacenter(int denyResponseCode)
         {
-            denyRequestsMiddlewareBuilder.DenyRequestsIfNotInActiveDatacenter(denyResponseCode);
+            denyRequestsMiddlewareCustomization = settings => settings.DenyResponseCode = denyResponseCode;
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupPingApiMiddleware(Action<IVostokPingApiMiddlewareBuilder> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupFillRequestInfoMiddleware(Action<FillRequestInfoMiddlewareSettings> setup)
         {
-            setup = setup ?? throw new ArgumentNullException(nameof(setup));
-            pingApiMiddlewareBuilder.Enable();
-            setup(pingApiMiddlewareBuilder);
+            fillRequestInfoMiddlewareCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupFillRequestInfoMiddleware(Action<IVostokFillRequestInfoMiddlewareBuilder> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupRestoreDistributedContextMiddleware(Action<RestoreDistributedContextMiddlewareSettings> setup)
         {
-            setup = setup ?? throw new ArgumentNullException(nameof(setup));
-            setup(fillRequestInfoMiddlewareBuilder);
+            contextMiddlewareCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupRestoreDistributedContextMiddleware(Action<IVostokRestoreDistributedContextMiddlewareBuilder> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupTracingMiddleware(Action<TracingMiddlewareSettings> setup)
         {
-            setup = setup ?? throw new ArgumentNullException(nameof(setup));
-            setup(restoreDistributedContextMiddlewareBuilder);
+            tracingMiddlewareCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog(Action<IVostokMicrosoftLogBuilder> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupLoggingMiddleware(Action<LoggingMiddlewareSettings> setup)
         {
-            setup = setup ?? throw new ArgumentNullException(nameof(setup));
-            setup(microsoftLogBuilder);
+            loggingMiddlewareCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+
+            return this;
+        }
+
+        public IVostokAspNetCoreApplicationBuilder SetupPingApiMiddleware(Action<PingApiMiddlewareSettings> setup)
+        {
+            pingApiMiddlewareCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+
+            return this;
+        }
+
+        public IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog(Action<VostokLoggerProviderSettings> setup)
+        {
+            microsoftLogCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+
             return this;
         }
 

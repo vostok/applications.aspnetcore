@@ -5,9 +5,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
-    // CR(iloktionov): Почему у этой штуки нет дефолтной реализации?
-    // CR(kungurtsev): Узнать что это значит...
-
     /// <summary>
     /// Middleware that handles '_status/ping' and '/_status/version' requests.
     /// </summary>

@@ -30,11 +30,10 @@ namespace Vostok.Hosting.AspNetCore.Models
         [CanBeNull]
         string ClientApplicationIdentity { get; }
 
-        // CR(iloktionov): А как этого может не быть?
         /// <summary>
         /// Ip address of request sender.
         /// </summary>
-        [CanBeNull]
+        [NotNull]
         IPAddress ClientIpAddress { get; }
     }
 }

@@ -21,8 +21,9 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         {
             FlowingContext.RestoreDistributedProperties(context.Request.Headers[HeaderNames.ContextProperties]);
             FlowingContext.RestoreDistributedGlobals(context.Request.Headers[HeaderNames.ContextGlobals]);
-            
-            settings.AdditionalRestoreDistributedContextAction?.Invoke(context.Request);
+
+            foreach (var action in settings.AdditionalRestoreDistributedContextActions)
+                action(context.Request);
 
             await next(context).ConfigureAwait(false);
         }

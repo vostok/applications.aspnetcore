@@ -1,5 +1,6 @@
 ﻿using System;
 using JetBrains.Annotations;
+using Vostok.Commons.Environment;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
@@ -9,22 +10,16 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
     [PublicAPI]
     public class PingApiMiddlewareSettings
     {
-        public PingApiMiddlewareSettings([NotNull] Func<string> statusProvider, [NotNull] Func<string> commitHashProvider)
-        {
-            StatusProvider = statusProvider ?? throw new ArgumentNullException(nameof(statusProvider));
-            CommitHashProvider = commitHashProvider ?? throw new ArgumentNullException(nameof(commitHashProvider));
-        }
-
         /// <summary>
         /// A delegate that returns current application status.
         /// </summary>
         [NotNull]
-        public Func<string> StatusProvider { get; }
+        public Func<string> StatusProvider { get; set; } = () => "Ok";
 
         /// <summary>
         /// A delegate that returns application commit hash.
         /// </summary>
         [NotNull]
-        public Func<string> CommitHashProvider { get; }
+        public Func<string> CommitHashProvider { get; set; } = AssemblyCommitHashExtractor.ExtractFromEntryAssembly;
     }
 }

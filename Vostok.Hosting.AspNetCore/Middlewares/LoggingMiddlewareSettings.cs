@@ -20,7 +20,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         }
 
         /// <summary>
-        /// <see cref="ILog"/> that will be used for requests and responses logging.
+        /// <see cref="ILog"/> instance that will be used for requests and responses logging.
         /// </summary>
         [NotNull]
         internal ILog Log { get; }

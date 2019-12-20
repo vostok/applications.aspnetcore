@@ -26,6 +26,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             using (var spanBuilder = settings.Tracer.BeginHttpServerSpan())
             {
                 // CR(iloktionov): А как же SetRequestDetails, SetResponseDetails?
+                // CR(kungurtsev): Кажется эта инфа для клиентских спанов.
                 spanBuilder.SetClientDetails(requestInfo.ClientApplicationIdentity, requestInfo.ClientIpAddress);
 
                 if (settings.ResponseTraceIdHeader != null)

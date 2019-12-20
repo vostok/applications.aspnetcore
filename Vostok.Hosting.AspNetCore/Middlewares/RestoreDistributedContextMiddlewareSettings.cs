@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 
@@ -11,9 +12,9 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
     public class RestoreDistributedContextMiddlewareSettings
     {
         /// <summary>
-        /// Additional action that will be executed during distributed context restoring.
+        /// Additional actions that will be executed during distributed context restoring.
         /// </summary>
-        [CanBeNull]
-        public Action<HttpRequest> AdditionalRestoreDistributedContextAction { get; set; }
+        [NotNull]
+        public List<Action<HttpRequest>> AdditionalRestoreDistributedContextActions { get; set; } = new List<Action<HttpRequest>>();
     }
 }

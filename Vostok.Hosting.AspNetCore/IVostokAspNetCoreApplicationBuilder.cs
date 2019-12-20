@@ -6,9 +6,10 @@ using Microsoft.Extensions.Logging;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.AspNetCore.Middlewares;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Microsoft;
 using Vostok.ServiceDiscovery.Abstractions;
 
-namespace Vostok.Hosting.AspNetCore.Setup
+namespace Vostok.Hosting.AspNetCore
 {
     // CR(iloktionov): 1. Нет смысла перечислять всё, что это штука делает, в xml-доке. Есть смысл описать, как ей правильно пользоваться.
 
@@ -36,7 +37,7 @@ namespace Vostok.Hosting.AspNetCore.Setup
     ///     <item><description>Adds <see cref="RestoreDistributedContextMiddleware"/>.</description></item>
     ///     <item><description>Adds <see cref="TracingMiddleware"/>.</description></item>
     ///     <item><description>Adds <see cref="LoggingMiddleware"/>.</description></item>
-    ///     <item><description>Adds <see cref="DenyRequestsMiddleware"/> (if configured).</description></item>
+    ///     <item><description>Adds <see cref="DenyRequestsIfNotInActiveDatacenterMiddleware"/> (if configured).</description></item>
     ///     <item><description>Adds <see cref="PingApiMiddleware"/>.</description></item>
     ///     <item><description>Applies user given <see cref="IWebHostBuilder"/> configuration.</description></item>
     /// </list>
@@ -50,46 +51,39 @@ namespace Vostok.Hosting.AspNetCore.Setup
         IVostokAspNetCoreApplicationBuilder SetupWebHost([NotNull] Action<IWebHostBuilder> setup);
 
         /// <summary>
-        /// Delegate which configures <see cref="IVostokLoggingMiddlewareBuilder"/>.
+        /// Delegate which configures <see cref="LoggingMiddlewareSettings"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupLoggingMiddleware([NotNull] Action<IVostokLoggingMiddlewareBuilder> setup);
+        IVostokAspNetCoreApplicationBuilder SetupLoggingMiddleware([NotNull] Action<LoggingMiddlewareSettings> setup);
 
         /// <summary>
-        /// Delegate which configures <see cref="IVostokTracingMiddlewareBuilder"/>.
+        /// Delegate which configures <see cref="TracingMiddlewareSettings"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupTracingMiddleware([NotNull] Action<IVostokTracingMiddlewareBuilder> setup);
+        IVostokAspNetCoreApplicationBuilder SetupTracingMiddleware([NotNull] Action<TracingMiddlewareSettings> setup);
 
         /// <summary>
-        /// Allows request processing, even if current datacenter is not active.
+        /// <para>Denies request processing, if local datacenter is not active.</para>
+        /// <para>Use this option only if your application hosted in multiple datacenters.</para>
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder AllowRequestsIfNotInActiveDatacenter();
-
-        // CR(iloktionov): 1. Здесь каноничный код — 503.
-        // CR(iloktionov): 2. Давай это будет не generic middleware, который отсекает что угодно по Func'у, а именно штука про дата-центры?
-        // CR(iloktionov): 3. Зачем нам и allow, и deny? Каково умолчание?
-        /// <summary>
-        /// Denies request processing, if current datacenter is not active.
-        /// </summary>
-        IVostokAspNetCoreApplicationBuilder DenyRequestsIfNotInActiveDatacenter(int denyResponseCode = (int)Clusterclient.Core.Model.ResponseCode.Gone);
+        IVostokAspNetCoreApplicationBuilder DenyRequestsIfNotInActiveDatacenter(int denyResponseCode = (int)Clusterclient.Core.Model.ResponseCode.ServiceUnavailable);
 
         /// <summary>
-        /// Delegate which configures <see cref="IVostokPingApiMiddlewareBuilder"/>.
+        /// Delegate which configures <see cref="PingApiMiddlewareSettings"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupPingApiMiddleware([NotNull] Action<IVostokPingApiMiddlewareBuilder> setup);
+        IVostokAspNetCoreApplicationBuilder SetupPingApiMiddleware([NotNull] Action<PingApiMiddlewareSettings> setup);
 
         /// <summary>
-        /// Delegate which configures <see cref="IVostokFillRequestInfoMiddlewareBuilder"/>.
+        /// Delegate which configures <see cref="FillRequestInfoMiddlewareSettings"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupFillRequestInfoMiddleware([NotNull] Action<IVostokFillRequestInfoMiddlewareBuilder> setup);
+        IVostokAspNetCoreApplicationBuilder SetupFillRequestInfoMiddleware([NotNull] Action<FillRequestInfoMiddlewareSettings> setup);
 
         /// <summary>
-        /// Delegate which configures <see cref="IVostokRestoreDistributedContextMiddlewareBuilder"/>.
+        /// Delegate which configures <see cref="RestoreDistributedContextMiddlewareSettings"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupRestoreDistributedContextMiddleware([NotNull] Action<IVostokRestoreDistributedContextMiddlewareBuilder> setup);
+        IVostokAspNetCoreApplicationBuilder SetupRestoreDistributedContextMiddleware([NotNull] Action<RestoreDistributedContextMiddlewareSettings> setup);
 
         /// <summary>
-        /// Delegate which configures <see cref="IVostokMicrosoftLogBuilder"/>.
+        /// Delegate which configures <see cref="VostokLoggerProviderSettings"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog([NotNull] Action<IVostokMicrosoftLogBuilder> setup);
+        IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog([NotNull] Action<VostokLoggerProviderSettings> setup);
     }
 }

@@ -2,19 +2,20 @@
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
+using Vostok.Datacenters;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
     /// <summary>
-    /// Middleware that denies all incoming requests in case of non-healthy application status.
+    /// Middleware that denies request processing, if current datacenter is not active.
     /// </summary>
-    internal class DenyRequestsMiddleware : IMiddleware
+    internal class DenyRequestsIfNotInActiveDatacenterMiddleware : IMiddleware
     {
-        private readonly DenyRequestsMiddlewareSettings settings;
+        private readonly DenyRequestsIfNotInActiveDatacenterMiddlewareSettings settings;
         private readonly ILog log;
 
-        public DenyRequestsMiddleware([NotNull] DenyRequestsMiddlewareSettings settings, [CanBeNull] ILog log)
+        public DenyRequestsIfNotInActiveDatacenterMiddleware([NotNull] DenyRequestsIfNotInActiveDatacenterMiddlewareSettings settings, [CanBeNull] ILog log)
         {
             this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
             this.log = log ?? LogProvider.Get();
@@ -22,9 +23,9 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            if (settings.Enabled())
+            if (!settings.Datacenters.LocalDatacenterIsActive())
             {
-                context.Response.StatusCode = settings.ResponseCode;
+                context.Response.StatusCode = settings.DenyResponseCode;
 
                 log.Info("Request has been denied.");
 
