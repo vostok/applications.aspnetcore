@@ -20,11 +20,11 @@ namespace Vostok.Hosting.AspNetCore.Builders
     internal class AspNetCoreApplicationBuilder : IVostokAspNetCoreApplicationBuilder
     {
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
-        private readonly Customization<FillRequestInfoMiddlewareSettings> fillRequestInfoMiddlewareCustomization;
-        private readonly Customization<TracingMiddlewareSettings> tracingMiddlewareCustomization;
-        private readonly Customization<LoggingMiddlewareSettings> loggingMiddlewareCustomization;
-        private readonly Customization<RestoreDistributedContextMiddlewareSettings> contextMiddlewareCustomization;
-        private readonly Customization<PingApiMiddlewareSettings> pingApiMiddlewareCustomization;
+        private readonly Customization<FillRequestInfoMiddlewareSettings> fillRequestInfoCustomization;
+        private readonly Customization<TracingMiddlewareSettings> tracingCustomization;
+        private readonly Customization<LoggingMiddlewareSettings> loggingCustomization;
+        private readonly Customization<RestoreDistributedContextMiddlewareSettings> restoreDistributedContextCustomization;
+        private readonly Customization<PingApiMiddlewareSettings> pingApiCustomization;
         private readonly Customization<VostokLoggerProviderSettings> microsoftLogCustomization;
 
         private Action<DenyRequestsIfNotInActiveDatacenterMiddlewareSettings> denyRequestsMiddlewareCustomization;
@@ -32,11 +32,11 @@ namespace Vostok.Hosting.AspNetCore.Builders
         public AspNetCoreApplicationBuilder()
         {
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
-            fillRequestInfoMiddlewareCustomization = new Customization<FillRequestInfoMiddlewareSettings>();
-            tracingMiddlewareCustomization = new Customization<TracingMiddlewareSettings>();
-            loggingMiddlewareCustomization = new Customization<LoggingMiddlewareSettings>();
-            contextMiddlewareCustomization = new Customization<RestoreDistributedContextMiddlewareSettings>();
-            pingApiMiddlewareCustomization = new Customization<PingApiMiddlewareSettings>();
+            fillRequestInfoCustomization = new Customization<FillRequestInfoMiddlewareSettings>();
+            tracingCustomization = new Customization<TracingMiddlewareSettings>();
+            loggingCustomization = new Customization<LoggingMiddlewareSettings>();
+            restoreDistributedContextCustomization = new Customization<RestoreDistributedContextMiddlewareSettings>();
+            pingApiCustomization = new Customization<PingApiMiddlewareSettings>();
             microsoftLogCustomization = new Customization<VostokLoggerProviderSettings>();
         }
 
@@ -173,7 +173,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             var settings = new FillRequestInfoMiddlewareSettings();
 
-            fillRequestInfoMiddlewareCustomization.Customize(settings);
+            fillRequestInfoCustomization.Customize(settings);
 
             return new FillRequestInfoMiddleware(settings);
         }
@@ -182,7 +182,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             var settings = new RestoreDistributedContextMiddlewareSettings();
 
-            contextMiddlewareCustomization.Customize(settings);
+            restoreDistributedContextCustomization.Customize(settings);
 
             return new RestoreDistributedContextMiddleware(settings);
         }
@@ -191,7 +191,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             var settings = new TracingMiddlewareSettings(environment.Tracer);
 
-            tracingMiddlewareCustomization.Customize(settings);
+            tracingCustomization.Customize(settings);
 
             return new TracingMiddleware(settings);
         }
@@ -200,7 +200,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             var settings = new LoggingMiddlewareSettings(environment.Log);
 
-            loggingMiddlewareCustomization.Customize(settings);
+            loggingCustomization.Customize(settings);
 
             return new LoggingMiddleware(settings);
         }
@@ -209,7 +209,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             var settings = new PingApiMiddlewareSettings();
 
-            pingApiMiddlewareCustomization.Customize(settings);
+            pingApiCustomization.Customize(settings);
 
             return new PingApiMiddleware(settings);
         }
@@ -247,37 +247,37 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupFillRequestInfoMiddleware(Action<FillRequestInfoMiddlewareSettings> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupFillRequestInfo(Action<FillRequestInfoMiddlewareSettings> setup)
         {
-            fillRequestInfoMiddlewareCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+            fillRequestInfoCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
 
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupRestoreDistributedContextMiddleware(Action<RestoreDistributedContextMiddlewareSettings> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupRestoreDistributedContext(Action<RestoreDistributedContextMiddlewareSettings> setup)
         {
-            contextMiddlewareCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+            restoreDistributedContextCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
 
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupTracingMiddleware(Action<TracingMiddlewareSettings> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupTracing(Action<TracingMiddlewareSettings> setup)
         {
-            tracingMiddlewareCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+            tracingCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
 
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupLoggingMiddleware(Action<LoggingMiddlewareSettings> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupLogging(Action<LoggingMiddlewareSettings> setup)
         {
-            loggingMiddlewareCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+            loggingCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
 
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupPingApiMiddleware(Action<PingApiMiddlewareSettings> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupPingApi(Action<PingApiMiddlewareSettings> setup)
         {
-            pingApiMiddlewareCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+            pingApiCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
 
             return this;
         }

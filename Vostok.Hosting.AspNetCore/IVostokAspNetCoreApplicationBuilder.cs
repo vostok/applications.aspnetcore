@@ -53,12 +53,12 @@ namespace Vostok.Hosting.AspNetCore
         /// <summary>
         /// Delegate which configures <see cref="LoggingMiddlewareSettings"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupLoggingMiddleware([NotNull] Action<LoggingMiddlewareSettings> setup);
+        IVostokAspNetCoreApplicationBuilder SetupLogging([NotNull] Action<LoggingMiddlewareSettings> setup);
 
         /// <summary>
         /// Delegate which configures <see cref="TracingMiddlewareSettings"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupTracingMiddleware([NotNull] Action<TracingMiddlewareSettings> setup);
+        IVostokAspNetCoreApplicationBuilder SetupTracing([NotNull] Action<TracingMiddlewareSettings> setup);
 
         /// <summary>
         /// <para>Denies request processing, if local datacenter is not active.</para>
@@ -69,17 +69,17 @@ namespace Vostok.Hosting.AspNetCore
         /// <summary>
         /// Delegate which configures <see cref="PingApiMiddlewareSettings"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupPingApiMiddleware([NotNull] Action<PingApiMiddlewareSettings> setup);
+        IVostokAspNetCoreApplicationBuilder SetupPingApi([NotNull] Action<PingApiMiddlewareSettings> setup);
 
         /// <summary>
         /// Delegate which configures <see cref="FillRequestInfoMiddlewareSettings"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupFillRequestInfoMiddleware([NotNull] Action<FillRequestInfoMiddlewareSettings> setup);
+        IVostokAspNetCoreApplicationBuilder SetupFillRequestInfo([NotNull] Action<FillRequestInfoMiddlewareSettings> setup);
 
         /// <summary>
         /// Delegate which configures <see cref="RestoreDistributedContextMiddlewareSettings"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupRestoreDistributedContextMiddleware([NotNull] Action<RestoreDistributedContextMiddlewareSettings> setup);
+        IVostokAspNetCoreApplicationBuilder SetupRestoreDistributedContext([NotNull] Action<RestoreDistributedContextMiddlewareSettings> setup);
 
         /// <summary>
         /// Delegate which configures <see cref="VostokLoggerProviderSettings"/>.
