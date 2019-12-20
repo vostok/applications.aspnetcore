@@ -236,20 +236,11 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         #region SetupComponents
 
-        public IVostokAspNetCoreApplicationBuilder ConfigureWebHost(Action<IWebHostBuilder> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupWebHost(Action<IWebHostBuilder> setup)
         {
             webHostBuilderCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
             return this;
         }
-
-        public IVostokAspNetCoreApplicationBuilder ConfigureLogging(Action<ILoggingBuilder> setup) =>
-            throw new NotImplementedException();
-
-        public IVostokAspNetCoreApplicationBuilder ConfigureAppConfiguration(Action<IConfigurationBuilder> setup) =>
-            throw new NotImplementedException();
-
-        public IVostokAspNetCoreApplicationBuilder ConfigureContainer<TContainerBuilder>(Action<TContainerBuilder> setup) =>
-            throw new NotImplementedException();
 
         public IVostokAspNetCoreApplicationBuilder DenyRequestsIfNotInActiveDatacenter(int denyResponseCode)
         {

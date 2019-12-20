@@ -50,22 +50,7 @@ namespace Vostok.Hosting.AspNetCore
         /// <summary>
         /// Delegate which configures <see cref="IWebHostBuilder"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder ConfigureWebHost([NotNull] Action<IWebHostBuilder> setup);
-
-        /// <summary>
-        /// Delegate which configures <see cref="ILoggingBuilder"/>.
-        /// </summary>
-        IVostokAspNetCoreApplicationBuilder ConfigureLogging([NotNull] Action<ILoggingBuilder> setup);
-
-        /// <summary>
-        /// Delegate which configures <see cref="IConfigurationBuilder"/>.
-        /// </summary>
-        IVostokAspNetCoreApplicationBuilder ConfigureAppConfiguration([NotNull] Action<IConfigurationBuilder> setup);
-        
-        /// <summary>
-        /// Delegate which configures container.
-        /// </summary>
-        IVostokAspNetCoreApplicationBuilder ConfigureContainer<TContainerBuilder>([NotNull] Action<TContainerBuilder> setup);
+        IVostokAspNetCoreApplicationBuilder SetupWebHost([NotNull] Action<IWebHostBuilder> setup);
 
         /// <summary>
         /// Delegate which configures <see cref="LoggingMiddlewareSettings"/>.
