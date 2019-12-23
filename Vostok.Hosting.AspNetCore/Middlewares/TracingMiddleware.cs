@@ -28,8 +28,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             {
                 spanBuilder.SetClientDetails(requestInfo.ClientApplicationIdentity, requestInfo.ClientIpAddress);
 
-                if (Uri.TryCreate(context.Request.Path, UriKind.Relative, out var url))
-                    spanBuilder.SetRequestDetails(url, context.Request.Method, context.Request.ContentLength);
+                spanBuilder.SetRequestDetails(context.Request.Path, context.Request.Method, context.Request.ContentLength);
                 
                 if (settings.ResponseTraceIdHeader != null)
                 {
