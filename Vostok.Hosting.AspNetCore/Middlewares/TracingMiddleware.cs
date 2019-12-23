@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Vostok.Context;
 using Vostok.Hosting.AspNetCore.Models;
@@ -25,10 +26,11 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             
             using (var spanBuilder = settings.Tracer.BeginHttpServerSpan())
             {
-                // CR(iloktionov): А как же SetRequestDetails, SetResponseDetails?
-                // CR(kungurtsev): Кажется эта инфа для клиентских спанов.
                 spanBuilder.SetClientDetails(requestInfo.ClientApplicationIdentity, requestInfo.ClientIpAddress);
 
+                if (Uri.TryCreate(context.Request.Path, UriKind.Relative, out var url))
+                    spanBuilder.SetRequestDetails(url, context.Request.Method, context.Request.ContentLength);
+                
                 if (settings.ResponseTraceIdHeader != null)
                 {
                     var traceId = spanBuilder.CurrentSpan.TraceId;
@@ -42,6 +44,8 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
                 }
 
                 await next(context).ConfigureAwait(false);
+
+                spanBuilder.SetResponseDetails(context.Response.StatusCode, context.Response.ContentLength);
             }
         }
     }

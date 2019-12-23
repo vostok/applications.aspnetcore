@@ -59,7 +59,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         private string GetClientApplicationIdentity(HttpRequest request)
         {
             var clientApplicationIdentity = request.Headers[HeaderNames.ApplicationIdentity].ToString();
-            if (clientApplicationIdentity != null)
+            if (!string.IsNullOrEmpty(clientApplicationIdentity))
                 return clientApplicationIdentity;
 
             return settings.AdditionalClientApplicationIdentityProviders

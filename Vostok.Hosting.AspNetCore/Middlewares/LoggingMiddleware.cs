@@ -81,7 +81,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             template.Append("Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.");
             var parameters = new List<object>(5) { (ResponseCode)response.StatusCode, (ResponseCode)response.StatusCode, elapsed.ToPrettyString() };
 
-            var bodySize = GetBodySize(response);
+            var bodySize = response.ContentLength;
             if (bodySize != null)
             {
                 template.Append(" Body size = {BodySize}.");
@@ -180,13 +180,6 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             var result = builder.ToString();
             StringBuilderCache.Release(builder);
             return result;
-        }
-
-        private static long? GetBodySize(HttpResponse response)
-        {
-            if (long.TryParse(response.Headers[HeaderNames.ContentLength], out var length))
-                return length;
-            return null;
         }
     }
 }
