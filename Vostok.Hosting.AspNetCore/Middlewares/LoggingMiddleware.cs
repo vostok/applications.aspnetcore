@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Vostok.Clusterclient.Core.Model;
+using Vostok.Commons.Formatting;
 using Vostok.Commons.Time;
 using Vostok.Context;
 using Vostok.Hosting.AspNetCore.Models;
@@ -18,6 +18,8 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
     /// </summary>
     internal class LoggingMiddleware : IMiddleware
     {
+        private const int StringBuilderCapacity = 256;
+
         private readonly LoggingMiddlewareSettings settings;
 
         public LoggingMiddleware(LoggingMiddlewareSettings settings)
@@ -36,12 +38,12 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             LogResponse(context.Request, context.Response, sw.Elapsed);
         }
 
-        // CR(iloktionov): Может, заюзаем StringBuilderCache из vostok.commons.formatting, чтобы не сорить?
         private void LogRequest(HttpRequest request)
         {
             var requestInfo = FlowingContext.Globals.Get<IRequestInfo>();
 
-            var template = new StringBuilder("Received request '{Request}' from");
+            var template = StringBuilderCache.Acquire(StringBuilderCapacity);
+            template.Append("Received request '{Request}' from");
             var parameters = new List<object>(5) { FormatPath(request, settings.LogQueryString) };
 
             if (requestInfo.ClientApplicationIdentity != null)
@@ -69,11 +71,14 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             }
             
             settings.Log.Info(template.ToString(), parameters.ToArray());
+
+            StringBuilderCache.Release(template);
         }
 
         private void LogResponse(HttpRequest request, HttpResponse response, TimeSpan elapsed)
         {
-            var template = new StringBuilder("Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.");
+            var template = StringBuilderCache.Acquire(StringBuilderCapacity);
+            template.Append("Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.");
             var parameters = new List<object>(5) { (ResponseCode)response.StatusCode, (ResponseCode)response.StatusCode, elapsed.ToPrettyString() };
 
             var bodySize = GetBodySize(response);
@@ -89,11 +94,11 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
                 parameters.Add(FormatResponseHeaders(response, settings.LogResponseHeaders));
             }
 
-            // CR(iloktionov): А не лучше заменить на log.Info(...) с типизированным объектом properties?
-            // CR(kungurtsev): Не будет ли типизированный объект добавлять значения к пустым полям?
             settings.Log.Log(new LogEvent(LogLevel.Info, PreciseDateTime.Now, template.ToString())
                 .WithParameters(parameters.ToArray())
                 .WithProperty("ElapsedTimeMs", elapsed.TotalMilliseconds));
+
+            StringBuilderCache.Release(template);
         }
 
         private static string GetClientConnectionInfo(HttpRequest request)
@@ -104,7 +109,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
         private static string FormatPath(HttpRequest request, LoggingCollectionSettings logQueryStringSettings)
         {
-            var builder = new StringBuilder();
+            var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
 
             builder.Append(request.Method);
             builder.Append(" ");
@@ -130,45 +135,51 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
                 }
             }
 
-            return builder.ToString();
+            var result = builder.ToString();
+            StringBuilderCache.Release(builder);
+            return result;
         }
 
         private static string FormatRequestHeaders(HttpRequest request, LoggingCollectionSettings settings)
         {
-            var builder = new StringBuilder();
+            var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
 
-            foreach (var header in request.Headers)
+            foreach (var (key, value) in request.Headers)
             {
-                if (!settings.IsEnabledForKey(header.Key))
+                if (!settings.IsEnabledForKey(key))
                     continue;
 
                 builder.AppendLine();
                 builder.Append("\t");
-                builder.Append(header.Key);
+                builder.Append(key);
                 builder.Append(": ");
-                builder.Append(header.Value);
+                builder.Append(value);
             }
 
-            return builder.ToString();
+            var result = builder.ToString();
+            StringBuilderCache.Release(builder);
+            return result;
         }
 
         private static string FormatResponseHeaders(HttpResponse response, LoggingCollectionSettings settings)
         {
-            var builder = new StringBuilder();
+            var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
 
-            foreach (var header in response.Headers)
+            foreach (var (key, value) in response.Headers)
             {
-                if (!settings.IsEnabledForKey(header.Key))
+                if (!settings.IsEnabledForKey(key))
                     continue;
 
                 builder.AppendLine();
                 builder.Append("\t");
-                builder.Append(header.Key);
+                builder.Append(key);
                 builder.Append(": ");
-                builder.Append(header.Value);
+                builder.Append(value);
             }
 
-            return builder.ToString();
+            var result = builder.ToString();
+            StringBuilderCache.Release(builder);
+            return result;
         }
 
         private static long? GetBodySize(HttpResponse response)
