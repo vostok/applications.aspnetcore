@@ -13,7 +13,7 @@ using Vostok.Logging.Abstractions;
 namespace Vostok.Hosting.AspNetCore
 {
     /// <summary>
-    /// <para><see cref="VostokAspNetCoreApplication{TStartup}"/> is the abstract class developers inherit from in order to create Vostok-compatible AspNetCore service.</para>
+    /// <para><see cref="VostokAspNetCoreApplication{TStartup}"/> is the abstract class developers inherit from in order to create Vostok-compatible AspNetCore services.</para>
     /// <para>Implement <see cref="Setup"/> method to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middlewares (see <see cref="IVostokAspNetCoreApplicationBuilder"/>).</para>
     /// <para>Override <see cref="WarmupAsync"/> method to perform any additional initialization after the DI container gets built but before the app gets registered in service discovery.</para>
     /// </summary>
