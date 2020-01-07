@@ -59,12 +59,6 @@ namespace Vostok.Hosting.AspNetCore.Builders
                     middlewares.Select(m => m.GetType()).ToArray()));
         }
 
-        // CR(iloktionov): 4. Тут можно настраивать UseShutdownTimeout (время на drain запросов). Может, будем настраивать? Что там по умолчанию?
-        // CR(kungurtsev): По умолчанию 5 секунд, как и в хосте. Из хоста сюда никак не прокинуть его.
-
-        // CR(iloktionov): 5. А есть смысл положить environment из нашей application identity в environment здесь, или это что-то сломает?
-        // CR(kungurtsev): Ломаются все файлы с настройками, IsDevelopment, и так далее.
-
         public IHost Build(IVostokHostingEnvironment environment)
         {
             var hostBuilder = Host.CreateDefaultBuilder()
@@ -79,6 +73,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
                 .ConfigureWebHost(
                     webHostBuilder =>
                     {
+
                         ConfigureUrl(webHostBuilder, environment);
                         var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
@@ -95,7 +90,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
                             CreatePingApiMiddleware(environment));
 
                         webHostBuilder.UseKestrel().UseSockets();
-
+                        webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout);
                         webHostBuilder.UseStartup<TStartup>();
                         webHostBuilderCustomization.Customize(webHostBuilder);
 
