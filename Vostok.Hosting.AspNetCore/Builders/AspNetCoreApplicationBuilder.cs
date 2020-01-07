@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Vostok.Commons.Helpers;
 using Vostok.Configuration.Microsoft;
 using Vostok.Hosting.Abstractions;
+using Vostok.Hosting.AspNetCore.Configuration;
 using Vostok.Hosting.AspNetCore.Helpers;
 using Vostok.Hosting.AspNetCore.Middlewares;
 using Vostok.Hosting.AspNetCore.StartupFilters;

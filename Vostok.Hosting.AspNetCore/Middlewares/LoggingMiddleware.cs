@@ -8,6 +8,7 @@ using Vostok.Clusterclient.Core.Model;
 using Vostok.Commons.Formatting;
 using Vostok.Commons.Time;
 using Vostok.Context;
+using Vostok.Hosting.AspNetCore.Configuration;
 using Vostok.Hosting.AspNetCore.Models;
 using Vostok.Logging.Abstractions;
 

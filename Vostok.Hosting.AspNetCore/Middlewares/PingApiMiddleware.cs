@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
+using Vostok.Hosting.AspNetCore.Configuration;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {

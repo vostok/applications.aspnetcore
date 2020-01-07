@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Context;
+using Vostok.Hosting.AspNetCore.Configuration;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {

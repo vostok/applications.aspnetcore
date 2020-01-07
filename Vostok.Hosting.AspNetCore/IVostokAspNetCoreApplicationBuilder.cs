@@ -1,6 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
+using Vostok.Hosting.AspNetCore.Configuration;
 using Vostok.Hosting.AspNetCore.Middlewares;
 using Vostok.Logging.Microsoft;
 

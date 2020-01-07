@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Vostok.Commons.Time;
 using Vostok.Context;
+using Vostok.Hosting.AspNetCore.Configuration;
 using Vostok.Hosting.AspNetCore.Models;
 using Vostok.Logging.Abstractions;
 using Vostok.Throttling;
