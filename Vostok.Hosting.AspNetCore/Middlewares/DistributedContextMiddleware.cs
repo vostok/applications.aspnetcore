@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Vostok.Clusterclient.Context;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Context;
 using Vostok.Hosting.AspNetCore.Configuration;
+using Vostok.Hosting.AspNetCore.Models;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
@@ -13,11 +15,16 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         public DistributedContextMiddleware(DistributedContextSettings settings)
             => this.settings = settings;
 
-        // TODO(iloktionov): ensure RequestPriority in flowing context globals
+        static DistributedContextMiddleware()
+            => FlowingContext.Configuration.RegisterDistributedGlobal(DistributedContextConstants.RequestPriorityGlobalName, new RequestPrioritySerializer());
+
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             FlowingContext.RestoreDistributedProperties(context.Request.Headers[HeaderNames.ContextProperties]);
             FlowingContext.RestoreDistributedGlobals(context.Request.Headers[HeaderNames.ContextGlobals]);
+
+            if (FlowingContext.Globals.Get<RequestPriority?>() == null)
+                FlowingContext.Globals.Set<RequestPriority?>(FlowingContext.Globals.Get<IRequestInfo>()?.Priority ?? RequestPriority.Ordinary);
 
             foreach (var action in settings.AdditionalRestoreDistributedContextActions)
                 action(context.Request);

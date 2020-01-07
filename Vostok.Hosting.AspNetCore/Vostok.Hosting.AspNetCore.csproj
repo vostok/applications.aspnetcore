@@ -100,5 +100,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.throttling\Vostok.Throttling\bin\Release\netstandard2.0\Vostok.Throttling.dll</HintPath>
     </Reference>
+    <Reference Include="Vostok.ClusterClient.Context">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.clusterclient.context\Vostok.ClusterClient.Context\bin\Release\netstandard2.0\Vostok.ClusterClient.Context.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
