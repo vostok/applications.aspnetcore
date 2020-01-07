@@ -32,7 +32,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         private readonly Customization<VostokLoggerProviderSettings> microsoftLogCustomization;
         private readonly Customization<ThrottlingSettings> throttlingCustomization;
 
-        private Action<DatacenterAwarenessSettings> denyRequestsMiddlewareCustomization;
+        private Action<DatacenterAwarenessSettings> datacenterAwarenessCustomization;
 
         public VostokAspNetCoreApplicationBuilder()
         {
@@ -168,12 +168,14 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         private IMiddleware CreateDenyRequestsIfNotInActiveDatacenterMiddleware(IVostokHostingEnvironment environment)
         {
-            if (denyRequestsMiddlewareCustomization == null)
+            if (datacenterAwarenessCustomization == null)
                 return null;
 
-            var settings = new DatacenterAwarenessSettings(environment.Datacenters);
-            denyRequestsMiddlewareCustomization(settings);
-            return new DenyRequestsIfNotInActiveDatacenterMiddleware(settings, environment.Log);
+            var settings = new DatacenterAwarenessSettings();
+
+            datacenterAwarenessCustomization(settings);
+            
+            return new DatacenterAwarenessMiddleware(settings, environment.Datacenters, environment.Log);
         }
 
         private IMiddleware CreateFillRequestInfoMiddleware()
@@ -266,7 +268,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         public IVostokAspNetCoreApplicationBuilder DenyRequestsIfNotInActiveDatacenter(int denyResponseCode)
         {
-            denyRequestsMiddlewareCustomization = settings => settings.DenyResponseCode = denyResponseCode;
+            datacenterAwarenessCustomization = settings => settings.DenyResponseCode = denyResponseCode;
             return this;
         }
 

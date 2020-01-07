@@ -1,25 +1,12 @@
-﻿using JetBrains.Annotations;
-using Vostok.Datacenters;
-using Vostok.Hosting.AspNetCore.Middlewares;
+﻿using Vostok.Hosting.AspNetCore.Middlewares;
 
 namespace Vostok.Hosting.AspNetCore.Configuration
 {
     /// <summary>
-    /// Configuration of the <see cref="DenyRequestsIfNotInActiveDatacenterMiddleware"/>.
+    /// Configuration of the <see cref="DatacenterAwarenessMiddleware"/>.
     /// </summary>
     internal class DatacenterAwarenessSettings
     {
-        public DatacenterAwarenessSettings([NotNull] IDatacenters datacenters)
-        {
-            Datacenters = datacenters;
-        }
-
-        /// <summary>
-        /// <see cref="IDatacenters"/> instance that will be used for checking whether or not local datacenter is active.
-        /// </summary>
-        [NotNull]
-        internal IDatacenters Datacenters { get; }
-
         /// <summary>
         /// Response code, that will be returned for denied requests.
         /// </summary>
