@@ -1,39 +1,43 @@
 notests *default:
   build:
-    target: Vostok.Hosting.AspNetCore.sln
+    target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
     tool:
       name: dotnet
 
   install:
-    - Vostok.Hosting.AspNetCore/bin/Release/netstandard2.0/Vostok.Hosting.AspNetCore.dll
-    - module vostok.hosting.abstractions
+    - Vostok.Applications.AspNetCore/bin/Release/netcoreapp3.1/Vostok.Applications.AspNetCore.dll
+    - module vostok.configuration.microsoft
+    - module vostok.hosting.abstractions@step2
+    - module vostok.logging.microsoft
 
   deps:
-    - vostok.tracing.extensions
-    - vostok.configuration.microsoft
-    - vostok.logging.microsoft@disable-scopes
-    - vostok.hosting.kontur
-    - vostok.hosting
-    - vostok.hosting.abstractions
-    - vostok.datacenters
-    - vostok.clusterconfig.client.abstractions
     - vostok.clusterclient.core
-    - vostok.servicediscovery.abstractions
-    - vostok.hercules.client.abstractions
+    - vostok.clusterclient.context
+    - vostok.clusterconfig.client.abstractions
+    - vostok.commons.time/src
+    - vostok.commons.helpers/src
+    - vostok.commons.environment/src
+    - vostok.commons.formatting/src
     - vostok.configuration.abstractions
-    - vostok.tracing.abstractions
-    - vostok.logging.abstractions
-    - vostok.metrics
+    - vostok.configuration.microsoft
     - vostok.context
+    - vostok.datacenters
     - vostok.devtools
+    - vostok.hercules.client.abstractions
+    - vostok.hosting.abstractions@step2
+    - vostok.logging.abstractions
+    - vostok.logging.microsoft
+    - vostok.metrics
+    - vostok.servicediscovery.abstractions
+    - vostok.throttling
+    - vostok.throttling.metrics
+    - vostok.tracing.abstractions
+    - vostok.tracing.extensions
 
 full-build > notests:
   deps:
-    - vostok.tracing.hercules
-    - vostok.configuration.sources
-    - vostok.clusterclient.transport
-    - vostok.servicediscovery
+    
   build:
-    target: Vostok.Hosting.AspNetCore.sln
+    target: Vostok.Applications.AspNetCore.sln
     configuration: Release
