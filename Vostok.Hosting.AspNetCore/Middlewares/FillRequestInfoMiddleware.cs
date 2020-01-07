@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -15,7 +16,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
     internal class FillRequestInfoMiddleware : IMiddleware
     {
         private readonly FillRequestInfoSettings settings;
-        
+
         public FillRequestInfoMiddleware([NotNull] FillRequestInfoSettings settings)
             => this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
@@ -32,14 +33,15 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             await next(context).ConfigureAwait(false);
         }
 
+        private static TResult ObtainFromProviders<TResult>(HttpRequest request, IEnumerable<Func<HttpRequest, TResult>> providers)
+            => providers.Select(provider => provider(request)).FirstOrDefault();
+
         private TimeSpan? GetTimeout(HttpRequest request)
         {
             if (NumericTypeParser<double>.TryParse(request.Headers[HeaderNames.RequestTimeout], out var seconds))
                 return seconds.Seconds();
 
-            return settings.AdditionalTimeoutProviders
-                .Select(provider => provider.Invoke(request))
-                .FirstOrDefault(result => result != null);
+            return ObtainFromProviders(request, settings.AdditionalTimeoutProviders);
         }
 
         private RequestPriority? GetPriority(HttpRequest request)
@@ -47,9 +49,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             if (Enum.TryParse(request.Headers[HeaderNames.RequestPriority], true, out RequestPriority priority))
                 return priority;
 
-            return settings.AdditionalPriorityProviders
-                .Select(provider => provider.Invoke(request))
-                .FirstOrDefault(result => result != null);
+            return ObtainFromProviders(request, settings.AdditionalPriorityProviders);
         }
 
         private string GetClientApplicationIdentity(HttpRequest request)
@@ -58,9 +58,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             if (!string.IsNullOrEmpty(clientApplicationIdentity))
                 return clientApplicationIdentity;
 
-            return settings.AdditionalClientIdentityProviders
-                .Select(provider => provider.Invoke(request))
-                .FirstOrDefault(result => result != null);
+            return ObtainFromProviders(request, settings.AdditionalClientIdentityProviders);
         }
     }
 }
