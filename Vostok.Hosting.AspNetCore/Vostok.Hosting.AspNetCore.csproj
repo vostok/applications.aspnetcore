@@ -90,5 +90,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.tracing.extensions\Vostok.Tracing.Extensions\bin\Release\netstandard2.0\Vostok.Tracing.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="Vostok.Throttling.Metrics">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.throttling.metrics\Vostok.Throttling.Metrics\bin\Release\netstandard2.0\Vostok.Throttling.Metrics.dll</HintPath>
+    </Reference>
+    <Reference Include="Vostok.Throttling">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.throttling\Vostok.Throttling\bin\Release\netstandard2.0\Vostok.Throttling.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

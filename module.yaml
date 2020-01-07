@@ -25,6 +25,8 @@ notests *default:
     - vostok.logging.microsoft
     - vostok.metrics
     - vostok.servicediscovery.abstractions
+    - vostok.throttling
+    - vostok.throttling.metrics
     - vostok.tracing.abstractions
     - vostok.tracing.extensions
 
