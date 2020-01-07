@@ -1,14 +1,14 @@
 notests *default:
   build:
-    target: Vostok.Hosting.AspNetCore.sln
+    target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
     tool:
       name: dotnet
 
   install:
-    - Vostok.Hosting.AspNetCore/bin/Release/netcoreapp3.1/Vostok.Hosting.AspNetCore.dll
+    - Vostok.Applications.AspNetCore/bin/Release/netcoreapp3.1/Vostok.Applications.AspNetCore.dll
     - module vostok.configuration.microsoft
-    - module vostok.hosting.abstractions
+    - module vostok.hosting.abstractions@step2
     - module vostok.logging.microsoft
 
   deps:
@@ -39,5 +39,5 @@ full-build > notests:
   deps:
     
   build:
-    target: Vostok.Hosting.AspNetCore.sln
+    target: Vostok.Applications.AspNetCore.sln
     configuration: Release
