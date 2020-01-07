@@ -12,6 +12,6 @@ namespace Vostok.Hosting.AspNetCore.Configuration
         /// Additional actions that will be executed during distributed context restoring.
         /// </summary>
         [NotNull]
-        public List<Action<HttpRequest>> AdditionalRestoreDistributedContextActions { get; set; } = new List<Action<HttpRequest>>();
+        public List<Action<HttpRequest>> AdditionalActions { get; set; } = new List<Action<HttpRequest>>();
     }
 }

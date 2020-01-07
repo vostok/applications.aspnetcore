@@ -26,7 +26,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             if (FlowingContext.Globals.Get<RequestPriority?>() == null)
                 FlowingContext.Globals.Set<RequestPriority?>(FlowingContext.Globals.Get<IRequestInfo>()?.Priority ?? RequestPriority.Ordinary);
 
-            foreach (var action in settings.AdditionalRestoreDistributedContextActions)
+            foreach (var action in settings.AdditionalActions)
                 action(context.Request);
 
             await next(context).ConfigureAwait(false);
