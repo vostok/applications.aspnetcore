@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -59,7 +58,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             if (!string.IsNullOrEmpty(clientApplicationIdentity))
                 return clientApplicationIdentity;
 
-            return settings.AdditionalClientApplicationIdentityProviders
+            return settings.AdditionalClientIdentityProviders
                 .Select(provider => provider.Invoke(request))
                 .FirstOrDefault(result => result != null);
         }

@@ -18,7 +18,7 @@ namespace Vostok.Hosting.AspNetCore.Models
         TimeSpan? Timeout { get; }
 
         /// <summary>
-        /// Request remaining timeout from request processing start.
+        /// Remaining <see cref="Timeout"/> since the start of request processing.
         /// </summary>
         [CanBeNull]
         TimeSpan? RemainingTimeout { get; }
@@ -36,7 +36,7 @@ namespace Vostok.Hosting.AspNetCore.Models
         string ClientApplicationIdentity { get; }
 
         /// <summary>
-        /// Ip address of request sender.
+        /// IP address of request sender.
         /// </summary>
         [NotNull]
         IPAddress ClientIpAddress { get; }
