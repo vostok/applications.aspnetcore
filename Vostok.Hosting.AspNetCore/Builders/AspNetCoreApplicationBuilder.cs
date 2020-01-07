@@ -308,6 +308,13 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return this;
         }
 
+        public IVostokAspNetCoreApplicationBuilder SetupThrottling(Action<ThrottlingMiddlewareSettings> setup)
+        {
+            throttlingCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+
+            return this;
+        }
+
         #endregion
     }
 }

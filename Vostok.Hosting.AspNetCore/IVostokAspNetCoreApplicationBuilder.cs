@@ -53,5 +53,7 @@ namespace Vostok.Hosting.AspNetCore
         /// Delegate which configures <see cref="VostokLoggerProviderSettings"/>.
         /// </summary>
         IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog([NotNull] Action<VostokLoggerProviderSettings> setup);
+
+        IVostokAspNetCoreApplicationBuilder SetupThrottling([NotNull] Action<ThrottlingMiddlewareSettings> setup);
     }
 }
