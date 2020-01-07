@@ -24,26 +24,26 @@ namespace Vostok.Hosting.AspNetCore.Builders
         where TStartup : class
     {
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
-        private readonly Customization<FillRequestInfoSettings> fillRequestInfoCustomization;
         private readonly Customization<TracingSettings> tracingCustomization;
         private readonly Customization<LoggingSettings> loggingCustomization;
-        private readonly Customization<DistributedContextSettings> restoreDistributedContextCustomization;
         private readonly Customization<PingApiSettings> pingApiCustomization;
-        private readonly Customization<VostokLoggerProviderSettings> microsoftLogCustomization;
         private readonly Customization<ThrottlingSettings> throttlingCustomization;
-
-        private Action<DatacenterAwarenessSettings> datacenterAwarenessCustomization;
+        private readonly Customization<FillRequestInfoSettings> fillRequestInfoCustomization;
+        private readonly Customization<VostokLoggerProviderSettings> microsoftLogCustomization;
+        private readonly Customization<DistributedContextSettings> distributedContextCustomization;
+        private readonly Customization<DatacenterAwarenessSettings> datacenterAwarenessCustomization;
 
         public VostokAspNetCoreApplicationBuilder()
         {
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
-            fillRequestInfoCustomization = new Customization<FillRequestInfoSettings>();
             tracingCustomization = new Customization<TracingSettings>();
             loggingCustomization = new Customization<LoggingSettings>();
-            restoreDistributedContextCustomization = new Customization<DistributedContextSettings>();
             pingApiCustomization = new Customization<PingApiSettings>();
-            microsoftLogCustomization = new Customization<VostokLoggerProviderSettings>();
             throttlingCustomization = new Customization<ThrottlingSettings>();
+            fillRequestInfoCustomization = new Customization<FillRequestInfoSettings>();
+            microsoftLogCustomization = new Customization<VostokLoggerProviderSettings>();
+            distributedContextCustomization = new Customization<DistributedContextSettings>();
+            datacenterAwarenessCustomization = new Customization<DatacenterAwarenessSettings>();
         }
 
         public static void AddMiddlewares(IWebHostBuilder builder, params IMiddleware[] middlewares)
@@ -168,12 +168,9 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         private IMiddleware CreateDenyRequestsIfNotInActiveDatacenterMiddleware(IVostokHostingEnvironment environment)
         {
-            if (datacenterAwarenessCustomization == null)
-                return null;
-
             var settings = new DatacenterAwarenessSettings();
 
-            datacenterAwarenessCustomization(settings);
+            datacenterAwarenessCustomization.Customize(settings);
             
             return new DatacenterAwarenessMiddleware(settings, environment.Datacenters, environment.Log);
         }
@@ -191,7 +188,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         {
             var settings = new DistributedContextSettings();
 
-            restoreDistributedContextCustomization.Customize(settings);
+            distributedContextCustomization.Customize(settings);
 
             return new RestoreDistributedContextMiddleware(settings);
         }
@@ -266,9 +263,9 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder DenyRequestsIfNotInActiveDatacenter(int denyResponseCode)
+        public IVostokAspNetCoreApplicationBuilder SetupDatacenterAwareness(Action<DatacenterAwarenessSettings> setup)
         {
-            datacenterAwarenessCustomization = settings => settings.DenyResponseCode = denyResponseCode;
+            datacenterAwarenessCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
             return this;
         }
 
@@ -281,7 +278,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         public IVostokAspNetCoreApplicationBuilder SetupRestoreDistributedContext(Action<DistributedContextSettings> setup)
         {
-            restoreDistributedContextCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+            distributedContextCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
 
             return this;
         }

@@ -21,16 +21,16 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            if (!datacenters.LocalDatacenterIsActive())
+            if (settings.RejectRequestsWhenDatacenterIsInactive && !datacenters.LocalDatacenterIsActive())
             {
-                context.Response.StatusCode = settings.DenyResponseCode;
+                context.Response.StatusCode = settings.RejectionResponseCode;
 
-                log.Info("Request has been denied.");
+                log.Warn("Rejecting request as local datacenter '{Datacenter}' is not active.", datacenters.GetLocalDatacenter());
 
                 return;
             }
 
-            await next(context).ConfigureAwait(false);
+            await next(context);
         }
     }
 }

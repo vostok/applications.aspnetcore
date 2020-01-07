@@ -21,7 +21,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         IVostokAspNetCoreApplicationBuilder SetupThrottling([NotNull] Action<ThrottlingSettings> setup);
 
-        IVostokAspNetCoreApplicationBuilder DenyRequestsIfNotInActiveDatacenter(int denyResponseCode = (int)Clusterclient.Core.Model.ResponseCode.ServiceUnavailable);
+        IVostokAspNetCoreApplicationBuilder SetupDatacenterAwareness([NotNull] Action<DatacenterAwarenessSettings> setup);
 
         IVostokAspNetCoreApplicationBuilder SetupPingApi([NotNull] Action<PingApiSettings> setup);
 
