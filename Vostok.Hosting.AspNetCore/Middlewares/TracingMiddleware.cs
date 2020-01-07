@@ -26,20 +26,10 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
             using (var spanBuilder = tracer.BeginHttpServerSpan())
             {
                 spanBuilder.SetClientDetails(requestInfo.ClientApplicationIdentity, requestInfo.ClientIpAddress);
-
                 spanBuilder.SetRequestDetails(context.Request.Path, context.Request.Method, context.Request.ContentLength);
                 
                 if (settings.ResponseTraceIdHeader != null)
-                {
-                    var traceId = spanBuilder.CurrentSpan.TraceId;
-
-                    context.Response.OnStarting(state =>
-                    {
-                        var ctx = (HttpContext)state;
-                        ctx.Response.Headers[settings.ResponseTraceIdHeader] = traceId.ToString();
-                        return Task.CompletedTask;
-                    }, context);
-                }
+                    context.Response.Headers[settings.ResponseTraceIdHeader] = spanBuilder.CurrentSpan?.TraceId.ToString();
 
                 await next(context).ConfigureAwait(false);
 
