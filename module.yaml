@@ -14,6 +14,10 @@ notests *default:
   deps:
     - vostok.clusterclient.core
     - vostok.clusterconfig.client.abstractions
+    - vostok.commons.time/src
+    - vostok.commons.helpers/src
+    - vostok.commons.environment/src
+    - vostok.commons.formatting/src
     - vostok.configuration.abstractions
     - vostok.configuration.microsoft
     - vostok.context

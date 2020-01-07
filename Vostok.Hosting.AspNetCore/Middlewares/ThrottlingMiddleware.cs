@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Vostok.Commons.Helpers.Url;
 using Vostok.Commons.Time;
 using Vostok.Context;
 using Vostok.Hosting.AspNetCore.Configuration;
@@ -63,15 +64,23 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         private static bool ShouldAbortConnection(HttpContext context, IThrottlingResult result)
             => result.Status == ThrottlingStatus.RejectedDueToDeadline || context.Request.ContentLength > LargeRequestBodySize;
 
-        private static IReadOnlyDictionary<string, string> BuildThrottlingProperties(HttpContext context, IRequestInfo info)
+        private IReadOnlyDictionary<string, string> BuildThrottlingProperties(HttpContext context, IRequestInfo info)
         {
-            // TODO(iloktionov): on/off switches for properties
+            var builder = new ThrottlingPropertiesBuilder();
 
-            return new ThrottlingPropertiesBuilder()
-                .AddConsumer(info.ClientApplicationIdentity)
-                .AddPriority(info.Priority?.ToString())
-                .AddMethod(context.Request.Method)
-                .Build();
+            if (settings.AddConsumerProperty)
+                builder.AddConsumer(info.ClientApplicationIdentity);
+
+            if (settings.AddPriorityProperty)
+                builder.AddPriority(info.Priority?.ToString());
+
+            if (settings.AddMethodProperty)
+                builder.AddPriority(context.Request.Method);
+
+            if (settings.AddUrlProperty)
+                builder.AddUrl(UrlNormalizer.NormalizePath(context.Request.Path));
+
+            return builder.Build();
         }
 
         private void LogWaitTime(IRequestInfo info, IThrottlingResult result)
