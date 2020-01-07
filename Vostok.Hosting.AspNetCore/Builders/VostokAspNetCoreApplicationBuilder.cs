@@ -17,6 +17,7 @@ using Vostok.Logging.Microsoft;
 using Vostok.ServiceDiscovery.Abstractions;
 using Vostok.Throttling;
 using Vostok.Throttling.Config;
+using Vostok.Throttling.Metrics;
 
 namespace Vostok.Hosting.AspNetCore.Builders
 {
@@ -46,7 +47,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
             datacenterAwarenessCustomization = new Customization<DatacenterAwarenessSettings>();
         }
 
-        public IHost Build(IVostokHostingEnvironment environment)
+        public IHost Build(IVostokHostingEnvironment environment, List<IDisposable> disposables)
         {
             var hostBuilder = Host.CreateDefaultBuilder()
                 .ConfigureLogging(
@@ -68,11 +69,11 @@ namespace Vostok.Hosting.AspNetCore.Builders
                         AddMiddlewares(
                             webHostBuilder,
                             CreateFillRequestInfoMiddleware(),
-                            CreateRestoreDistributedContextMiddleware(),
+                            CreateDistributedContextMiddleware(),
                             CreateTracingMiddleware(environment),
-                            CreateThrottlingMiddleware(environment),
+                            CreateThrottlingMiddleware(environment, disposables),
                             CreateLoggingMiddleware(environment),
-                            CreateDenyRequestsIfNotInActiveDatacenterMiddleware(environment),
+                            CreateDatacenterAwarenessMiddleware(environment),
                             CreatePingApiMiddleware(environment));
 
                         webHostBuilder.UseKestrel().UseSockets();
@@ -155,7 +156,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         #region CreateComponents
 
-        private IMiddleware CreateDenyRequestsIfNotInActiveDatacenterMiddleware(IVostokHostingEnvironment environment)
+        private IMiddleware CreateDatacenterAwarenessMiddleware(IVostokHostingEnvironment environment)
         {
             var settings = new DatacenterAwarenessSettings();
 
@@ -173,7 +174,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return new FillRequestInfoMiddleware(settings);
         }
 
-        private IMiddleware CreateRestoreDistributedContextMiddleware()
+        private IMiddleware CreateDistributedContextMiddleware()
         {
             var settings = new DistributedContextSettings();
 
@@ -226,9 +227,8 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return new VostokLoggerProvider(environment.Log, settings);
         }
 
-        // TODO(iloktionov): 1. Add throttling metrics
-        // TODO(iloktionov): 2. Use custom cores count provider
-        private IMiddleware CreateThrottlingMiddleware(IVostokHostingEnvironment environment)
+        // TODO(iloktionov): 1. Use custom cores count provider
+        private IMiddleware CreateThrottlingMiddleware(IVostokHostingEnvironment environment, List<IDisposable> disposables)
         {
             var settings = new ThrottlingSettings();
 
@@ -237,6 +237,9 @@ namespace Vostok.Hosting.AspNetCore.Builders
             var configBuilder = new ThrottlingConfigurationBuilder();
 
             var throttlingProvider = new ThrottlingProvider(configBuilder.Build());
+
+            if (settings.Metrics != null)
+                disposables.Add(environment.Metrics.Instance.CreateThrottlingMetrics(throttlingProvider, settings.Metrics));
 
             return new ThrottlingMiddleware(settings, throttlingProvider, environment.Log);
         }

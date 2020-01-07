@@ -34,7 +34,7 @@ namespace Vostok.Hosting.AspNetCore
 
             Setup(builder, environment);
 
-            disposables.Add(host = builder.Build(environment));
+            disposables.Add(host = builder.Build(environment, disposables));
 
             await StartHostAsync(environment).ConfigureAwait(false);
 
@@ -75,8 +75,8 @@ namespace Vostok.Hosting.AspNetCore
             log.Info("Starting Host.");
 
             await host.StartAsync(environment.ShutdownToken).ConfigureAwait(false);
-
             await lifetime.ApplicationStarted.WaitAsync();
+
             log.Info("Host started.");
         }
 

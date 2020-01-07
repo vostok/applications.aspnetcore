@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Vostok.Throttling;
+using Vostok.Throttling.Metrics;
 
 namespace Vostok.Hosting.AspNetCore.Configuration
 {
@@ -32,5 +33,12 @@ namespace Vostok.Hosting.AspNetCore.Configuration
         /// If set to <c>true</c>, the middleware will pass <see cref="WellKnownThrottlingProperties.Url"/> property to <see cref="IThrottlingProvider"/>.
         /// </summary>
         public bool AddUrlProperty { get; set; }
+
+        /// <summary>
+        /// <para>Configuration of application's throttling metrics, enabled by default.</para>
+        /// <para>Set this property to <c>null</c> to disable throttling metrics.</para>
+        /// </summary>
+        [CanBeNull]
+        public ThrottlingMetricsOptions Metrics = new ThrottlingMetricsOptions();
     }
 }
