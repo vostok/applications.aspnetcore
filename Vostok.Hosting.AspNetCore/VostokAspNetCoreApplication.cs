@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
@@ -22,10 +22,11 @@ namespace Vostok.Hosting.AspNetCore
     public abstract class VostokAspNetCoreApplication<TStartup> : IVostokApplication, IDisposable
         where TStartup : class
     {
-        private IHostApplicationLifetime lifetime;
-        private ILog log;
-        private IHost host;
-        private CancellationTokenRegistration shutdownTokenRegistration;
+        private readonly List<IDisposable> disposables = new List<IDisposable>();
+
+        private volatile IHostApplicationLifetime lifetime;
+        private volatile IHost host;
+        private volatile ILog log;
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
@@ -33,7 +34,7 @@ namespace Vostok.Hosting.AspNetCore
 
             Setup(builder, environment);
 
-            host = builder.Build(environment);
+            disposables.Add(host = builder.Build(environment));
 
             await StartHostAsync(environment).ConfigureAwait(false);
 
@@ -51,16 +52,13 @@ namespace Vostok.Hosting.AspNetCore
         }
 
         /// <summary>
-        /// Override this method to perform any initialization that needs to happen after DI container is built, but before registering in service discovery.
+        /// Override this method to perform any initialization that needs to happen after DI container is built and host is started, but before registering in service discovery.
         /// </summary>
         public virtual Task WarmupAsync([NotNull] IVostokHostingEnvironment environment, [NotNull] IServiceProvider serviceProvider) =>
             Task.CompletedTask;
 
         public void Dispose()
-        {
-            shutdownTokenRegistration.Dispose();
-            host?.Dispose();
-        }
+            => disposables.ForEach(disposable => disposable?.Dispose());
 
         private async Task StartHostAsync(IVostokHostingEnvironment environment)
         {
@@ -68,10 +66,11 @@ namespace Vostok.Hosting.AspNetCore
 
             lifetime = (IHostApplicationLifetime)host.Services.GetService(typeof(IHostApplicationLifetime));
 
-            shutdownTokenRegistration = environment.ShutdownToken.Register(
-                () => host
-                    .StopAsync()
-                    .ContinueWith(t => log.Error(t.Exception, "Failed to stop Host."), TaskContinuationOptions.OnlyOnFaulted));
+            disposables.Add(
+                environment.ShutdownToken.Register(
+                    () => host
+                        .StopAsync()
+                        .ContinueWith(t => log.Error(t.Exception, "Failed to stop Host."), TaskContinuationOptions.OnlyOnFaulted)));
 
             log.Info("Starting Host.");
 

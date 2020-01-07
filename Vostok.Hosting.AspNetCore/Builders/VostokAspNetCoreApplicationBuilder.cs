@@ -60,7 +60,6 @@ namespace Vostok.Hosting.AspNetCore.Builders
                 .ConfigureWebHost(
                     webHostBuilder =>
                     {
-
                         ConfigureUrl(webHostBuilder, environment);
                         var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
