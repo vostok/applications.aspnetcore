@@ -1,13 +1,9 @@
 ﻿using System;
 using JetBrains.Annotations;
 using Vostok.Commons.Environment;
-using Vostok.Hosting.AspNetCore.Middlewares;
 
 namespace Vostok.Hosting.AspNetCore.Configuration
 {
-    /// <summary>
-    /// Configuration of the <see cref="PingApiMiddleware"/>.
-    /// </summary>
     [PublicAPI]
     public class PingApiSettings
     {

@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Clusterclient.Core.Model;
-using Vostok.Hosting.AspNetCore.Middlewares;
 using Vostok.Hosting.AspNetCore.Models;
 
 namespace Vostok.Hosting.AspNetCore.Configuration
 {
-    /// <summary>
-    /// Configuration of the <see cref="FillRequestInfoMiddleware"/>.
-    /// </summary>
     [PublicAPI]
     public class FillRequestInfoSettings
     {

@@ -1,12 +1,8 @@
 ﻿using System;
 using JetBrains.Annotations;
-using Vostok.Hosting.AspNetCore.Middlewares;
 
 namespace Vostok.Hosting.AspNetCore.Configuration
 {
-    /// <summary>
-    /// Configuration of the <see cref="LoggingMiddleware"/>.
-    /// </summary>
     [PublicAPI]
     public class LoggingSettings
     {
