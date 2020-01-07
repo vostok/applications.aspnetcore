@@ -7,24 +7,25 @@ namespace Vostok.Hosting.AspNetCore.Models
 {
     internal class RequestInfo : IRequestInfo
     {
-        private readonly TimeBudget timeBudget;
-
         public RequestInfo(TimeSpan? requestTimeout, RequestPriority? requestPriority, string clientApplicationIdentity, IPAddress clientIpAddress)
         {
             Timeout = requestTimeout;
-
-            if (requestTimeout.HasValue)
-                timeBudget = TimeBudget.StartNew(requestTimeout.Value);
-
+            Budget = Timeout.HasValue ? TimeBudget.StartNew(Timeout.Value.Cut(100.Milliseconds(), 0.05)) : null;
             Priority = requestPriority;
             ClientApplicationIdentity = clientApplicationIdentity;
             ClientIpAddress = clientIpAddress;
         }
 
         public TimeSpan? Timeout { get; }
-        public TimeSpan? RemainingTimeout => timeBudget?.Remaining;
+        
+        public TimeSpan? RemainingTimeout => Budget?.Remaining;
+        
+        public TimeBudget Budget { get; }
+        
         public RequestPriority? Priority { get; }
+        
         public string ClientApplicationIdentity { get; }
+        
         public IPAddress ClientIpAddress { get; }
     }
 }
