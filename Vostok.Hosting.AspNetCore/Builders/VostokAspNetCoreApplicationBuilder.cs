@@ -185,7 +185,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
             distributedContextCustomization.Customize(settings);
 
-            return new RestoreDistributedContextMiddleware(settings);
+            return new DistributedContextMiddleware(settings);
         }
 
         private IMiddleware CreateTracingMiddleware(IVostokHostingEnvironment environment)
