@@ -14,6 +14,8 @@ using Vostok.Hosting.AspNetCore.Middlewares;
 using Vostok.Hosting.AspNetCore.StartupFilters;
 using Vostok.Logging.Microsoft;
 using Vostok.ServiceDiscovery.Abstractions;
+using Vostok.Throttling;
+using Vostok.Throttling.Config;
 
 namespace Vostok.Hosting.AspNetCore.Builders
 {
@@ -27,6 +29,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
         private readonly Customization<RestoreDistributedContextMiddlewareSettings> restoreDistributedContextCustomization;
         private readonly Customization<PingApiMiddlewareSettings> pingApiCustomization;
         private readonly Customization<VostokLoggerProviderSettings> microsoftLogCustomization;
+        private readonly Customization<ThrottlingMiddlewareSettings> throttlingCustomization;
 
         private Action<DenyRequestsIfNotInActiveDatacenterMiddlewareSettings> denyRequestsMiddlewareCustomization;
 
@@ -39,6 +42,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
             restoreDistributedContextCustomization = new Customization<RestoreDistributedContextMiddlewareSettings>();
             pingApiCustomization = new Customization<PingApiMiddlewareSettings>();
             microsoftLogCustomization = new Customization<VostokLoggerProviderSettings>();
+            throttlingCustomization = new Customization<ThrottlingMiddlewareSettings>();
         }
 
         public static void AddMiddlewares(IWebHostBuilder builder, params IMiddleware[] middlewares)
@@ -82,9 +86,9 @@ namespace Vostok.Hosting.AspNetCore.Builders
                         AddMiddlewares(
                             webHostBuilder,
                             CreateFillRequestInfoMiddleware(),
-                            // TODO(kungurtsev): throttling middleware should go here.
                             CreateRestoreDistributedContextMiddleware(),
                             CreateTracingMiddleware(environment),
+                            CreateThrottlingMiddleware(environment),
                             CreateLoggingMiddleware(environment),
                             CreateDenyRequestsIfNotInActiveDatacenterMiddleware(environment),
                             CreatePingApiMiddleware(environment));
@@ -180,7 +184,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return new FillRequestInfoMiddleware(settings);
         }
 
-        public IMiddleware CreateRestoreDistributedContextMiddleware()
+        private IMiddleware CreateRestoreDistributedContextMiddleware()
         {
             var settings = new RestoreDistributedContextMiddlewareSettings();
 
@@ -189,7 +193,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return new RestoreDistributedContextMiddleware(settings);
         }
 
-        public IMiddleware CreateTracingMiddleware(IVostokHostingEnvironment environment)
+        private IMiddleware CreateTracingMiddleware(IVostokHostingEnvironment environment)
         {
             var settings = new TracingMiddlewareSettings(environment.Tracer);
 
@@ -198,7 +202,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return new TracingMiddleware(settings);
         }
 
-        public IMiddleware CreateLoggingMiddleware(IVostokHostingEnvironment environment)
+        private IMiddleware CreateLoggingMiddleware(IVostokHostingEnvironment environment)
         {
             var settings = new LoggingMiddlewareSettings(environment.Log);
 
@@ -207,7 +211,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return new LoggingMiddleware(settings);
         }
 
-        public IMiddleware CreatePingApiMiddleware(IVostokHostingEnvironment environment)
+        private IMiddleware CreatePingApiMiddleware(IVostokHostingEnvironment environment)
         {
             var settings = new PingApiMiddlewareSettings();
 
@@ -216,7 +220,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return new PingApiMiddleware(settings);
         }
 
-        public ILoggerProvider CreateMicrosoftLog(IVostokHostingEnvironment environment)
+        private ILoggerProvider CreateMicrosoftLog(IVostokHostingEnvironment environment)
         {
             var settings = new VostokLoggerProviderSettings
             {
@@ -231,6 +235,19 @@ namespace Vostok.Hosting.AspNetCore.Builders
             microsoftLogCustomization.Customize(settings);
 
             return new VostokLoggerProvider(environment.Log, settings);
+        }
+
+        private IMiddleware CreateThrottlingMiddleware(IVostokHostingEnvironment environment)
+        {
+            var settings = new ThrottlingMiddlewareSettings();
+
+            throttlingCustomization.Customize(settings);
+
+            var throttlingConfigurationBuilder = new ThrottlingConfigurationBuilder();
+
+            var throttlingProvider = new ThrottlingProvider(throttlingConfigurationBuilder.Build());
+
+            return new ThrottlingMiddleware(settings, throttlingProvider, environment.Log);
         }
 
         #endregion
