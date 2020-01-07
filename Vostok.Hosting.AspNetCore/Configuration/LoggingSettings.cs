@@ -1,7 +1,6 @@
 ﻿using System;
 using JetBrains.Annotations;
 using Vostok.Hosting.AspNetCore.Middlewares;
-using Vostok.Logging.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Configuration
 {
@@ -14,17 +13,6 @@ namespace Vostok.Hosting.AspNetCore.Configuration
         private LoggingCollectionSettings logQueryString = false;
         private LoggingCollectionSettings logRequestHeaders = false;
         private LoggingCollectionSettings logResponseHeaders = false;
-
-        public LoggingSettings([NotNull] ILog log)
-        {
-            Log = log ?? throw new ArgumentNullException(nameof(log));
-        }
-
-        /// <summary>
-        /// <see cref="ILog"/> instance that will be used for requests and responses logging.
-        /// </summary>
-        [NotNull]
-        internal ILog Log { get; }
 
         /// <summary>
         /// <para>Whether or not to log query parameters.</para>

@@ -205,11 +205,11 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         private IMiddleware CreateLoggingMiddleware(IVostokHostingEnvironment environment)
         {
-            var settings = new LoggingSettings(environment.Log);
+            var settings = new LoggingSettings();
 
             loggingCustomization.Customize(settings);
 
-            return new LoggingMiddleware(settings);
+            return new LoggingMiddleware(settings, environment.Log);
         }
 
         private IMiddleware CreatePingApiMiddleware(IVostokHostingEnvironment environment)

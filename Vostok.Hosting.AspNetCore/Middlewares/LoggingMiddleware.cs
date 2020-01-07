@@ -19,10 +19,12 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         private const int StringBuilderCapacity = 256;
 
         private readonly LoggingSettings settings;
+        private readonly ILog log;
 
-        public LoggingMiddleware(LoggingSettings settings)
+        public LoggingMiddleware(LoggingSettings settings, ILog log)
         {
             this.settings = settings;
+            this.log = log;
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -68,7 +70,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
                 parameters.Add(FormatRequestHeaders(request, settings.LogRequestHeaders));
             }
             
-            settings.Log.Info(template.ToString(), parameters.ToArray());
+            log.Info(template.ToString(), parameters.ToArray());
 
             StringBuilderCache.Release(template);
         }
@@ -92,7 +94,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
                 parameters.Add(FormatResponseHeaders(response, settings.LogResponseHeaders));
             }
 
-            settings.Log.Log(new LogEvent(LogLevel.Info, PreciseDateTime.Now, template.ToString())
+            log.Log(new LogEvent(LogLevel.Info, PreciseDateTime.Now, template.ToString())
                 .WithParameters(parameters.ToArray())
                 .WithProperty("ElapsedTimeMs", elapsed.TotalMilliseconds));
 
