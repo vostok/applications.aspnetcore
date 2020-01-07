@@ -64,7 +64,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
         private static IReadOnlyDictionary<string, string> BuildThrottlingProperties(HttpContext context, IRequestInfo info)
         {
-            // TODO(iloktionov): url?
+            // TODO(iloktionov): on/off switches for properties
 
             return new ThrottlingPropertiesBuilder()
                 .AddConsumer(info.ClientApplicationIdentity)

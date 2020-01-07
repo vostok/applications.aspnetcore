@@ -237,15 +237,18 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return new VostokLoggerProvider(environment.Log, settings);
         }
 
+        // TODO(iloktionov): 1. Add throttling metrics
+        // TODO(iloktionov): 2. Use custom cores count provider
         private IMiddleware CreateThrottlingMiddleware(IVostokHostingEnvironment environment)
         {
             var settings = new ThrottlingMiddlewareSettings();
 
             throttlingCustomization.Customize(settings);
 
-            var throttlingConfigurationBuilder = new ThrottlingConfigurationBuilder();
+            var configBuilder = new ThrottlingConfigurationBuilder();
 
-            var throttlingProvider = new ThrottlingProvider(throttlingConfigurationBuilder.Build());
+
+            var throttlingProvider = new ThrottlingProvider(configBuilder.Build());
 
             return new ThrottlingMiddleware(settings, throttlingProvider, environment.Log);
         }
