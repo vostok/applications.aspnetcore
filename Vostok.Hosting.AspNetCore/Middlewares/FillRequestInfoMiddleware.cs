@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Clusterclient.Core.Model;
+using Vostok.Commons.Helpers;
 using Vostok.Commons.Time;
 using Vostok.Context;
 using Vostok.Hosting.AspNetCore.Configuration;
@@ -17,9 +18,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         private readonly FillRequestInfoSettings settings;
         
         public FillRequestInfoMiddleware([NotNull] FillRequestInfoSettings settings)
-        {
-            this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        }
+            => this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
@@ -36,7 +35,7 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 
         private TimeSpan? GetTimeout(HttpRequest request)
         {
-            if (double.TryParse(request.Headers[HeaderNames.RequestTimeout], NumberStyles.Any, CultureInfo.InvariantCulture, out var seconds))
+            if (NumericTypeParser<double>.TryParse(request.Headers[HeaderNames.RequestTimeout], out var seconds))
                 return seconds.Seconds();
 
             return settings.AdditionalTimeoutProviders
