@@ -196,11 +196,11 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         private IMiddleware CreateTracingMiddleware(IVostokHostingEnvironment environment)
         {
-            var settings = new TracingSettings(environment.Tracer);
+            var settings = new TracingSettings();
 
             tracingCustomization.Customize(settings);
 
-            return new TracingMiddleware(settings);
+            return new TracingMiddleware(settings, environment.Tracer);
         }
 
         private IMiddleware CreateLoggingMiddleware(IVostokHostingEnvironment environment)

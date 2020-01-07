@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Vostok.Context;
 using Vostok.Hosting.AspNetCore.Configuration;
 using Vostok.Hosting.AspNetCore.Models;
+using Vostok.Tracing.Abstractions;
 using Vostok.Tracing.Extensions.Http;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
@@ -10,17 +11,19 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
     internal class TracingMiddleware : IMiddleware
     {
         private readonly TracingSettings settings;
+        private readonly ITracer tracer;
 
-        public TracingMiddleware(TracingSettings settings)
+        public TracingMiddleware(TracingSettings settings, ITracer tracer)
         {
             this.settings = settings;
+            this.tracer = tracer;
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             var requestInfo = FlowingContext.Globals.Get<IRequestInfo>();
             
-            using (var spanBuilder = settings.Tracer.BeginHttpServerSpan())
+            using (var spanBuilder = tracer.BeginHttpServerSpan())
             {
                 spanBuilder.SetClientDetails(requestInfo.ClientApplicationIdentity, requestInfo.ClientIpAddress);
 
