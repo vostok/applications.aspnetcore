@@ -19,15 +19,15 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         IVostokAspNetCoreApplicationBuilder SetupTracing([NotNull] Action<TracingSettings> setup);
 
-        IVostokAspNetCoreApplicationBuilder SetupThrottling([NotNull] Action<ThrottlingSettings> setup);
+        IVostokAspNetCoreApplicationBuilder SetupThrottling([NotNull] Action<IVostokThrottlingBuilder> setup);
 
         IVostokAspNetCoreApplicationBuilder SetupDatacenterAwareness([NotNull] Action<DatacenterAwarenessSettings> setup);
 
         IVostokAspNetCoreApplicationBuilder SetupPingApi([NotNull] Action<PingApiSettings> setup);
 
-        IVostokAspNetCoreApplicationBuilder SetupFillRequestInfo([NotNull] Action<FillRequestInfoSettings> setup);
+        IVostokAspNetCoreApplicationBuilder SetupRequestInfoFilling([NotNull] Action<FillRequestInfoSettings> setup);
 
-        IVostokAspNetCoreApplicationBuilder SetupRestoreDistributedContext([NotNull] Action<DistributedContextSettings> setup);
+        IVostokAspNetCoreApplicationBuilder SetupDistributedContext([NotNull] Action<DistributedContextSettings> setup);
         
         IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog([NotNull] Action<VostokLoggerProviderSettings> setup);
     }

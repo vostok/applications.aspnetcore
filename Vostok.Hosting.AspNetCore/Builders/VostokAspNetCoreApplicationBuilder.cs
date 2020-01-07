@@ -15,8 +15,6 @@ using Vostok.Hosting.AspNetCore.Middlewares;
 using Vostok.Hosting.AspNetCore.StartupFilters;
 using Vostok.Logging.Microsoft;
 using Vostok.ServiceDiscovery.Abstractions;
-using Vostok.Throttling;
-using Vostok.Throttling.Config;
 using Vostok.Throttling.Metrics;
 
 namespace Vostok.Hosting.AspNetCore.Builders
@@ -24,36 +22,41 @@ namespace Vostok.Hosting.AspNetCore.Builders
     internal class VostokAspNetCoreApplicationBuilder<TStartup> : IVostokAspNetCoreApplicationBuilder
         where TStartup : class
     {
+        private readonly IVostokHostingEnvironment environment;
+        private readonly List<IDisposable> disposables;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
         private readonly Customization<TracingSettings> tracingCustomization;
         private readonly Customization<LoggingSettings> loggingCustomization;
         private readonly Customization<PingApiSettings> pingApiCustomization;
-        private readonly Customization<ThrottlingSettings> throttlingCustomization;
         private readonly Customization<FillRequestInfoSettings> fillRequestInfoCustomization;
         private readonly Customization<VostokLoggerProviderSettings> microsoftLogCustomization;
         private readonly Customization<DistributedContextSettings> distributedContextCustomization;
         private readonly Customization<DatacenterAwarenessSettings> datacenterAwarenessCustomization;
+        private readonly VostokThrottlingBuilder throttlingBuilder;
 
-        public VostokAspNetCoreApplicationBuilder()
+        public VostokAspNetCoreApplicationBuilder(IVostokHostingEnvironment environment, List<IDisposable> disposables)
         {
+            this.environment = environment;
+            this.disposables = disposables;
+
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
             tracingCustomization = new Customization<TracingSettings>();
             loggingCustomization = new Customization<LoggingSettings>();
             pingApiCustomization = new Customization<PingApiSettings>();
-            throttlingCustomization = new Customization<ThrottlingSettings>();
             fillRequestInfoCustomization = new Customization<FillRequestInfoSettings>();
             microsoftLogCustomization = new Customization<VostokLoggerProviderSettings>();
             distributedContextCustomization = new Customization<DistributedContextSettings>();
             datacenterAwarenessCustomization = new Customization<DatacenterAwarenessSettings>();
+            throttlingBuilder = new VostokThrottlingBuilder(environment);
         }
 
-        public IHost Build(IVostokHostingEnvironment environment, List<IDisposable> disposables)
+        public IHost Build()
         {
             var hostBuilder = Host.CreateDefaultBuilder()
                 .ConfigureLogging(
                     loggingBuilder => loggingBuilder
                         .ClearProviders()
-                        .AddProvider(CreateMicrosoftLog(environment)))
+                        .AddProvider(CreateMicrosoftLog()))
                 .ConfigureAppConfiguration(
                     configurationBuilder => configurationBuilder
                         .AddVostok(environment.ConfigurationSource)
@@ -70,11 +73,11 @@ namespace Vostok.Hosting.AspNetCore.Builders
                             webHostBuilder,
                             CreateFillRequestInfoMiddleware(),
                             CreateDistributedContextMiddleware(),
-                            CreateTracingMiddleware(environment),
-                            CreateThrottlingMiddleware(environment, disposables),
-                            CreateLoggingMiddleware(environment),
-                            CreateDatacenterAwarenessMiddleware(environment),
-                            CreatePingApiMiddleware(environment));
+                            CreateTracingMiddleware(),
+                            CreateThrottlingMiddleware(),
+                            CreateLoggingMiddleware(),
+                            CreateDatacenterAwarenessMiddleware(),
+                            CreatePingApiMiddleware());
 
                         webHostBuilder.UseKestrel().UseSockets();
                         webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout);
@@ -156,61 +159,25 @@ namespace Vostok.Hosting.AspNetCore.Builders
 
         #region CreateComponents
 
-        private IMiddleware CreateDatacenterAwarenessMiddleware(IVostokHostingEnvironment environment)
-        {
-            var settings = new DatacenterAwarenessSettings();
-
-            datacenterAwarenessCustomization.Customize(settings);
-            
-            return new DatacenterAwarenessMiddleware(settings, environment.Datacenters, environment.Log);
-        }
+        private IMiddleware CreateDatacenterAwarenessMiddleware()
+            => new DatacenterAwarenessMiddleware(datacenterAwarenessCustomization.Customize(new DatacenterAwarenessSettings()), environment.Datacenters, environment.Log);
 
         private IMiddleware CreateFillRequestInfoMiddleware()
-        {
-            var settings = new FillRequestInfoSettings();
-
-            fillRequestInfoCustomization.Customize(settings);
-
-            return new FillRequestInfoMiddleware(settings);
-        }
+            => new FillRequestInfoMiddleware(fillRequestInfoCustomization.Customize(new FillRequestInfoSettings()));
 
         private IMiddleware CreateDistributedContextMiddleware()
-        {
-            var settings = new DistributedContextSettings();
+            => new DistributedContextMiddleware(distributedContextCustomization.Customize(new DistributedContextSettings()));
 
-            distributedContextCustomization.Customize(settings);
+        private IMiddleware CreateTracingMiddleware()
+            => new TracingMiddleware(tracingCustomization.Customize(new TracingSettings()), environment.Tracer);
 
-            return new DistributedContextMiddleware(settings);
-        }
+        private IMiddleware CreateLoggingMiddleware()
+            => new LoggingMiddleware(loggingCustomization.Customize(new LoggingSettings()), environment.Log);
 
-        private IMiddleware CreateTracingMiddleware(IVostokHostingEnvironment environment)
-        {
-            var settings = new TracingSettings();
+        private IMiddleware CreatePingApiMiddleware()
+            => new PingApiMiddleware(pingApiCustomization.Customize(new PingApiSettings()));
 
-            tracingCustomization.Customize(settings);
-
-            return new TracingMiddleware(settings, environment.Tracer);
-        }
-
-        private IMiddleware CreateLoggingMiddleware(IVostokHostingEnvironment environment)
-        {
-            var settings = new LoggingSettings();
-
-            loggingCustomization.Customize(settings);
-
-            return new LoggingMiddleware(settings, environment.Log);
-        }
-
-        private IMiddleware CreatePingApiMiddleware(IVostokHostingEnvironment environment)
-        {
-            var settings = new PingApiSettings();
-
-            pingApiCustomization.Customize(settings);
-
-            return new PingApiMiddleware(settings);
-        }
-
-        private ILoggerProvider CreateMicrosoftLog(IVostokHostingEnvironment environment)
+        private ILoggerProvider CreateMicrosoftLog()
         {
             var settings = new VostokLoggerProviderSettings
             {
@@ -222,35 +189,17 @@ namespace Vostok.Hosting.AspNetCore.Builders
                 }
             };
 
-            microsoftLogCustomization.Customize(settings);
-
-            return new VostokLoggerProvider(environment.Log, settings);
+            return new VostokLoggerProvider(environment.Log, microsoftLogCustomization.Customize(settings));
         }
 
-        private IMiddleware CreateThrottlingMiddleware(IVostokHostingEnvironment environment, List<IDisposable> disposables)
+        private IMiddleware CreateThrottlingMiddleware()
         {
-            var settings = new ThrottlingSettings();
-
-            throttlingCustomization.Customize(settings);
-
-            var configBuilder = new ThrottlingConfigurationBuilder();
-
-            configBuilder.SetNumberOfCores(
-                () =>
-                {
-                    var limit = environment.ApplicationLimits.CpuUnits;
-                    if (limit.HasValue)
-                        return (int) Math.Ceiling(limit.Value);
-
-                    return Environment.ProcessorCount;
-                });
-
-            var throttlingProvider = new ThrottlingProvider(configBuilder.Build());
+            var (provider, settings) = throttlingBuilder.Build();
 
             if (settings.Metrics != null)
-                disposables.Add(environment.Metrics.Instance.CreateThrottlingMetrics(throttlingProvider, settings.Metrics));
+                disposables.Add(environment.Metrics.Instance.CreateThrottlingMetrics(provider, settings.Metrics));
 
-            return new ThrottlingMiddleware(settings, throttlingProvider, environment.Log);
+            return new ThrottlingMiddleware(settings, provider, environment.Log);
         }
 
         #endregion
@@ -269,52 +218,45 @@ namespace Vostok.Hosting.AspNetCore.Builders
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupFillRequestInfo(Action<FillRequestInfoSettings> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupRequestInfoFilling(Action<FillRequestInfoSettings> setup)
         {
             fillRequestInfoCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
-
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupRestoreDistributedContext(Action<DistributedContextSettings> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupDistributedContext(Action<DistributedContextSettings> setup)
         {
             distributedContextCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
-
             return this;
         }
 
         public IVostokAspNetCoreApplicationBuilder SetupTracing(Action<TracingSettings> setup)
         {
             tracingCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
-
             return this;
         }
 
         public IVostokAspNetCoreApplicationBuilder SetupLogging(Action<LoggingSettings> setup)
         {
             loggingCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
-
             return this;
         }
 
         public IVostokAspNetCoreApplicationBuilder SetupPingApi(Action<PingApiSettings> setup)
         {
             pingApiCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
-
             return this;
         }
 
         public IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog(Action<VostokLoggerProviderSettings> setup)
         {
             microsoftLogCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
-
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupThrottling(Action<ThrottlingSettings> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupThrottling(Action<IVostokThrottlingBuilder> setup)
         {
-            throttlingCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
-
+            setup(throttlingBuilder);
             return this;
         }
 

@@ -23,18 +23,17 @@ namespace Vostok.Hosting.AspNetCore
         where TStartup : class
     {
         private readonly List<IDisposable> disposables = new List<IDisposable>();
-
         private volatile IHostApplicationLifetime lifetime;
         private volatile IHost host;
         private volatile ILog log;
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
-            var builder = new VostokAspNetCoreApplicationBuilder<TStartup>();
+            var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, disposables);
 
             Setup(builder, environment);
 
-            disposables.Add(host = builder.Build(environment, disposables));
+            disposables.Add(host = builder.Build());
 
             await StartHostAsync(environment).ConfigureAwait(false);
 
