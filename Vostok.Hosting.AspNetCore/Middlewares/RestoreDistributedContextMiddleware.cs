@@ -5,9 +5,6 @@ using Vostok.Context;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
-    /// <summary>
-    /// Middleware that restores distributed <see cref="FlowingContext.Properties"/> and <see cref="FlowingContext.Globals"/> from <see cref="HttpContext"/>
-    /// </summary>
     internal class RestoreDistributedContextMiddleware : IMiddleware
     {
         private readonly RestoreDistributedContextMiddlewareSettings settings;

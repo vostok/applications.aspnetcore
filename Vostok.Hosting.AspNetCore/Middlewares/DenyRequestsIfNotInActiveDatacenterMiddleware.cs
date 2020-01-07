@@ -7,9 +7,6 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.Hosting.AspNetCore.Middlewares
 {
-    /// <summary>
-    /// Middleware that denies request processing, if current datacenter is not active.
-    /// </summary>
     internal class DenyRequestsIfNotInActiveDatacenterMiddleware : IMiddleware
     {
         private readonly DenyRequestsIfNotInActiveDatacenterMiddlewareSettings settings;
