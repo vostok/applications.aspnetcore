@@ -7,9 +7,9 @@ namespace Vostok.Hosting.AspNetCore.Configuration
     /// <summary>
     /// Configuration of the <see cref="DenyRequestsIfNotInActiveDatacenterMiddleware"/>.
     /// </summary>
-    internal class DenyRequestsIfNotInActiveDatacenterMiddlewareSettings
+    internal class DatacenterAwarenessSettings
     {
-        public DenyRequestsIfNotInActiveDatacenterMiddlewareSettings([NotNull] IDatacenters datacenters)
+        public DatacenterAwarenessSettings([NotNull] IDatacenters datacenters)
         {
             Datacenters = datacenters;
         }

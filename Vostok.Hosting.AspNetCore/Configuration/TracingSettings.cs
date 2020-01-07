@@ -9,9 +9,9 @@ namespace Vostok.Hosting.AspNetCore.Configuration
     /// Configuration of the <see cref="TracingMiddleware"/>.
     /// </summary>
     [PublicAPI]
-    public class TracingMiddlewareSettings
+    public class TracingSettings
     {
-        public TracingMiddlewareSettings([NotNull] ITracer tracer)
+        public TracingSettings([NotNull] ITracer tracer)
         {
             Tracer = tracer ?? throw new ArgumentNullException(nameof(tracer));
         }

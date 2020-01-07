@@ -18,9 +18,9 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
     {
         private const int StringBuilderCapacity = 256;
 
-        private readonly LoggingMiddlewareSettings settings;
+        private readonly LoggingSettings settings;
 
-        public LoggingMiddleware(LoggingMiddlewareSettings settings)
+        public LoggingMiddleware(LoggingSettings settings)
         {
             this.settings = settings;
         }

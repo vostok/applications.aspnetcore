@@ -9,13 +9,13 @@ namespace Vostok.Hosting.AspNetCore.Configuration
     /// Configuration of the <see cref="LoggingMiddleware"/>.
     /// </summary>
     [PublicAPI]
-    public class LoggingMiddlewareSettings
+    public class LoggingSettings
     {
         private LoggingCollectionSettings logQueryString = false;
         private LoggingCollectionSettings logRequestHeaders = false;
         private LoggingCollectionSettings logResponseHeaders = false;
 
-        public LoggingMiddlewareSettings([NotNull] ILog log)
+        public LoggingSettings([NotNull] ILog log)
         {
             Log = log ?? throw new ArgumentNullException(nameof(log));
         }

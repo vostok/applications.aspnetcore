@@ -12,7 +12,7 @@ namespace Vostok.Hosting.AspNetCore.Configuration
     /// Configuration of the <see cref="FillRequestInfoMiddleware"/>.
     /// </summary>
     [PublicAPI]
-    public class FillRequestInfoMiddlewareSettings
+    public class FillRequestInfoSettings
     {
         /// <summary>
         /// <para>A delegates that obtain <see cref="IRequestInfo.Timeout"/> from <see cref="HttpRequest"/>.</para>

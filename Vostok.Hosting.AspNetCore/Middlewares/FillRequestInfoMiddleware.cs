@@ -14,9 +14,9 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 {
     internal class FillRequestInfoMiddleware : IMiddleware
     {
-        private readonly FillRequestInfoMiddlewareSettings settings;
+        private readonly FillRequestInfoSettings settings;
         
-        public FillRequestInfoMiddleware([NotNull] FillRequestInfoMiddlewareSettings settings)
+        public FillRequestInfoMiddleware([NotNull] FillRequestInfoSettings settings)
         {
             this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }

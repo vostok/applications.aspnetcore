@@ -10,10 +10,10 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 {
     internal class DenyRequestsIfNotInActiveDatacenterMiddleware : IMiddleware
     {
-        private readonly DenyRequestsIfNotInActiveDatacenterMiddlewareSettings settings;
+        private readonly DatacenterAwarenessSettings settings;
         private readonly ILog log;
 
-        public DenyRequestsIfNotInActiveDatacenterMiddleware([NotNull] DenyRequestsIfNotInActiveDatacenterMiddlewareSettings settings, [CanBeNull] ILog log)
+        public DenyRequestsIfNotInActiveDatacenterMiddleware([NotNull] DatacenterAwarenessSettings settings, [CanBeNull] ILog log)
         {
             this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
             this.log = log ?? LogProvider.Get();

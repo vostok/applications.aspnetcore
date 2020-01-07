@@ -8,9 +8,9 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 {
     internal class RestoreDistributedContextMiddleware : IMiddleware
     {
-        private readonly RestoreDistributedContextMiddlewareSettings settings;
+        private readonly DistributedContextSettings settings;
 
-        public RestoreDistributedContextMiddleware(RestoreDistributedContextMiddlewareSettings settings)
+        public RestoreDistributedContextMiddleware(DistributedContextSettings settings)
         {
             this.settings = settings;
         }

@@ -8,9 +8,9 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 {
     internal class PingApiMiddleware : IMiddleware
     {
-        private readonly PingApiMiddlewareSettings settings;
+        private readonly PingApiSettings settings;
 
-        public PingApiMiddleware([NotNull] PingApiMiddlewareSettings settings)
+        public PingApiMiddleware([NotNull] PingApiSettings settings)
         {
             this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }

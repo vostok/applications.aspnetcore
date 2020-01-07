@@ -29,7 +29,7 @@ namespace Vostok.Hosting.AspNetCore
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
-            var builder = new AspNetCoreApplicationBuilder<TStartup>();
+            var builder = new VostokAspNetCoreApplicationBuilder<TStartup>();
 
             Setup(builder, environment);
 

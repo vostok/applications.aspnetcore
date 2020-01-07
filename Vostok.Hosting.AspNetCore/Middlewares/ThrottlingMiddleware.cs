@@ -16,11 +16,11 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
         private const long LargeRequestBodySize = 4 * 1024;
         private static readonly TimeSpan LongThrottlingWaitTime = 500.Milliseconds();
 
-        private readonly ThrottlingMiddlewareSettings settings;
+        private readonly ThrottlingSettings settings;
         private readonly IThrottlingProvider provider;
         private readonly ILog log;
 
-        public ThrottlingMiddleware(ThrottlingMiddlewareSettings settings, IThrottlingProvider provider, ILog log)
+        public ThrottlingMiddleware(ThrottlingSettings settings, IThrottlingProvider provider, ILog log)
         {
             this.settings = settings;
             this.provider = provider;

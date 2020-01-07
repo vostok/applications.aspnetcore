@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 namespace Vostok.Hosting.AspNetCore.Configuration
 {
     /// <summary>
-    /// Configuration of the <see cref="LoggingMiddlewareSettings.LogQueryString"/>, <see cref="LoggingMiddlewareSettings.LogRequestHeaders"/> and <see cref="LoggingMiddlewareSettings.LogResponseHeaders"/>.
+    /// Configuration of the <see cref="LoggingSettings.LogQueryString"/>, <see cref="LoggingSettings.LogRequestHeaders"/> and <see cref="LoggingSettings.LogResponseHeaders"/>.
     /// </summary>
     [PublicAPI]
     public class LoggingCollectionSettings

@@ -9,9 +9,9 @@ namespace Vostok.Hosting.AspNetCore.Middlewares
 {
     internal class TracingMiddleware : IMiddleware
     {
-        private readonly TracingMiddlewareSettings settings;
+        private readonly TracingSettings settings;
 
-        public TracingMiddleware(TracingMiddlewareSettings settings)
+        public TracingMiddleware(TracingSettings settings)
         {
             this.settings = settings;
         }

@@ -10,7 +10,7 @@ namespace Vostok.Hosting.AspNetCore.Configuration
     /// Configuration of the <see cref="TracingMiddleware"/>.
     /// </summary>
     [PublicAPI]
-    public class RestoreDistributedContextMiddlewareSettings
+    public class DistributedContextSettings
     {
         /// <summary>
         /// Additional actions that will be executed during distributed context restoring.

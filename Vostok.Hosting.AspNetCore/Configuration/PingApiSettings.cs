@@ -9,7 +9,7 @@ namespace Vostok.Hosting.AspNetCore.Configuration
     /// Configuration of the <see cref="PingApiMiddleware"/>.
     /// </summary>
     [PublicAPI]
-    public class PingApiMiddlewareSettings
+    public class PingApiSettings
     {
         /// <summary>
         /// A delegate that returns current application status.
