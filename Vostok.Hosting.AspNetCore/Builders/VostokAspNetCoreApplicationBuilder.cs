@@ -46,19 +46,6 @@ namespace Vostok.Hosting.AspNetCore.Builders
             datacenterAwarenessCustomization = new Customization<DatacenterAwarenessSettings>();
         }
 
-        public static void AddMiddlewares(IWebHostBuilder builder, params IMiddleware[] middlewares)
-        {
-            middlewares = middlewares.Where(m => m != null).ToArray();
-
-            foreach (var middleware in middlewares)
-                builder.ConfigureServices(services => services.AddSingleton(middleware.GetType(), middleware));
-
-            AddStartupFilter(
-                builder,
-                new AddMiddlewaresStartupFilter(
-                    middlewares.Select(m => m.GetType()).ToArray()));
-        }
-
         public IHost Build(IVostokHostingEnvironment environment)
         {
             var hostBuilder = Host.CreateDefaultBuilder()
@@ -99,6 +86,17 @@ namespace Vostok.Hosting.AspNetCore.Builders
                     });
 
             return hostBuilder.Build();
+        }
+
+        private static void AddMiddlewares(IWebHostBuilder builder, params IMiddleware[] middlewares)
+        {
+            foreach (var middleware in middlewares)
+                builder.ConfigureServices(services => services.AddSingleton(middleware.GetType(), middleware));
+
+            AddStartupFilter(
+                builder,
+                new AddMiddlewaresStartupFilter(
+                    middlewares.Select(m => m.GetType()).ToArray()));
         }
 
         private static void ConfigureUrl(IWebHostBuilder builder, IVostokHostingEnvironment environment)
@@ -142,10 +140,7 @@ namespace Vostok.Hosting.AspNetCore.Builders
                 });
 
         private static void AddStartupFilter(IWebHostBuilder builder, IStartupFilter startupFilter) =>
-            builder.ConfigureServices(
-                services =>
-                    services
-                        .AddTransient(_ => startupFilter));
+            builder.ConfigureServices(services => services.AddTransient(_ => startupFilter));
 
         private void EnsureUrlsNotChanged(string urlsBefore, string urlsAfter)
         {
@@ -241,7 +236,6 @@ namespace Vostok.Hosting.AspNetCore.Builders
             throttlingCustomization.Customize(settings);
 
             var configBuilder = new ThrottlingConfigurationBuilder();
-
 
             var throttlingProvider = new ThrottlingProvider(configBuilder.Build());
 
