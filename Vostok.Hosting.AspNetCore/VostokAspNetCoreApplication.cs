@@ -37,9 +37,6 @@ namespace Vostok.Hosting.AspNetCore
 
             await StartHostAsync(environment).ConfigureAwait(false);
 
-            // CR(iloktionov): А почему warmup вызывается после того, как приложение уже начало слушать порт? Оно может быть ещё не готово к этому.
-            // CR(kungurtsev): Чтобы иметь возможность подёргать за контроллеры и прогреть их.
-            // CR(kungurtsev): Для всего остального есть Startup.
             await WarmupAsync(environment, host.Services).ConfigureAwait(false);
         }
 
