@@ -81,7 +81,8 @@ namespace Vostok.Applications.AspNetCore.Builders
                                 CreateThrottlingMiddleware(),
                                 CreateLoggingMiddleware(),
                                 CreateDatacenterAwarenessMiddleware(),
-                                CreatePingApiMiddleware());
+                                CreatePingApiMiddleware(),
+                                CreateErrorHandlingMiddleware());
 
                             webHostBuilder.UseKestrel().UseSockets();
                             webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
@@ -181,6 +182,9 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         private IMiddleware CreatePingApiMiddleware()
             => new PingApiMiddleware(pingApiCustomization.Customize(new PingApiSettings()));
+
+        private IMiddleware CreateErrorHandlingMiddleware()
+            => new UnhandledErrorMiddleware(environment.Log);
 
         private ILoggerProvider CreateMicrosoftLog()
         {
