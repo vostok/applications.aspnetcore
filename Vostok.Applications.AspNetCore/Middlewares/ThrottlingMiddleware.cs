@@ -85,14 +85,16 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
         private void LogWaitTime(IRequestInfo info, IThrottlingResult result)
             => log.Warn(
-                "Request from {ClientIdentity} spent {ThrottlingWaitTime} on throttling.",
+                "Request from '{ClientIdentity}' at {ClientIP} spent {ThrottlingWaitTime} on throttling.",
                 info.ClientApplicationIdentity,
+                info.ClientIpAddress,
                 result.WaitTime);
 
         private void LogFailure(IRequestInfo info, IThrottlingResult result)
             => log.Error(
-                "Dropping request from {ClientIdentity} due to throttling status {ThrottlingStatus}. Rejection reason = '{RejectionReason}'.",
+                "Dropping request from '{ClientIdentity}' at {ClientIP} due to throttling status {ThrottlingStatus}. Rejection reason = '{RejectionReason}'.",
                 info.ClientApplicationIdentity,
+                info.ClientIpAddress,
                 result.Status,
                 result.RejectionReason);
 
