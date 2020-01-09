@@ -11,6 +11,7 @@ using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Applications.AspNetCore.StartupFilters;
 using Vostok.Commons.Helpers;
+using Vostok.Commons.Time;
 using Vostok.Configuration.Microsoft;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
@@ -80,7 +81,7 @@ namespace Vostok.Applications.AspNetCore.Builders
                             CreatePingApiMiddleware());
 
                         webHostBuilder.UseKestrel().UseSockets();
-                        webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout);
+                        webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
                         webHostBuilder.UseStartup<TStartup>();
                         webHostBuilderCustomization.Customize(webHostBuilder);
 
