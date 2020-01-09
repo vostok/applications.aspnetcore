@@ -31,7 +31,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            if (settings.DisableForWebSockets && context.WebSockets.IsWebSocketRequest)
+            if (IsDisabled(context))
             {
                 await next(context);
                 return;
@@ -65,6 +65,17 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                     context.Response.Headers.ContentLength = 0L;
                 }
             }
+        }
+
+        private bool IsDisabled(HttpContext context)
+        {
+            if (settings.DisableForWebSockets && context.WebSockets.IsWebSocketRequest)
+                return true;
+
+            if (settings.EnabledController != null && !settings.EnabledController(context))
+                return true;
+
+            return false;
         }
 
         private static bool ShouldAbortConnection(HttpContext context, IThrottlingResult result)
