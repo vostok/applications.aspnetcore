@@ -31,6 +31,12 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
+            if (settings.DisableForWebSockets && context.WebSockets.IsWebSocketRequest)
+            {
+                await next(context);
+                return;
+            }
+
             var info = FlowingContext.Globals.Get<IRequestInfo>();
             var properties = BuildThrottlingProperties(context, info);
 

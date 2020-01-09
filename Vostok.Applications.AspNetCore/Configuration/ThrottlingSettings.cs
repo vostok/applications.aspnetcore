@@ -34,6 +34,12 @@ namespace Vostok.Applications.AspNetCore.Configuration
         public bool AddUrlProperty { get; set; }
 
         /// <summary>
+        /// <para>If set to <c>true</c>, disables throttling entirely for web socket requests.</para>
+        /// <para>Use <see cref="KestrelSettings.MaxConcurrentWebSocketConnections"/> to limit web socket parallelism.</para>
+        /// </summary>
+        public bool DisableForWebSockets { get; set; } = true;
+
+        /// <summary>
         /// <para>Configuration of application's throttling metrics, enabled by default.</para>
         /// <para>Set this property to <c>null</c> to disable throttling metrics.</para>
         /// </summary>
