@@ -18,7 +18,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         private readonly FillRequestInfoSettings settings;
 
         public FillRequestInfoMiddleware([NotNull] FillRequestInfoSettings settings)
-            => this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            => this.settings = settings;
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {

@@ -11,6 +11,7 @@ using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Applications.AspNetCore.StartupFilters;
 using Vostok.Commons.Helpers;
+using Vostok.Commons.Threading;
 using Vostok.Commons.Time;
 using Vostok.Configuration.Microsoft;
 using Vostok.Context;
@@ -26,6 +27,7 @@ namespace Vostok.Applications.AspNetCore.Builders
     {
         private readonly IVostokHostingEnvironment environment;
         private readonly List<IDisposable> disposables;
+        private readonly AtomicBoolean initialized;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
         private readonly Customization<TracingSettings> tracingCustomization;
         private readonly Customization<LoggingSettings> loggingCustomization;
@@ -36,10 +38,11 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly Customization<DatacenterAwarenessSettings> datacenterAwarenessCustomization;
         private readonly VostokThrottlingBuilder throttlingBuilder;
 
-        public VostokAspNetCoreApplicationBuilder(IVostokHostingEnvironment environment, List<IDisposable> disposables)
+        public VostokAspNetCoreApplicationBuilder(IVostokHostingEnvironment environment, List<IDisposable> disposables, AtomicBoolean initialized)
         {
             this.environment = environment;
             this.disposables = disposables;
+            this.initialized = initialized;
 
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
             tracingCustomization = new Customization<TracingSettings>();
@@ -181,7 +184,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             => new LoggingMiddleware(loggingCustomization.Customize(new LoggingSettings()), environment.Log);
 
         private IMiddleware CreatePingApiMiddleware()
-            => new PingApiMiddleware(pingApiCustomization.Customize(new PingApiSettings()));
+            => new PingApiMiddleware(pingApiCustomization.Customize(new PingApiSettings()), initialized);
 
         private IMiddleware CreateErrorHandlingMiddleware()
             => new UnhandledErrorMiddleware(environment.Log);

@@ -4,17 +4,22 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Commons.Environment;
+using Vostok.Commons.Threading;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
     internal class PingApiMiddleware : IMiddleware
     {
         private readonly PingApiSettings settings;
+        private readonly AtomicBoolean initialized;
 
         private volatile string defaultCommitHash;
 
-        public PingApiMiddleware([NotNull] PingApiSettings settings)
-            => this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        public PingApiMiddleware([NotNull] PingApiSettings settings, AtomicBoolean initialized)
+        {
+            this.settings = settings;
+            this.initialized = initialized;
+        }
 
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
@@ -51,7 +56,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         }
 
         private string GetHealthStatus()
-            => settings.HealthCheck?.Invoke() ?? true ? "Ok" : "Warn";
+            => initialized.Value ? (settings.HealthCheck?.Invoke() ?? true ? "Ok" : "Warn") : "Init";
 
         private string ObtainCommitHash()
             => settings.CommitHashProvider?.Invoke() ?? (defaultCommitHash ?? (defaultCommitHash = AssemblyCommitHashExtractor.ExtractFromEntryAssembly()));

@@ -19,6 +19,7 @@ notests *default:
     - vostok.commons.helpers/src
     - vostok.commons.environment/src
     - vostok.commons.formatting/src
+    - vostok.commons.threading/src
     - vostok.configuration.abstractions
     - vostok.configuration.microsoft
     - vostok.context

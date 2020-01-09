@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Commons.Helpers.Extensions;
+using Vostok.Commons.Threading;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Logging.Abstractions;
@@ -23,13 +24,15 @@ namespace Vostok.Applications.AspNetCore
         where TStartup : class
     {
         private readonly List<IDisposable> disposables = new List<IDisposable>();
+        private readonly AtomicBoolean initialized = new AtomicBoolean(false);
+
         private volatile IHostApplicationLifetime lifetime;
         private volatile IHost host;
         private volatile ILog log;
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
-            var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, disposables);
+            var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, disposables, initialized);
 
             Setup(builder, environment);
 
@@ -38,6 +41,8 @@ namespace Vostok.Applications.AspNetCore
             await StartHostAsync(environment);
 
             await WarmupAsync(environment, host.Services);
+
+            initialized.TrySetTrue();
         }
 
         public Task RunAsync(IVostokHostingEnvironment environment) =>
