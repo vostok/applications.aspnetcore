@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Models;
+using Vostok.Clusterclient.Core.Model;
 using Vostok.Commons.Helpers.Url;
 using Vostok.Commons.Time;
 using Vostok.Context;
@@ -60,9 +61,10 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             }
         }
 
-        // TODO(iloktionov): Chunked transfer encoding, web sockets?
         private static bool ShouldAbortConnection(HttpContext context, IThrottlingResult result)
-            => result.Status == ThrottlingStatus.RejectedDueToDeadline || context.Request.ContentLength > LargeRequestBodySize;
+            => result.Status == ThrottlingStatus.RejectedDueToDeadline || 
+               context.Request.ContentLength > LargeRequestBodySize ||
+               context.Request.Headers[HeaderNames.TransferEncoding] == "chunked";
 
         private IReadOnlyDictionary<string, string> BuildThrottlingProperties(HttpContext context, IRequestInfo info)
         {
