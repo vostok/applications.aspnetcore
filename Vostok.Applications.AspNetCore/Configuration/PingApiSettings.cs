@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using JetBrains.Annotations;
 using Vostok.Commons.Environment;
 
@@ -14,9 +15,10 @@ namespace Vostok.Applications.AspNetCore.Configuration
         public Func<string> StatusProvider { get; set; } = () => "Ok";
 
         /// <summary>
-        /// A delegate that returns application commit hash.
+        /// <para>An optional delegate that returns application commit hash.</para>
+        /// <para>By default, commit hash is extracted from <see cref="AssemblyTitleAttribute"/> of the entry assembly.</para>
         /// </summary>
-        [NotNull]
-        public Func<string> CommitHashProvider { get; set; } = AssemblyCommitHashExtractor.ExtractFromEntryAssembly;
+        [CanBeNull]
+        public Func<string> CommitHashProvider { get; set; }
     }
 }

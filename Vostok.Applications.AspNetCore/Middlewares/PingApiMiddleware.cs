@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Applications.AspNetCore.Configuration;
+using Vostok.Commons.Environment;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
@@ -10,10 +11,10 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     {
         private readonly PingApiSettings settings;
 
+        private volatile string defaultCommitHash;
+
         public PingApiMiddleware([NotNull] PingApiSettings settings)
-        {
-            this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        }
+            => this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
@@ -24,10 +25,13 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 case "/_status/ping":
                     if (!HttpMethods.IsGet(request.Method))
                         break;
+                    
                     return HandlePingRequest(context);
+
                 case "/_status/version":
                     if (!HttpMethods.IsGet(request.Method))
                         break;
+                    
                     return HandleVersionRequest(context);
             }
 
@@ -43,7 +47,10 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         private Task HandleVersionRequest(HttpContext context)
         {
             context.Response.StatusCode = 200;
-            return context.Response.WriteAsync("{" + $"\"CommitHash\":\"{settings.CommitHashProvider()}\"" + "}");
+            return context.Response.WriteAsync("{" + $"\"CommitHash\":\"{ObtainCommitHash()}\"" + "}");
         }
+
+        private string ObtainCommitHash()
+            => settings.CommitHashProvider?.Invoke() ?? (defaultCommitHash ?? (defaultCommitHash = AssemblyCommitHashExtractor.ExtractFromEntryAssembly()));
     }
 }
