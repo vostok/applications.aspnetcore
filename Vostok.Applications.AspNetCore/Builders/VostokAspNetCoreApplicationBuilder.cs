@@ -13,6 +13,7 @@ using Vostok.Applications.AspNetCore.StartupFilters;
 using Vostok.Commons.Helpers;
 using Vostok.Commons.Time;
 using Vostok.Configuration.Microsoft;
+using Vostok.Context;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
 using Vostok.ServiceDiscovery.Abstractions;
@@ -53,43 +54,46 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public IHost Build()
         {
-            var hostBuilder = Host.CreateDefaultBuilder()
-                .ConfigureLogging(
-                    loggingBuilder => loggingBuilder
-                        .ClearProviders()
-                        .AddProvider(CreateMicrosoftLog()))
-                .ConfigureAppConfiguration(
-                    configurationBuilder => configurationBuilder
-                        .AddVostok(environment.ConfigurationSource)
-                        .AddVostok(environment.SecretConfigurationSource))
-                .ConfigureWebHost(
-                    webHostBuilder =>
-                    {
-                        ConfigureUrl(webHostBuilder, environment);
-                        var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+            using (FlowingContext.Globals.Use(environment))
+            {
+                var hostBuilder = Host.CreateDefaultBuilder()
+                    .ConfigureLogging(
+                        loggingBuilder => loggingBuilder
+                            .ClearProviders()
+                            .AddProvider(CreateMicrosoftLog()))
+                    .ConfigureAppConfiguration(
+                        configurationBuilder => configurationBuilder
+                            .AddVostok(environment.ConfigurationSource)
+                            .AddVostok(environment.SecretConfigurationSource))
+                    .ConfigureWebHost(
+                        webHostBuilder =>
+                        {
+                            ConfigureUrl(webHostBuilder, environment);
+                            var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
-                        RegisterTypes(webHostBuilder, environment);
+                            RegisterTypes(webHostBuilder, environment);
 
-                        AddMiddlewares(
-                            webHostBuilder,
-                            CreateFillRequestInfoMiddleware(),
-                            CreateDistributedContextMiddleware(),
-                            CreateTracingMiddleware(),
-                            CreateThrottlingMiddleware(),
-                            CreateLoggingMiddleware(),
-                            CreateDatacenterAwarenessMiddleware(),
-                            CreatePingApiMiddleware());
+                            AddMiddlewares(
+                                webHostBuilder,
+                                CreateFillRequestInfoMiddleware(),
+                                CreateDistributedContextMiddleware(),
+                                CreateTracingMiddleware(),
+                                CreateThrottlingMiddleware(),
+                                CreateLoggingMiddleware(),
+                                CreateDatacenterAwarenessMiddleware(),
+                                CreatePingApiMiddleware());
 
-                        webHostBuilder.UseKestrel().UseSockets();
-                        webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
-                        webHostBuilder.UseStartup<TStartup>();
-                        webHostBuilderCustomization.Customize(webHostBuilder);
+                            webHostBuilder.UseKestrel().UseSockets();
+                            webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
+                            webHostBuilder.UseStartup<TStartup>();
+                            webHostBuilderCustomization.Customize(webHostBuilder);
 
-                        var urlsAfter = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
-                        EnsureUrlsNotChanged(urlsBefore, urlsAfter);
-                    });
+                            var urlsAfter = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+                            EnsureUrlsNotChanged(urlsBefore, urlsAfter);
+                        });
 
-            return hostBuilder.Build();
+                return hostBuilder.Build();
+            }
         }
 
         private static void AddMiddlewares(IWebHostBuilder builder, params IMiddleware[] middlewares)
