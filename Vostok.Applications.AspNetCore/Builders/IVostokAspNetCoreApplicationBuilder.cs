@@ -16,6 +16,8 @@ namespace Vostok.Applications.AspNetCore.Builders
     {
         IVostokAspNetCoreApplicationBuilder SetupWebHost([NotNull] Action<IWebHostBuilder> setup);
 
+        IVostokAspNetCoreApplicationBuilder SetupKestrel([NotNull] Action<KestrelSettings> setup);
+
         IVostokAspNetCoreApplicationBuilder SetupLogging([NotNull] Action<LoggingSettings> setup);
 
         IVostokAspNetCoreApplicationBuilder SetupTracing([NotNull] Action<TracingSettings> setup);

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -29,6 +31,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly List<IDisposable> disposables;
         private readonly AtomicBoolean initialized;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
+        private readonly Customization<KestrelSettings> kestrelCustomization;
         private readonly Customization<TracingSettings> tracingCustomization;
         private readonly Customization<LoggingSettings> loggingCustomization;
         private readonly Customization<PingApiSettings> pingApiCustomization;
@@ -45,6 +48,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             this.initialized = initialized;
 
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
+            kestrelCustomization = new Customization<KestrelSettings>();
             tracingCustomization = new Customization<TracingSettings>();
             loggingCustomization = new Customization<LoggingSettings>();
             pingApiCustomization = new Customization<PingApiSettings>();
@@ -87,9 +91,11 @@ namespace Vostok.Applications.AspNetCore.Builders
                                 CreateErrorHandlingMiddleware(),
                                 CreatePingApiMiddleware());
 
-                            webHostBuilder.UseKestrel().UseSockets();
+                            webHostBuilder.UseKestrel(ConfigureKestrel);
+                            webHostBuilder.UseSockets(ConfigureSocketTransport);
                             webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
                             webHostBuilder.UseStartup<TStartup>();
+
                             webHostBuilderCustomization.Customize(webHostBuilder);
 
                             var urlsAfter = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
@@ -166,6 +172,33 @@ namespace Vostok.Applications.AspNetCore.Builders
                 "To configure application url use VostokHostingEnvironmentSetup: `vostokHostingEnvironmentSetup.SetupServiceBeacon(serviceBeaconBuilder => serviceBeaconBuilder.SetupReplicaInfo(replicaInfo => replicaInfo.SetUrl(...)))`.");
         }
 
+        private void ConfigureKestrel(KestrelServerOptions options)
+        {
+            var settings = kestrelCustomization.Customize(new KestrelSettings());
+
+            options.AddServerHeader = false;
+            options.AllowSynchronousIO = false;
+
+            options.Limits.MaxConcurrentConnections = null;
+            options.Limits.MaxRequestBufferSize = 256 * 1024;
+            options.Limits.MaxResponseBufferSize = 256 * 1024;
+            options.Limits.Http2.MaxStreamsPerConnection = 1000;
+
+            options.Limits.MaxRequestBodySize = settings.MaxRequestBodySize;
+            options.Limits.MaxRequestLineSize = settings.MaxRequestLineSize;
+            options.Limits.MaxRequestHeadersTotalSize = settings.MaxRequestHeadersSize;
+            options.Limits.MaxConcurrentUpgradedConnections = settings.MaxConcurrentWebSocketConnections;
+
+            if (settings.KeepAliveTimeout.HasValue)
+                options.Limits.KeepAliveTimeout = settings.KeepAliveTimeout.Value;
+
+            if (settings.RequestHeadersTimeout.HasValue)
+                options.Limits.RequestHeadersTimeout = settings.RequestHeadersTimeout.Value;
+        }
+
+        private static void ConfigureSocketTransport(SocketTransportOptions options)
+            => options.NoDelay = true;
+
         #region CreateComponents
 
         private IMiddleware CreateDatacenterAwarenessMiddleware()
@@ -221,6 +254,12 @@ namespace Vostok.Applications.AspNetCore.Builders
         public IVostokAspNetCoreApplicationBuilder SetupWebHost(Action<IWebHostBuilder> setup)
         {
             webHostBuilderCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+            return this;
+        }
+
+        public IVostokAspNetCoreApplicationBuilder SetupKestrel(Action<KestrelSettings> setup)
+        {
+            kestrelCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
             return this;
         }
 
