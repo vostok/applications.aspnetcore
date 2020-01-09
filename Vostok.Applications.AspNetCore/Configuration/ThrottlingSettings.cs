@@ -4,7 +4,6 @@ using Vostok.Throttling.Metrics;
 
 namespace Vostok.Applications.AspNetCore.Configuration
 {
-    // TODO(iloktionov): Add extensions for customization of throttling provider
     [PublicAPI]
     public class ThrottlingSettings
     {
