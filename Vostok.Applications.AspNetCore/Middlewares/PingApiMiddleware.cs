@@ -25,13 +25,13 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 case "/_status/ping":
                     if (!HttpMethods.IsGet(request.Method))
                         break;
-                    
+
                     return HandlePingRequest(context);
 
                 case "/_status/version":
                     if (!HttpMethods.IsGet(request.Method))
                         break;
-                    
+
                     return HandleVersionRequest(context);
             }
 
@@ -41,7 +41,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         private Task HandlePingRequest(HttpContext context)
         {
             context.Response.StatusCode = 200;
-            return context.Response.WriteAsync("{" + $"\"Status\":\"{settings.StatusProvider()}\"" + "}");
+            return context.Response.WriteAsync("{" + $"\"Status\":\"{GetHealthStatus()}\"" + "}");
         }
 
         private Task HandleVersionRequest(HttpContext context)
@@ -49,6 +49,9 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             context.Response.StatusCode = 200;
             return context.Response.WriteAsync("{" + $"\"CommitHash\":\"{ObtainCommitHash()}\"" + "}");
         }
+
+        private string GetHealthStatus()
+            => settings.HealthCheck?.Invoke() ?? true ? "Ok" : "Warn";
 
         private string ObtainCommitHash()
             => settings.CommitHashProvider?.Invoke() ?? (defaultCommitHash ?? (defaultCommitHash = AssemblyCommitHashExtractor.ExtractFromEntryAssembly()));

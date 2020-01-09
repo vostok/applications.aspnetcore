@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using JetBrains.Annotations;
-using Vostok.Commons.Environment;
 
 namespace Vostok.Applications.AspNetCore.Configuration
 {
@@ -9,10 +8,11 @@ namespace Vostok.Applications.AspNetCore.Configuration
     public class PingApiSettings
     {
         /// <summary>
-        /// A delegate that returns current application status.
+        /// <para>An optional delegate that returns <c>true</c> if the application is currently healthy or <c>false</c> if there are some warnings.</para>
+        /// <para>By default, application is always considered healthy.</para>
         /// </summary>
-        [NotNull]
-        public Func<string> StatusProvider { get; set; } = () => "Ok";
+        [CanBeNull]
+        public Func<bool> HealthCheck { get; set; }
 
         /// <summary>
         /// <para>An optional delegate that returns application commit hash.</para>
