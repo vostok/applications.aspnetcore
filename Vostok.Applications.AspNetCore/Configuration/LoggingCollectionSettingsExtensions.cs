@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 
@@ -10,14 +12,23 @@ namespace Vostok.Applications.AspNetCore.Configuration
             settings.Enabled(request);
 
         public static bool IsEnabledForAllKeys([NotNull] this LoggingCollectionSettings settings) =>
-            settings.WhitelistKeys == null && settings.BlacklistKeys == null;
+            settings.Whitelist == null && settings.Blacklist == null;
 
         public static bool IsEnabledForKey([NotNull] this LoggingCollectionSettings settings, [NotNull] string key)
         {
-            if (settings.WhitelistKeys == null)
-                return settings.BlacklistKeys == null || !settings.BlacklistKeys.Contains(key);
+            if (settings.Whitelist == null)
+                return settings.Blacklist == null || !settings.Blacklist.Contains(key);
 
-            return settings.WhitelistKeys.Contains(key);
+            return settings.Whitelist.Contains(key);
         }
+
+        public static LoggingCollectionSettings ToCaseInsensitive([CanBeNull] this LoggingCollectionSettings settings)
+            => settings == null
+                ? null
+                : new LoggingCollectionSettings(settings.Enabled)
+                {
+                    Whitelist = settings.Whitelist == null ? null : new HashSet<string>(settings.Whitelist, StringComparer.OrdinalIgnoreCase),
+                    Blacklist = settings.Blacklist == null ? null : new HashSet<string>(settings.Blacklist, StringComparer.OrdinalIgnoreCase)
+                };
     }
 }

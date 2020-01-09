@@ -11,8 +11,8 @@ namespace Vostok.Applications.AspNetCore.Configuration
         private LoggingCollectionSettings logResponseHeaders = false;
 
         /// <summary>
-        /// <para>Whether or not to log query parameters.</para>
-        /// <para>Disabled by default.</para>
+        /// <para>Request query parameters logging options</para>
+        /// <para>By default, query parameters are not logged at all.</para>
         /// </summary>
         [NotNull]
         public LoggingCollectionSettings LogQueryString
@@ -20,12 +20,12 @@ namespace Vostok.Applications.AspNetCore.Configuration
             get =>
                 logQueryString;
             set =>
-                logQueryString = value ?? throw new ArgumentNullException(nameof(LogQueryString));
+                logQueryString = value.ToCaseInsensitive() ?? throw new ArgumentNullException(nameof(LogQueryString));
         }
 
         /// <summary>
-        /// <para>Whether or not to log request headers.</para>
-        /// <para>Disabled by default.</para>
+        /// <para>Request headers logging options</para>
+        /// <para>By default, request headers are not logged at all.</para>
         /// </summary>
         [NotNull]
         public LoggingCollectionSettings LogRequestHeaders
@@ -33,12 +33,12 @@ namespace Vostok.Applications.AspNetCore.Configuration
             get =>
                 logRequestHeaders;
             set =>
-                logRequestHeaders = value ?? throw new ArgumentNullException(nameof(LogQueryString));
+                logRequestHeaders = value.ToCaseInsensitive() ?? throw new ArgumentNullException(nameof(LogRequestHeaders));
         }
 
         /// <summary>
-        /// <para>Whether or not to log response headers.</para>
-        /// <para>Disabled by default.</para>
+        /// <para>Response headers logging options</para>
+        /// <para>By default, response headers are not logged at all.</para>
         /// </summary>
         [NotNull]
         public LoggingCollectionSettings LogResponseHeaders
@@ -46,7 +46,7 @@ namespace Vostok.Applications.AspNetCore.Configuration
             get =>
                 logResponseHeaders;
             set =>
-                logResponseHeaders = value ?? throw new ArgumentNullException(nameof(LogQueryString));
+                logResponseHeaders = value.ToCaseInsensitive() ?? throw new ArgumentNullException(nameof(LogResponseHeaders));
         }
     }
 }

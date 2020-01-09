@@ -26,19 +26,19 @@ namespace Vostok.Applications.AspNetCore.Configuration
         public Func<HttpRequest, bool> Enabled { get; }
 
         /// <summary>
-        /// <para>Whitelist of parameter keys to be logged.</para>
+        /// <para>Case-insensitive whitelist of parameter keys to be logged.</para>
         /// <para><c>null</c> value allows all keys.</para>
-        /// <para>Takes precedence over <see cref="BlacklistKeys"/>.</para>
+        /// <para>Takes precedence over <see cref="Blacklist"/>.</para>
         /// </summary>
         [CanBeNull]
-        public IReadOnlyCollection<string> WhitelistKeys { get; set; }
+        public IReadOnlyCollection<string> Whitelist { get; set; }
 
         /// <summary>
-        /// <para>Blacklist of parameter keys to be logged.</para>
+        /// <para>Case-insensitive blacklist of parameter keys to be logged.</para>
         /// <para><c>null</c> value allows all keys.</para>
         /// </summary>
         [CanBeNull]
-        public IReadOnlyCollection<string> BlacklistKeys { get; set; }
+        public IReadOnlyCollection<string> Blacklist { get; set; }
 
         public static implicit operator LoggingCollectionSettings(bool enabled) =>
             new LoggingCollectionSettings(enabled);
