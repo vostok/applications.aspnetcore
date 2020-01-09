@@ -31,7 +31,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 if (settings.ResponseTraceIdHeader != null)
                     context.Response.Headers[settings.ResponseTraceIdHeader] = spanBuilder.CurrentSpan?.TraceId.ToString();
 
-                await next(context).ConfigureAwait(false);
+                await next(context);
 
                 spanBuilder.SetResponseDetails(context.Response.StatusCode, context.Response.ContentLength);
             }
