@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Vostok.Applications.AspNetCore.Configuration;
@@ -31,154 +32,157 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         {
             LogRequest(context.Request);
 
-            var sw = Stopwatch.StartNew();
+            var watch = Stopwatch.StartNew();
 
             await next(context);
 
-            LogResponse(context.Request, context.Response, sw.Elapsed);
+            LogResponse(context.Request, context.Response, watch.Elapsed);
         }
 
         private void LogRequest(HttpRequest request)
         {
             var requestInfo = FlowingContext.Globals.Get<IRequestInfo>();
+            var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
 
-            var template = StringBuilderCache.Acquire(StringBuilderCapacity);
-            template.Append("Received request '{Request}' from");
-            var parameters = new List<object>(5) { FormatPath(request, settings.LogQueryString) };
+            var addClientIdentity = requestInfo.ClientApplicationIdentity != null;
+            var addTimeout = requestInfo.Timeout.HasValue;
+            var addBodySize = request.ContentLength > 0L;
+            var addHeaders = settings.LogRequestHeaders.IsEnabledForRequest(request);
 
-            if (requestInfo.ClientApplicationIdentity != null)
-            {
-                template.Append(" '{RequestFrom}' at");
-                parameters.Add(requestInfo.ClientApplicationIdentity);
-            }
+            var parametersCount = 2 + (addClientIdentity ? 1 : 0) + (addTimeout ? 1 : 0) + (addBodySize ? 1 : 0) + (addHeaders ? 1 : 0);
+            var parameters = new object[parametersCount];
+            var parametersIndex = 0;
 
-            template.Append(" '{RequestConnection}'");
-            parameters.Add(GetClientConnectionInfo(request));
+            AppendSegment(builder, parameters, "Received request '{Request}' from", FormatPath(builder, request, settings.LogQueryString), ref parametersIndex);
 
-            var timeout = requestInfo.RemainingTimeout;
-            if (timeout != null)
-            {
-                template.Append(" with timeout {Timeout}");
-                parameters.Add(timeout.Value.ToPrettyString());
-            }
-            
-            template.Append(".");
+            if (addClientIdentity)
+                AppendSegment(builder, parameters, " '{RequestFrom}' at", requestInfo.ClientApplicationIdentity, ref parametersIndex);
 
-            if (settings.LogRequestHeaders.IsEnabledForRequest(request))
-            {
-                template.Append("\nRequest headers:{RequestHeaders}");
-                parameters.Add(FormatRequestHeaders(request, settings.LogRequestHeaders));
-            }
-            
-            log.Info(template.ToString(), parameters.ToArray());
+            AppendSegment(builder, parameters, " '{RequestConnection}'", GetClientConnectionInfo(request), ref parametersIndex);
 
-            StringBuilderCache.Release(template);
+            if (addTimeout)
+                AppendSegment(builder, parameters, " with timeout = {Timeout}", requestInfo.Timeout.Value.ToPrettyString(), ref parametersIndex);
+
+            builder.Append('.');
+
+            if (addBodySize)
+                AppendSegment(builder, parameters, " Body size = {BodySize}.", request.ContentLength, ref parametersIndex);
+
+            if (addHeaders)
+                AppendSegment(builder, parameters, " Request headers: {RequestHeaders}", FormatHeaders(builder, request.Headers, settings.LogRequestHeaders), ref parametersIndex);
+
+            log.Info(builder.ToString(), parameters);
+
+            StringBuilderCache.Release(builder);
         }
 
         private void LogResponse(HttpRequest request, HttpResponse response, TimeSpan elapsed)
         {
-            var template = StringBuilderCache.Acquire(StringBuilderCapacity);
-            template.Append("Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.");
-            var parameters = new List<object>(5) { (ResponseCode)response.StatusCode, (ResponseCode)response.StatusCode, elapsed.ToPrettyString() };
+            var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
 
-            var bodySize = response.ContentLength;
-            if (bodySize != null)
-            {
-                template.Append(" Body size = {BodySize}.");
-                parameters.Add(bodySize);
-            }
+            var addBodySize = response.ContentLength > 0;
+            var addHeaders = settings.LogResponseHeaders.IsEnabledForRequest(request);
 
-            if (settings.LogResponseHeaders.IsEnabledForRequest(request))
-            {
-                template.Append("\nResponse headers:{ResponseHeaders}");
-                parameters.Add(FormatResponseHeaders(response, settings.LogResponseHeaders));
-            }
+            builder.Append("Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.");
 
-            log.Log(new LogEvent(LogLevel.Info, PreciseDateTime.Now, template.ToString())
-                .WithParameters(parameters.ToArray())
-                .WithProperty("ElapsedTimeMs", elapsed.TotalMilliseconds));
+            if (addBodySize)
+                builder.Append(" Body size = {BodySize}.");
 
-            StringBuilderCache.Release(template);
+            if (addHeaders)
+                builder.Append(" Response headers: {ResponseHeaders}");
+
+            var logEvent = new LogEvent(LogLevel.Info, PreciseDateTime.Now, builder.ToString())
+                .WithProperty("ResponseCode", (ResponseCode) response.StatusCode)
+                .WithProperty("ElapsedTime", elapsed.ToPrettyString())
+                .WithProperty("ElapsedTimeMs", elapsed.TotalMilliseconds);
+
+            if (addBodySize)
+                logEvent = logEvent.WithProperty("BodySize", response.ContentLength);
+
+            if (addHeaders)
+                logEvent = logEvent.WithProperty("ResponseHeaders", FormatHeaders(builder, response.Headers, settings.LogResponseHeaders));
+
+            log.Log(logEvent);
+
+            StringBuilderCache.Release(builder);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void AppendSegment(StringBuilder builder, object[] parameters, string templateSegment, object parameter, ref int parameterIndex)
+        {
+            builder.Append(templateSegment);
+
+            parameters[parameterIndex++] = parameter;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string GetClientConnectionInfo(HttpRequest request)
         {
             var connection = request.HttpContext.Connection;
             return $"{connection.RemoteIpAddress}:{connection.RemotePort}";
         }
 
-        private static string FormatPath(HttpRequest request, LoggingCollectionSettings logQueryStringSettings)
+        private static string FormatPath(StringBuilder builder, HttpRequest request, LoggingCollectionSettings querySettings)
         {
-            var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
-
-            builder.Append(request.Method);
-            builder.Append(" ");
-
-            builder.Append(request.Path);
-
-            if (logQueryStringSettings.IsEnabledForRequest(request))
+            return FormatAndRollback(builder, b =>
             {
-                if (logQueryStringSettings.IsEnabledForAllKeys())
-                {
-                    builder.Append(request.QueryString);
-                }
-                else
-                {
-                    var filtered = request.Query.Where(kvp => logQueryStringSettings.IsEnabledForKey(kvp.Key)).ToList();
+                b.Append(request.Method);
+                b.Append(" ");
+                b.Append(request.Path);
 
-                    for (var i = 0; i < filtered.Count; i++)
+                if (querySettings.IsEnabledForRequest(request))
+                {
+                    if (querySettings.IsEnabledForAllKeys())
                     {
-                        if (i == 0)
-                            builder.Append("?");
-                        builder.Append($"{filtered[i].Key}={filtered[i].Value}");
+                        b.Append(request.QueryString);
+                    }
+                    else
+                    {
+                        var writtenFirst = false;
+
+                        foreach (var pair in request.Query.Where(kvp => querySettings.IsEnabledForKey(kvp.Key)))
+                        {
+                            if (!writtenFirst)
+                            {
+                                b.Append('?');
+                                writtenFirst = true;
+                            }
+
+                            b.Append($"{pair.Key}={pair.Value}");
+                        }
                     }
                 }
-            }
-
-            var result = builder.ToString();
-            StringBuilderCache.Release(builder);
-            return result;
+            });
         }
 
-        private static string FormatRequestHeaders(HttpRequest request, LoggingCollectionSettings settings)
+        private static string FormatHeaders(StringBuilder builder, IHeaderDictionary headers, LoggingCollectionSettings settings)
         {
-            var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
-
-            foreach (var (key, value) in request.Headers)
+            return FormatAndRollback(builder, b =>
             {
-                if (!settings.IsEnabledForKey(key))
-                    continue;
+                foreach (var (key, value) in headers)
+                {
+                    if (!settings.IsEnabledForKey(key))
+                        continue;
 
-                builder.AppendLine();
-                builder.Append("\t");
-                builder.Append(key);
-                builder.Append(": ");
-                builder.Append(value);
-            }
-
-            var result = builder.ToString();
-            StringBuilderCache.Release(builder);
-            return result;
+                    b.AppendLine();
+                    b.Append('\t');
+                    b.Append(key);
+                    b.Append(": ");
+                    b.Append(value);
+                }
+            });
         }
 
-        private static string FormatResponseHeaders(HttpResponse response, LoggingCollectionSettings settings)
+        private static string FormatAndRollback(StringBuilder builder, Action<StringBuilder> format)
         {
-            var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
+            var positionBefore = builder.Length;
 
-            foreach (var (key, value) in response.Headers)
-            {
-                if (!settings.IsEnabledForKey(key))
-                    continue;
+            format(builder);
 
-                builder.AppendLine();
-                builder.Append("\t");
-                builder.Append(key);
-                builder.Append(": ");
-                builder.Append(value);
-            }
+            var result = builder.ToString(positionBefore, builder.Length - positionBefore);
 
-            var result = builder.ToString();
-            StringBuilderCache.Release(builder);
+            builder.Length = positionBefore;
+
             return result;
         }
     }
