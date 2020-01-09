@@ -6,9 +6,9 @@ namespace Vostok.Applications.AspNetCore.Configuration
     public class TracingSettings
     {
         /// <summary>
-        /// If filled, trace id will be written to response header.
+        /// If filled, trace id will be written to response header. A good value to use is '<c>Trace-Id</c>'.
         /// </summary>
         [CanBeNull]
-        public string ResponseTraceIdHeader { get; set; } = "Trace-Id";
+        public string ResponseTraceIdHeader { get; set; }
     }
 }
