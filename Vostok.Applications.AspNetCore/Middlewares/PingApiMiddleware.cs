@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Applications.AspNetCore.Configuration;
@@ -56,7 +55,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         }
 
         private string GetHealthStatus()
-            => initialized.Value ? (settings.HealthCheck?.Invoke() ?? true ? "Ok" : "Warn") : "Init";
+            => initialized.Value ? settings.HealthCheck?.Invoke() ?? true ? "Ok" : "Warn" : "Init";
 
         private string ObtainCommitHash()
             => settings.CommitHashProvider?.Invoke() ?? (defaultCommitHash ?? (defaultCommitHash = AssemblyCommitHashExtractor.ExtractFromEntryAssembly()));

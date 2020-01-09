@@ -84,8 +84,8 @@ namespace Vostok.Applications.AspNetCore.Builders
                                 CreateThrottlingMiddleware(),
                                 CreateLoggingMiddleware(),
                                 CreateDatacenterAwarenessMiddleware(),
-                                CreatePingApiMiddleware(),
-                                CreateErrorHandlingMiddleware());
+                                CreateErrorHandlingMiddleware(),
+                                CreatePingApiMiddleware());
 
                             webHostBuilder.UseKestrel().UseSockets();
                             webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
