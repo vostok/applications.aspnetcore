@@ -29,6 +29,8 @@ notests *default:
     - vostok.hosting.abstractions@step2
     - vostok.logging.abstractions
     - vostok.logging.microsoft
+    - vostok.logging.context
+    - vostok.logging.tracing
     - vostok.metrics
     - vostok.servicediscovery.abstractions
     - vostok.throttling

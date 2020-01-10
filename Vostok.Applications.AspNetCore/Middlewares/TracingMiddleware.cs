@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Context;
+using Vostok.Logging.Context;
+using Vostok.Logging.Tracing;
 using Vostok.Tracing.Abstractions;
 using Vostok.Tracing.Extensions.Http;
 
@@ -24,6 +26,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             var requestInfo = FlowingContext.Globals.Get<IRequestInfo>();
             
             using (var spanBuilder = tracer.BeginHttpServerSpan())
+            using (new OperationContextToken(TracingLogPropertiesFormatter.FormatSpanIdPrefix(tracer.CurrentContext) ?? string.Empty))
             {
                 spanBuilder.SetClientDetails(requestInfo.ClientApplicationIdentity, requestInfo.ClientIpAddress);
                 spanBuilder.SetRequestDetails(context.Request.Path, context.Request.Method, context.Request.ContentLength);

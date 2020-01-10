@@ -107,5 +107,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.clusterclient.context\Vostok.ClusterClient.Context\bin\Release\netstandard2.0\Vostok.ClusterClient.Context.dll</HintPath>
     </Reference>
+    <Reference Include="Vostok.Logging.Tracing">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.logging.tracing\Vostok.Logging.Tracing\bin\Release\netstandard2.0\Vostok.Logging.Tracing.dll</HintPath>
+    </Reference>
+    <Reference Include="Vostok.Logging.Context">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.logging.context\Vostok.Logging.Context\bin\Release\netstandard2.0\Vostok.Logging.Context.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
