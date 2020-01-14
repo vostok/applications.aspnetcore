@@ -36,20 +36,20 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         private static TResult ObtainFromProviders<TResult>(HttpRequest request, IEnumerable<Func<HttpRequest, TResult>> providers)
             => providers.Select(provider => provider(request)).FirstOrDefault();
 
-        private TimeSpan? GetTimeout(HttpRequest request)
+        private TimeSpan GetTimeout(HttpRequest request)
         {
             if (NumericTypeParser<double>.TryParse(request.Headers[HeaderNames.RequestTimeout], out var seconds))
                 return seconds.Seconds();
 
-            return ObtainFromProviders(request, settings.AdditionalTimeoutProviders);
+            return ObtainFromProviders(request, settings.AdditionalTimeoutProviders) ?? settings.DefaultTimeoutProvider(request);
         }
 
-        private RequestPriority? GetPriority(HttpRequest request)
+        private RequestPriority GetPriority(HttpRequest request)
         {
             if (Enum.TryParse(request.Headers[HeaderNames.RequestPriority], true, out RequestPriority priority))
                 return priority;
 
-            return ObtainFromProviders(request, settings.AdditionalPriorityProviders);
+            return ObtainFromProviders(request, settings.AdditionalPriorityProviders) ?? settings.DefaultPriorityProvider(request);
         }
 
         private string GetClientApplicationIdentity(HttpRequest request)

@@ -45,11 +45,10 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
 
             var addClientIdentity = requestInfo.ClientApplicationIdentity != null;
-            var addTimeout = requestInfo.Timeout.HasValue;
             var addBodySize = request.ContentLength > 0L;
             var addHeaders = settings.LogRequestHeaders.IsEnabledForRequest(request);
 
-            var parametersCount = 2 + (addClientIdentity ? 1 : 0) + (addTimeout ? 1 : 0) + (addBodySize ? 1 : 0) + (addHeaders ? 1 : 0);
+            var parametersCount = 3 + (addClientIdentity ? 1 : 0) + (addBodySize ? 1 : 0) + (addHeaders ? 1 : 0);
             var parameters = new object[parametersCount];
             var parametersIndex = 0;
 
@@ -59,9 +58,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 AppendSegment(builder, parameters, " '{ClientIdentity}' at", requestInfo.ClientApplicationIdentity, ref parametersIndex);
 
             AppendSegment(builder, parameters, " '{RequestConnection}'", GetClientConnectionInfo(request), ref parametersIndex);
-
-            if (addTimeout)
-                AppendSegment(builder, parameters, " with timeout = {Timeout}", requestInfo.Timeout.Value.ToPrettyString(), ref parametersIndex);
+            AppendSegment(builder, parameters, " with timeout = {Timeout}", requestInfo.Timeout.ToPrettyString(), ref parametersIndex);
 
             builder.Append('.');
 

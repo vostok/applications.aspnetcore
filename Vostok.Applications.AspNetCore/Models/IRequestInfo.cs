@@ -14,20 +14,17 @@ namespace Vostok.Applications.AspNetCore.Models
         /// <summary>
         /// Request timeout.
         /// </summary>
-        [CanBeNull]
-        TimeSpan? Timeout { get; }
+        TimeSpan Timeout { get; }
 
         /// <summary>
         /// Remaining <see cref="Timeout"/> since the start of request processing.
         /// </summary>
-        [CanBeNull]
-        TimeSpan? RemainingTimeout { get; }
+        TimeSpan RemainingTimeout { get; }
 
         /// <summary>
         /// Request priority.
         /// </summary>
-        [CanBeNull]
-        RequestPriority? Priority { get; }
+        RequestPriority Priority { get; }
 
         /// <summary>
         /// Application name of request sender.

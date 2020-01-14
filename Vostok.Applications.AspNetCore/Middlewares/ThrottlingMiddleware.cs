@@ -93,7 +93,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 builder.AddConsumer(info.ClientApplicationIdentity);
 
             if (settings.AddPriorityProperty)
-                builder.AddPriority(info.Priority?.ToString());
+                builder.AddPriority(info.Priority.ToString());
 
             if (settings.AddMethodProperty)
                 builder.AddPriority(context.Request.Method);

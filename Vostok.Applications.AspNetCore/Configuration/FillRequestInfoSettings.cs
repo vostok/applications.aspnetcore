@@ -4,12 +4,29 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Clusterclient.Core.Model;
+using Vostok.Commons.Time;
 
 namespace Vostok.Applications.AspNetCore.Configuration
 {
     [PublicAPI]
     public class FillRequestInfoSettings
     {
+        /// <summary>
+        /// <para>A delegate that provides a default value for <see cref="IRequestInfo.Timeout"/>.</para>
+        /// <para>Used when the request does not contain any supported headers with timeout value.</para>
+        /// <para>Executed after built-in provider and <see cref="AdditionalTimeoutProviders"/>.</para>
+        /// </summary>
+        [NotNull]
+        public Func<HttpRequest, TimeSpan> DefaultTimeoutProvider { get; set; } = _ => 1.Minutes();
+
+        /// <summary>
+        /// <para>A delegate that provides a default value for <see cref="IRequestInfo.Priority"/>.</para>
+        /// <para>Used when the request does not contain any supported headers with priority value.</para>
+        /// <para>Executed after built-in provider and <see cref="AdditionalPriorityProviders"/>.</para>
+        /// </summary>
+        [NotNull]
+        public Func<HttpRequest, RequestPriority> DefaultPriorityProvider { get; set; } = _ => RequestPriority.Ordinary;
+
         /// <summary>
         /// <para>A list of optional delegates that obtain <see cref="IRequestInfo.Timeout"/> from <see cref="HttpRequest"/>.</para>
         /// <para>By default, the middleware parses the value of <see cref="HeaderNames.RequestTimeout"/> header.</para>
