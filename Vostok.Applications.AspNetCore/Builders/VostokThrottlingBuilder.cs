@@ -1,5 +1,6 @@
 ﻿using System;
 using Vostok.Applications.AspNetCore.Configuration;
+using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Commons.Helpers;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Abstractions;
@@ -28,7 +29,7 @@ namespace Vostok.Applications.AspNetCore.Builders
                         return Environment.ProcessorCount;
                     })
                 .SetErrorCallback(
-                    error => environment.Log.Error(error, "Failed to throttle request."));
+                    error => environment.Log.ForContext<ThrottlingMiddleware>().Error(error, "Failed to throttle request."));
 
             settingsCustomization = new Customization<ThrottlingSettings>();
         }
