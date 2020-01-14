@@ -9,6 +9,7 @@ notests *default:
     - Vostok.Applications.AspNetCore/bin/Release/netcoreapp3.1/Vostok.Applications.AspNetCore.dll
     - module vostok.clusterclient.core
     - module vostok.configuration.microsoft
+    - module vostok.context
     - module vostok.hosting.abstractions@step2
     - module vostok.logging.microsoft
     - module vostok.throttling
