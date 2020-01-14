@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Throttling;
 using Vostok.Throttling.Metrics;
+using Vostok.Throttling.Quotas;
 
 namespace Vostok.Applications.AspNetCore.Configuration
 {
@@ -34,6 +35,11 @@ namespace Vostok.Applications.AspNetCore.Configuration
         /// If set to <c>true</c>, the middleware will pass <see cref="WellKnownThrottlingProperties.Url"/> property to <see cref="IThrottlingProvider"/>.
         /// </summary>
         public bool AddUrlProperty { get; set; }
+
+        /// <summary>
+        /// <para>If set to <c>true</c>, adds an instance of <see cref="ThreadPoolOverloadQuota"/> to the throttling provider.</para>
+        /// </summary>
+        public bool UseThreadPoolOverloadQuota { get; set; } = true;
 
         /// <summary>
         /// <para>If set to <c>true</c>, disables throttling entirely for web socket requests.</para>

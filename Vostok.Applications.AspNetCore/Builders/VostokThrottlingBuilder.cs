@@ -30,7 +30,13 @@ namespace Vostok.Applications.AspNetCore.Builders
         }
 
         public (ThrottlingProvider provider, ThrottlingSettings settings) Build()
-            => (new ThrottlingProvider(configurationBuilder.Build()), settingsCustomization.Customize(new ThrottlingSettings()));
+        {
+            var settings = settingsCustomization.Customize(new ThrottlingSettings());
+            if (settings.UseThreadPoolOverloadQuota)
+                configurationBuilder.AddCustomQuota(new ThreadPoolOverloadQuota(new ThreadPoolOverloadQuotaOptions()));
+
+            return (new ThrottlingProvider(configurationBuilder.Build()), settings);
+        } 
 
         public IVostokThrottlingBuilder UseEssentials(Func<ThrottlingEssentials> essentialsProvider)
         {
