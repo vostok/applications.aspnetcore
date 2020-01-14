@@ -14,6 +14,10 @@ namespace Vostok.Applications.AspNetCore.Builders
         public static IVostokThrottlingBuilder DisableThrottling([NotNull] this IVostokThrottlingBuilder builder)
             => builder.CustomizeSettings(s => s.EnabledController = _ => false);
 
+        [NotNull]
+        public static IVostokThrottlingBuilder DisableMetrics([NotNull] this IVostokThrottlingBuilder builder)
+            => builder.CustomizeSettings(s => s.Metrics = null);
+
         #region Consumer quotas
 
         [NotNull]
