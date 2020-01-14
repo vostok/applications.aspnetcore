@@ -87,8 +87,6 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         {
             var builder = new ThrottlingPropertiesBuilder();
 
-            // CR(kungurtsev): если нет клиента, может использовать ещё и ip?
-            // CR(kungurtsev): или просто ip, для троттлинга по хосту.
             if (settings.AddConsumerProperty)
                 builder.AddConsumer(info.ClientApplicationIdentity);
 
