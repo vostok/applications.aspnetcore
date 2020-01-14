@@ -106,6 +106,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
         // CR(kungurtsev): добавить сразу и ThrottlingWaitTimeMs, для сортировки в кибане.
         // CR(kungurtsev): в logging middleware используется ip + port, стоит сделать одинаково.
+        // CR(kungurtsev): можно ли добавить эту инфу в спан?
         private void LogWaitTime(IRequestInfo info, IThrottlingResult result)
             => log.Warn(
                 "Request from '{ClientIdentity}' at {ClientIP} spent {ThrottlingWaitTime} on throttling.",
