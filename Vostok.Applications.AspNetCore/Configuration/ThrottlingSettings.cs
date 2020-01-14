@@ -38,16 +38,15 @@ namespace Vostok.Applications.AspNetCore.Configuration
         /// <summary>
         /// <para>If set to <c>true</c>, disables throttling entirely for web socket requests.</para>
         /// <para>Use <see cref="KestrelSettings.MaxConcurrentWebSocketConnections"/> to limit web socket parallelism.</para>
-        /// <para>Has precedence over <see cref="EnabledController"/>.</para>
+        /// <para>Has precedence over <see cref="Enabled"/>.</para>
         /// </summary>
         public bool DisableForWebSockets { get; set; } = true;
 
-        // CR(kungurtsev): слово Controller как-то сбивает. Лучше просто Enabled.
         /// <summary>
         /// An optional delegate to decide whether to do (<c>true</c> return value) or skip (<c>false</c> return value) request throttling.
         /// </summary>
         [CanBeNull]
-        public Func<HttpContext, bool> EnabledController { get; set; }
+        public Func<HttpContext, bool> Enabled { get; set; }
 
         /// <summary>
         /// <para>Configuration of application's throttling metrics, enabled by default.</para>

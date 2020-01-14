@@ -72,7 +72,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (settings.DisableForWebSockets && context.WebSockets.IsWebSocketRequest)
                 return true;
 
-            if (settings.EnabledController != null && !settings.EnabledController(context))
+            if (settings.Enabled != null && !settings.Enabled(context))
                 return true;
 
             return false;
