@@ -36,30 +36,30 @@ namespace Vostok.Applications.AspNetCore.Builders
         public (ThrottlingProvider provider, ThrottlingSettings settings) Build()
             => (new ThrottlingProvider(configurationBuilder.Build()), settingsCustomization.Customize(new ThrottlingSettings()));
 
-        public IVostokThrottlingBuilder UseEssentials(ThrottlingEssentials value)
+        public IVostokThrottlingBuilder UseEssentials(ThrottlingEssentials essentials)
         {
-            configurationBuilder.SetEssentials(value);
+            configurationBuilder.SetEssentials(essentials);
             return this;
         }
 
-        public IVostokThrottlingBuilder UseEssentials(Func<ThrottlingEssentials> provider)
+        public IVostokThrottlingBuilder UseEssentials(Func<ThrottlingEssentials> essentialsProvider)
         {
-            configurationBuilder.SetEssentials(provider);
+            configurationBuilder.SetEssentials(essentialsProvider);
             return this;
         }
 
         public IVostokThrottlingBuilder UseEssentials(Func<IConfigurationProvider, ThrottlingEssentials> provider)
             => UseEssentials(() => provider(environment.ConfigurationProvider));
 
-        public IVostokThrottlingBuilder UsePropertyQuota(string propertyName, PropertyQuotaOptions value)
+        public IVostokThrottlingBuilder UsePropertyQuota(string propertyName, PropertyQuotaOptions quotaOptions)
         {
-            configurationBuilder.SetPropertyQuota(propertyName, value);
+            configurationBuilder.SetPropertyQuota(propertyName, quotaOptions);
             return this;
         }
 
-        public IVostokThrottlingBuilder UsePropertyQuota(string propertyName, Func<PropertyQuotaOptions> provider)
+        public IVostokThrottlingBuilder UsePropertyQuota(string propertyName, Func<PropertyQuotaOptions> quotaOptionsProvider)
         {
-            configurationBuilder.SetPropertyQuota(propertyName, provider);
+            configurationBuilder.SetPropertyQuota(propertyName, quotaOptionsProvider);
             return this;
         }
 
