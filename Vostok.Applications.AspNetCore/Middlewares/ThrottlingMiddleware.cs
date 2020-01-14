@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Vostok.Applications.AspNetCore.Configuration;
@@ -45,14 +46,14 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 if (result.Status == ThrottlingStatus.Passed)
                 {
                     if (result.WaitTime >= LongThrottlingWaitTime)
-                        LogWaitTime(info, result);
+                        LogWaitTime(context, info, result);
 
                     await next(context);
 
                     return;
                 }
 
-                LogFailure(info, result);
+                LogFailure(context, info, result);
 
                 if (ShouldAbortConnection(context, result))
                 {
@@ -67,6 +68,15 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             }
         }
 
+        private static bool ShouldAbortConnection(HttpContext context, IThrottlingResult result)
+            => result.Status == ThrottlingStatus.RejectedDueToDeadline ||
+               context.Request.ContentLength > LargeRequestBodySize ||
+               context.Request.Headers[HeaderNames.TransferEncoding] == "chunked";
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string GetClientConnectionInfo(HttpContext context)
+            => $"{context.Connection.RemoteIpAddress}:{context.Connection.RemotePort}";
+
         private bool IsDisabled(HttpContext context)
         {
             if (settings.DisableForWebSockets && context.WebSockets.IsWebSocketRequest)
@@ -77,11 +87,6 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
             return false;
         }
-
-        private static bool ShouldAbortConnection(HttpContext context, IThrottlingResult result)
-            => result.Status == ThrottlingStatus.RejectedDueToDeadline || 
-               context.Request.ContentLength > LargeRequestBodySize ||
-               context.Request.Headers[HeaderNames.TransferEncoding] == "chunked";
 
         private IReadOnlyDictionary<string, string> BuildThrottlingProperties(HttpContext context, IRequestInfo info)
         {
@@ -102,21 +107,22 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             return builder.Build();
         }
 
-        // CR(kungurtsev): добавить сразу и ThrottlingWaitTimeMs, для сортировки в кибане.
-        // CR(kungurtsev): в logging middleware используется ip + port, стоит сделать одинаково.
-        // CR(kungurtsev): можно ли добавить эту инфу в спан?
-        private void LogWaitTime(IRequestInfo info, IThrottlingResult result)
+        private void LogWaitTime(HttpContext context, IRequestInfo info, IThrottlingResult result)
             => log.Warn(
-                "Request from '{ClientIdentity}' at {ClientIP} spent {ThrottlingWaitTime} on throttling.",
-                info.ClientApplicationIdentity,
-                info.ClientIpAddress,
-                result.WaitTime);
+                "Request from '{ClientIdentity}' at {RequestConnection} spent {ThrottlingWaitTime} on throttling.",
+                new
+                {
+                    ClientIdentity = info.ClientApplicationIdentity,
+                    RequestConnection = GetClientConnectionInfo(context),
+                    ThrottlingWaitTime = result.WaitTime.ToPrettyString(),
+                    ThrottlingWaitTimeMs = result.WaitTime.TotalMilliseconds
+                });
 
-        private void LogFailure(IRequestInfo info, IThrottlingResult result)
+        private void LogFailure(HttpContext context, IRequestInfo info, IThrottlingResult result)
             => log.Error(
-                "Dropping request from '{ClientIdentity}' at {ClientIP} due to throttling status {ThrottlingStatus}. Rejection reason = '{RejectionReason}'.",
+                "Dropping request from '{ClientIdentity}' at {RequestConnection} due to throttling status {ThrottlingStatus}. Rejection reason = '{RejectionReason}'.",
                 info.ClientApplicationIdentity,
-                info.ClientIpAddress,
+                GetClientConnectionInfo(context),
                 result.Status,
                 result.RejectionReason);
 
