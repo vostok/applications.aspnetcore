@@ -10,6 +10,10 @@ namespace Vostok.Applications.AspNetCore.Builders
     [PublicAPI]
     public static class IVostokThrottlingBuilderExtensions
     {
+        [NotNull]
+        public static IVostokThrottlingBuilder DisableThrottling([NotNull] this IVostokThrottlingBuilder builder)
+            => builder.CustomizeSettings(s => s.EnabledController = _ => false);
+
         #region Consumer quotas
 
         [NotNull]
