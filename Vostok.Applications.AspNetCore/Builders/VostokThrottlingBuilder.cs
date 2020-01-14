@@ -2,6 +2,7 @@
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Commons.Helpers;
 using Vostok.Hosting.Abstractions;
+using Vostok.Logging.Abstractions;
 using Vostok.Throttling;
 using Vostok.Throttling.Config;
 using Vostok.Throttling.Quotas;
@@ -16,15 +17,18 @@ namespace Vostok.Applications.AspNetCore.Builders
         public VostokThrottlingBuilder(IVostokHostingEnvironment environment)
         {
             configurationBuilder = new ThrottlingConfigurationBuilder();
-            configurationBuilder.SetNumberOfCores(
-                () =>
-                {
-                    var limit = environment.ApplicationLimits.CpuUnits;
-                    if (limit.HasValue)
-                        return (int) Math.Ceiling(limit.Value);
+            configurationBuilder
+                .SetNumberOfCores(
+                    () =>
+                    {
+                        var limit = environment.ApplicationLimits.CpuUnits;
+                        if (limit.HasValue)
+                            return (int)Math.Ceiling(limit.Value);
 
-                    return Environment.ProcessorCount;
-                });
+                        return Environment.ProcessorCount;
+                    })
+                .SetErrorCallback(
+                    error => environment.Log.Error(error, "Failed to throttle request."));
 
             settingsCustomization = new Customization<ThrottlingSettings>();
         }
@@ -36,7 +40,7 @@ namespace Vostok.Applications.AspNetCore.Builders
                 configurationBuilder.AddCustomQuota(new ThreadPoolOverloadQuota(new ThreadPoolOverloadQuotaOptions()));
 
             return (new ThrottlingProvider(configurationBuilder.Build()), settings);
-        } 
+        }
 
         public IVostokThrottlingBuilder UseEssentials(Func<ThrottlingEssentials> essentialsProvider)
         {
