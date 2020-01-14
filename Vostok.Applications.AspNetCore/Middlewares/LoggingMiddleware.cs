@@ -56,7 +56,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             AppendSegment(builder, parameters, "Received request '{Request}' from", FormatPath(builder, request, settings.LogQueryString), ref parametersIndex);
 
             if (addClientIdentity)
-                AppendSegment(builder, parameters, " '{RequestFrom}' at", requestInfo.ClientApplicationIdentity, ref parametersIndex);
+                AppendSegment(builder, parameters, " '{ClientIdentity}' at", requestInfo.ClientApplicationIdentity, ref parametersIndex);
 
             AppendSegment(builder, parameters, " '{RequestConnection}'", GetClientConnectionInfo(request), ref parametersIndex);
 

@@ -87,6 +87,8 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         {
             var builder = new ThrottlingPropertiesBuilder();
 
+            // CR(kungurtsev): если нет клиента, может использовать ещё и ip?
+            // CR(kungurtsev): или просто ip, для троттлинга по хосту.
             if (settings.AddConsumerProperty)
                 builder.AddConsumer(info.ClientApplicationIdentity);
 
@@ -102,6 +104,8 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             return builder.Build();
         }
 
+        // CR(kungurtsev): добавить сразу и ThrottlingWaitTimeMs, для сортировки в кибане.
+        // CR(kungurtsev): в logging middleware используется ip + port, стоит сделать одинаково.
         private void LogWaitTime(IRequestInfo info, IThrottlingResult result)
             => log.Warn(
                 "Request from '{ClientIdentity}' at {ClientIP} spent {ThrottlingWaitTime} on throttling.",

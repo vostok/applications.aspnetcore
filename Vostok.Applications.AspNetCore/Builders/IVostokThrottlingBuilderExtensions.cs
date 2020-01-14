@@ -6,6 +6,7 @@ using Vostok.Throttling.Quotas;
 
 namespace Vostok.Applications.AspNetCore.Builders
 {
+    // CR(kungurtsev): выставлять сразу и ThrottlingSettings.AddXxxProperty.
     [PublicAPI]
     public static class IVostokThrottlingBuilderExtensions
     {

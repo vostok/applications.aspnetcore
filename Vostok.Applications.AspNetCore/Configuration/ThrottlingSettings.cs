@@ -42,6 +42,7 @@ namespace Vostok.Applications.AspNetCore.Configuration
         /// </summary>
         public bool DisableForWebSockets { get; set; } = true;
 
+        // CR(kungurtsev): слово Controller как-то сбивает. Лучше просто Enabled.
         /// <summary>
         /// An optional delegate to decide whether to do (<c>true</c> return value) or skip (<c>false</c> return value) request throttling.
         /// </summary>
