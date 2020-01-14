@@ -24,13 +24,15 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             var requestInfo = FlowingContext.Globals.Get<IRequestInfo>();
-            
+
             using (var spanBuilder = tracer.BeginHttpServerSpan())
-            using (new OperationContextToken(TracingLogPropertiesFormatter.FormatSpanIdPrefix(tracer.CurrentContext) ?? string.Empty))
+            using (new OperationContextToken(
+                TracingLogPropertiesFormatter.FormatPrefix(
+                    spanBuilder.CurrentSpan.ParentSpanId ?? spanBuilder.CurrentSpan.SpanId) ?? string.Empty))
             {
                 spanBuilder.SetClientDetails(requestInfo.ClientApplicationIdentity, requestInfo.ClientIpAddress);
                 spanBuilder.SetRequestDetails(context.Request.Path, context.Request.Method, context.Request.ContentLength);
-                
+
                 if (settings.ResponseTraceIdHeader != null)
                     context.Response.Headers[settings.ResponseTraceIdHeader] = spanBuilder.CurrentSpan?.TraceId.ToString();
 
