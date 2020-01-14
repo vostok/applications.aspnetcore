@@ -1,7 +1,6 @@
 ﻿using System;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Commons.Helpers;
-using Vostok.Configuration.Abstractions;
 using Vostok.Hosting.Abstractions;
 using Vostok.Throttling;
 using Vostok.Throttling.Config;
@@ -11,14 +10,11 @@ namespace Vostok.Applications.AspNetCore.Builders
 {
     internal class VostokThrottlingBuilder : IVostokThrottlingBuilder
     {
-        private readonly IVostokHostingEnvironment environment;
         private readonly ThrottlingConfigurationBuilder configurationBuilder;
         private readonly Customization<ThrottlingSettings> settingsCustomization;
 
         public VostokThrottlingBuilder(IVostokHostingEnvironment environment)
         {
-            this.environment = environment;
-
             configurationBuilder = new ThrottlingConfigurationBuilder();
             configurationBuilder.SetNumberOfCores(
                 () =>
@@ -36,24 +32,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         public (ThrottlingProvider provider, ThrottlingSettings settings) Build()
             => (new ThrottlingProvider(configurationBuilder.Build()), settingsCustomization.Customize(new ThrottlingSettings()));
 
-        public IVostokThrottlingBuilder UseEssentials(ThrottlingEssentials essentials)
-        {
-            configurationBuilder.SetEssentials(essentials);
-            return this;
-        }
-
         public IVostokThrottlingBuilder UseEssentials(Func<ThrottlingEssentials> essentialsProvider)
         {
             configurationBuilder.SetEssentials(essentialsProvider);
-            return this;
-        }
-
-        public IVostokThrottlingBuilder UseEssentials(Func<IConfigurationProvider, ThrottlingEssentials> provider)
-            => UseEssentials(() => provider(environment.ConfigurationProvider));
-
-        public IVostokThrottlingBuilder UsePropertyQuota(string propertyName, PropertyQuotaOptions quotaOptions)
-        {
-            configurationBuilder.SetPropertyQuota(propertyName, quotaOptions);
             return this;
         }
 
@@ -62,9 +43,6 @@ namespace Vostok.Applications.AspNetCore.Builders
             configurationBuilder.SetPropertyQuota(propertyName, quotaOptionsProvider);
             return this;
         }
-
-        public IVostokThrottlingBuilder UsePropertyQuota(string propertyName, Func<IConfigurationProvider, PropertyQuotaOptions> provider)
-            => UsePropertyQuota(propertyName, () => provider(environment.ConfigurationProvider));
 
         public IVostokThrottlingBuilder UseCustomQuota(IThrottlingQuota quota)
         {

@@ -10,17 +10,11 @@ namespace Vostok.Applications.AspNetCore.Builders
     public interface IVostokThrottlingBuilder
     {
         [NotNull]
-        IVostokThrottlingBuilder UseEssentials([NotNull] ThrottlingEssentials essentials);
-
-        [NotNull]
         IVostokThrottlingBuilder UseEssentials([NotNull] Func<ThrottlingEssentials> essentialsProvider);
 
         // CR(kungurtsev): не понятно, что за проперти такие, в рамках обработки запроса.
         // CR(kungurtsev): тут явно не хватает доки.
         // CR(kungurtsev): не сразу понимаешь, что есть проперти, которые (name-value), и есть квоты к ним.
-        [NotNull]
-        IVostokThrottlingBuilder UsePropertyQuota([NotNull] string propertyName, [NotNull] PropertyQuotaOptions quotaOptions);
-
         [NotNull]
         IVostokThrottlingBuilder UsePropertyQuota([NotNull] string propertyName, [NotNull] Func<PropertyQuotaOptions> quotaOptionsProvider);
 
