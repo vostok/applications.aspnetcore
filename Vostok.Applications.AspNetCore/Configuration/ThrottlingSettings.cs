@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Throttling;
 using Vostok.Throttling.Metrics;
-using Vostok.Throttling.Quotas;
 
 namespace Vostok.Applications.AspNetCore.Configuration
 {
