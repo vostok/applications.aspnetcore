@@ -29,18 +29,19 @@ namespace Vostok.Applications.AspNetCore.Builders
                         return Environment.ProcessorCount;
                     })
                 .SetErrorCallback(
-                    error => environment.Log.ForContext<ThrottlingMiddleware>().Error(error, "Failed to throttle request."));
+                    error => environment.Log.ForContext<ThrottlingMiddleware>().Error(error, "Internal failure in request throttling."));
 
             settingsCustomization = new Customization<ThrottlingSettings>();
         }
 
+        public bool UseThreadPoolOverloadQuota { get; set; } = true;
+
         public (ThrottlingProvider provider, ThrottlingSettings settings) Build()
         {
-            var settings = settingsCustomization.Customize(new ThrottlingSettings());
-            if (settings.UseThreadPoolOverloadQuota)
+            if (UseThreadPoolOverloadQuota)
                 configurationBuilder.AddCustomQuota(new ThreadPoolOverloadQuota(new ThreadPoolOverloadQuotaOptions()));
 
-            return (new ThrottlingProvider(configurationBuilder.Build()), settings);
+            return (new ThrottlingProvider(configurationBuilder.Build()), settingsCustomization.Customize(new ThrottlingSettings()));
         }
 
         public IVostokThrottlingBuilder UseEssentials(Func<ThrottlingEssentials> essentialsProvider)
@@ -61,7 +62,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             return this;
         }
 
-        public IVostokThrottlingBuilder CustomizeSettings(Action<ThrottlingSettings> customization)
+        public IVostokThrottlingBuilder CustomizeMiddleware(Action<ThrottlingSettings> customization)
         {
             settingsCustomization.AddCustomization(customization);
             return this;

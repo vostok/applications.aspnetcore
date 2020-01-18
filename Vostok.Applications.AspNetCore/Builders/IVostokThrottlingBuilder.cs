@@ -11,6 +11,11 @@ namespace Vostok.Applications.AspNetCore.Builders
     public interface IVostokThrottlingBuilder
     {
         /// <summary>
+        /// <para>If set to <c>true</c>, adds an instance of <see cref="ThreadPoolOverloadQuota"/> to the throttling provider.</para>
+        /// </summary>
+        bool UseThreadPoolOverloadQuota { get; set; }
+
+        /// <summary>
         /// <para>Configures throttling essentials, such as capacity and queue limits, to be obtained from given <paramref name="essentialsProvider"/>.</para>
         /// <para>See <see cref="ThrottlingEssentials"/> for more info.</para>
         /// </summary>
@@ -48,6 +53,6 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// Allows to customize advanced settings pertinent to internal middleware responsible for request throttling.
         /// </summary>
         [NotNull]
-        IVostokThrottlingBuilder CustomizeSettings([NotNull] Action<ThrottlingSettings> customization);
+        IVostokThrottlingBuilder CustomizeMiddleware([NotNull] Action<ThrottlingSettings> customization);
     }
 }

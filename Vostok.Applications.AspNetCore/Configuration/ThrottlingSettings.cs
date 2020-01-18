@@ -37,11 +37,6 @@ namespace Vostok.Applications.AspNetCore.Configuration
         public bool AddUrlProperty { get; set; }
 
         /// <summary>
-        /// <para>If set to <c>true</c>, adds an instance of <see cref="ThreadPoolOverloadQuota"/> to the throttling provider.</para>
-        /// </summary>
-        public bool UseThreadPoolOverloadQuota { get; set; } = true;
-
-        /// <summary>
         /// <para>If set to <c>true</c>, disables throttling entirely for web socket requests.</para>
         /// <para>Use <see cref="KestrelSettings.MaxConcurrentWebSocketConnections"/> to limit web socket parallelism.</para>
         /// <para>Has precedence over <see cref="Enabled"/>.</para>
