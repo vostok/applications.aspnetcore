@@ -21,6 +21,7 @@
     <PackageReleaseNotes>https://github.com/vostok/applications.aspnetcore/blob/master/CHANGELOG.md</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/vostok/applications.aspnetcore</RepositoryUrl>
     <OutputType>Library</OutputType>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\AssemblyCommitHashExtractor.cs" Link="Commons\AssemblyCommitHashExtractor.cs" />
