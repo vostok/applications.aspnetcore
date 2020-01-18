@@ -30,7 +30,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
             FlowingContext.Globals.Set(requestInfo);
 
-            await next(context);
+            await next(context).ConfigureAwait(false);
         }
 
         private static TResult ObtainFromProviders<TResult>(HttpRequest request, IEnumerable<Func<HttpRequest, TResult>> providers)

@@ -38,9 +38,9 @@ namespace Vostok.Applications.AspNetCore
 
             disposables.Add(host = builder.Build());
 
-            await StartHostAsync(environment);
+            await StartHostAsync(environment).ConfigureAwait(false);
 
-            await WarmupAsync(environment, host.Services);
+            await WarmupAsync(environment, host.Services).ConfigureAwait(false);
 
             initialized.TrySetTrue();
         }
@@ -78,19 +78,19 @@ namespace Vostok.Applications.AspNetCore
 
             log.Info("Starting Host.");
 
-            await host.StartAsync(environment.ShutdownToken);
+            await host.StartAsync(environment.ShutdownToken).ConfigureAwait(false);
 
-            await lifetime.ApplicationStarted.WaitAsync();
+            await lifetime.ApplicationStarted.WaitAsync().ConfigureAwait(false);
 
             log.Info("Host started.");
         }
 
         private async Task RunHostAsync()
         {
-            await lifetime.ApplicationStopping.WaitAsync();
+            await lifetime.ApplicationStopping.WaitAsync().ConfigureAwait(false);
             log.Info("Stopping Host.");
 
-            await lifetime.ApplicationStopped.WaitAsync();
+            await lifetime.ApplicationStopped.WaitAsync().ConfigureAwait(false);
             log.Info("Host stopped.");
 
             host.Dispose();
