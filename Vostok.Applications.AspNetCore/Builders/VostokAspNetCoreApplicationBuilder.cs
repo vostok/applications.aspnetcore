@@ -77,6 +77,8 @@ namespace Vostok.Applications.AspNetCore.Builders
                         .AddVostok(environment.ConfigurationSource)
                         .AddVostok(environment.SecretConfigurationSource));
 
+                RegisterTypes(hostBuilder, environment);
+
                 if (webHostEnabled)
                 {
                     hostBuilder.ConfigureWebHost(
@@ -84,8 +86,6 @@ namespace Vostok.Applications.AspNetCore.Builders
                         {
                             ConfigureUrl(webHostBuilder, environment);
                             var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
-
-                            RegisterTypes(webHostBuilder, environment);
 
                             AddMiddlewares(
                                 webHostBuilder,
@@ -135,7 +135,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             AddStartupFilter(builder, new UrlPathStartupFilter(environment));
         }
 
-        private static void RegisterTypes(IWebHostBuilder builder, IVostokHostingEnvironment environment) =>
+        private static void RegisterTypes(IHostBuilder builder, IVostokHostingEnvironment environment) =>
             builder.ConfigureServices(
                 services =>
                 {
