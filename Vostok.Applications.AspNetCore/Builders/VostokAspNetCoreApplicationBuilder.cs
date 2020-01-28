@@ -30,6 +30,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly IVostokHostingEnvironment environment;
         private readonly List<IDisposable> disposables;
         private readonly AtomicBoolean initialized;
+        private readonly AtomicBoolean webHostEnabled;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
         private readonly Customization<KestrelSettings> kestrelCustomization;
         private readonly Customization<TracingSettings> tracingCustomization;
@@ -47,6 +48,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             this.disposables = disposables;
             this.initialized = initialized;
 
+            webHostEnabled = true;
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
             kestrelCustomization = new Customization<KestrelSettings>();
             tracingCustomization = new Customization<TracingSettings>();
@@ -63,16 +65,21 @@ namespace Vostok.Applications.AspNetCore.Builders
         {
             using (FlowingContext.Globals.Use(environment))
             {
-                var hostBuilder = Host.CreateDefaultBuilder()
-                    .ConfigureLogging(
-                        loggingBuilder => loggingBuilder
-                            .ClearProviders()
-                            .AddProvider(CreateMicrosoftLog()))
-                    .ConfigureAppConfiguration(
-                        configurationBuilder => configurationBuilder
-                            .AddVostok(environment.ConfigurationSource)
-                            .AddVostok(environment.SecretConfigurationSource))
-                    .ConfigureWebHost(
+                var hostBuilder = Host.CreateDefaultBuilder();
+
+                hostBuilder.ConfigureLogging(
+                    loggingBuilder => loggingBuilder
+                        .ClearProviders()
+                        .AddProvider(CreateMicrosoftLog()));
+
+                hostBuilder.ConfigureAppConfiguration(
+                    configurationBuilder => configurationBuilder
+                        .AddVostok(environment.ConfigurationSource)
+                        .AddVostok(environment.SecretConfigurationSource));
+
+                if (webHostEnabled)
+                {
+                    hostBuilder.ConfigureWebHost(
                         webHostBuilder =>
                         {
                             ConfigureUrl(webHostBuilder, environment);
@@ -101,6 +108,7 @@ namespace Vostok.Applications.AspNetCore.Builders
                             var urlsAfter = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
                             EnsureUrlsNotChanged(urlsBefore, urlsAfter);
                         });
+                }
 
                 return hostBuilder.Build();
             }
@@ -250,6 +258,12 @@ namespace Vostok.Applications.AspNetCore.Builders
         #endregion
 
         #region SetupComponents
+
+        public IVostokAspNetCoreApplicationBuilder DisableWebHost()
+        {
+            webHostEnabled.Value = false;
+            return this;
+        }
 
         public IVostokAspNetCoreApplicationBuilder SetupWebHost(Action<IWebHostBuilder> setup)
         {

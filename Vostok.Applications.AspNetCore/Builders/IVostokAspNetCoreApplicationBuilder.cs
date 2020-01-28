@@ -9,11 +9,13 @@ namespace Vostok.Applications.AspNetCore.Builders
     /// <summary>
     /// <para>Builds the configuration of <see cref="VostokAspNetCoreApplication{TStartup}"/>.</para>
     /// <para>Can be customized in app's <see cref="VostokAspNetCoreApplication{TStartup}.Setup"/> method.</para>
-    /// <para>Allows to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middlewares.</para>
+    /// <para>Allows to configure/disable <see cref="IWebHostBuilder"/> and customize built-in Vostok middlewares.</para>
     /// </summary>
     [PublicAPI]
     public interface IVostokAspNetCoreApplicationBuilder
     {
+        IVostokAspNetCoreApplicationBuilder DisableWebHost();
+
         IVostokAspNetCoreApplicationBuilder SetupWebHost([NotNull] Action<IWebHostBuilder> setup);
 
         IVostokAspNetCoreApplicationBuilder SetupKestrel([NotNull] Action<KestrelSettings> setup);
