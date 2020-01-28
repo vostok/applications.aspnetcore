@@ -31,6 +31,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly List<IDisposable> disposables;
         private readonly AtomicBoolean initialized;
         private readonly AtomicBoolean webHostEnabled;
+        private readonly Customization<IServiceCollection> hostServicesCustomization;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
         private readonly Customization<KestrelSettings> kestrelCustomization;
         private readonly Customization<TracingSettings> tracingCustomization;
@@ -50,6 +51,7 @@ namespace Vostok.Applications.AspNetCore.Builders
 
             webHostEnabled = true;
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
+            hostServicesCustomization = new Customization<IServiceCollection>();
             kestrelCustomization = new Customization<KestrelSettings>();
             tracingCustomization = new Customization<TracingSettings>();
             loggingCustomization = new Customization<LoggingSettings>();
@@ -76,6 +78,8 @@ namespace Vostok.Applications.AspNetCore.Builders
                     configurationBuilder => configurationBuilder
                         .AddVostok(environment.ConfigurationSource)
                         .AddVostok(environment.SecretConfigurationSource));
+
+                hostBuilder.ConfigureServices(services => hostServicesCustomization.Customize(services));
 
                 RegisterTypes(hostBuilder, environment);
 
@@ -262,6 +266,12 @@ namespace Vostok.Applications.AspNetCore.Builders
         public IVostokAspNetCoreApplicationBuilder DisableWebHost()
         {
             webHostEnabled.Value = false;
+            return this;
+        }
+
+        public IVostokAspNetCoreApplicationBuilder SetupHostServices(Action<IServiceCollection> setup)
+        {
+            hostServicesCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
             return this;
         }
 

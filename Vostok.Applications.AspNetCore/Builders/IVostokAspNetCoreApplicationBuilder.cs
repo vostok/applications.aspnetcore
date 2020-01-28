@@ -1,6 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Logging.Microsoft;
 
@@ -17,6 +18,8 @@ namespace Vostok.Applications.AspNetCore.Builders
         IVostokAspNetCoreApplicationBuilder DisableWebHost();
 
         IVostokAspNetCoreApplicationBuilder SetupWebHost([NotNull] Action<IWebHostBuilder> setup);
+
+        IVostokAspNetCoreApplicationBuilder SetupHostServices([NotNull] Action<IServiceCollection> setup);
 
         IVostokAspNetCoreApplicationBuilder SetupKestrel([NotNull] Action<KestrelSettings> setup);
 
