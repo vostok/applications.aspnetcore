@@ -9,6 +9,6 @@ namespace Vostok.Applications.AspNetCore.Builders
     {
         public static IVostokAspNetCoreApplicationBuilder AddHostedService<THostedService>([NotNull] this IVostokAspNetCoreApplicationBuilder builder)
             where THostedService : class, IHostedService
-            => builder.SetupHostServices(services => services.AddHostedService<THostedService>());
+            => builder.SetupGenericHost(b => b.ConfigureServices(services => services.AddHostedService<THostedService>()));
     }
 }

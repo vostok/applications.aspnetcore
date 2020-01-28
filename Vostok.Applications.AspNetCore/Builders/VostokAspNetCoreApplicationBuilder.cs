@@ -31,7 +31,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly List<IDisposable> disposables;
         private readonly AtomicBoolean initialized;
         private readonly AtomicBoolean webHostEnabled;
-        private readonly Customization<IServiceCollection> hostServicesCustomization;
+        private readonly Customization<IHostBuilder> genericHostCustomization;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
         private readonly Customization<KestrelSettings> kestrelCustomization;
         private readonly Customization<TracingSettings> tracingCustomization;
@@ -51,7 +51,7 @@ namespace Vostok.Applications.AspNetCore.Builders
 
             webHostEnabled = true;
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
-            hostServicesCustomization = new Customization<IServiceCollection>();
+            genericHostCustomization = new Customization<IHostBuilder>();
             kestrelCustomization = new Customization<KestrelSettings>();
             tracingCustomization = new Customization<TracingSettings>();
             loggingCustomization = new Customization<LoggingSettings>();
@@ -79,9 +79,9 @@ namespace Vostok.Applications.AspNetCore.Builders
                         .AddVostok(environment.ConfigurationSource)
                         .AddVostok(environment.SecretConfigurationSource));
 
-                hostBuilder.ConfigureServices(services => hostServicesCustomization.Customize(services));
-
                 RegisterTypes(hostBuilder, environment);
+
+                genericHostCustomization.Customize(new HostBuilderWrapper(hostBuilder));
 
                 if (webHostEnabled)
                 {
@@ -269,9 +269,9 @@ namespace Vostok.Applications.AspNetCore.Builders
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupHostServices(Action<IServiceCollection> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupGenericHost(Action<IHostBuilder> setup)
         {
-            hostServicesCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+            genericHostCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
             return this;
         }
 
