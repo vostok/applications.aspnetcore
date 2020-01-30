@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Models;
+using Vostok.Commons.Environment;
 using Vostok.Commons.Helpers.Extensions;
 using Vostok.Commons.Threading;
 using Vostok.Hosting.Abstractions;
@@ -34,6 +36,9 @@ namespace Vostok.Applications.AspNetCore
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
             var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, disposables, initialized);
+
+            // Note(kungurtsev): for code, packed into another dll.
+            builder.SetupPingApi(settings => settings.CommitHashProvider = GetCommitHash);
 
             Setup(builder, environment);
 
@@ -97,6 +102,18 @@ namespace Vostok.Applications.AspNetCore
             log.Info("Host stopped.");
 
             host.Dispose();
+        }
+
+        private string GetCommitHash()
+        {
+            try
+            {
+                return AssemblyCommitHashExtractor.ExtractFromAssembly(Assembly.GetAssembly(GetType()));
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }
