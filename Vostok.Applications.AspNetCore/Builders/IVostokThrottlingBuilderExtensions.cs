@@ -37,7 +37,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// <para>See <see cref="IVostokThrottlingBuilder.UsePropertyQuota"/> for additional info on property quotas.</para>
         /// </summary>
         [NotNull]
-        public static IVostokThrottlingBuilder UsePriorityQuota([NotNull] this IVostokThrottlingBuilder builder, [NotNull] Func<PropertyQuotaOptions> quotaOptionsProvider) => 
+        public static IVostokThrottlingBuilder UsePriorityQuota([NotNull] this IVostokThrottlingBuilder builder, [NotNull] Func<PropertyQuotaOptions> quotaOptionsProvider) =>
             builder
                 .CustomizeMiddleware(settings => settings.AddPriorityProperty = true)
                 .UsePropertyQuota(WellKnownThrottlingProperties.Priority, quotaOptionsProvider);
@@ -47,7 +47,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// <para>See <see cref="IVostokThrottlingBuilder.UsePropertyQuota"/> for additional info on property quotas.</para>
         /// </summary>
         [NotNull]
-        public static IVostokThrottlingBuilder UseMethodQuota([NotNull] this IVostokThrottlingBuilder builder, [NotNull] Func<PropertyQuotaOptions> quotaOptionsProvider) => 
+        public static IVostokThrottlingBuilder UseMethodQuota([NotNull] this IVostokThrottlingBuilder builder, [NotNull] Func<PropertyQuotaOptions> quotaOptionsProvider) =>
             builder
                 .CustomizeMiddleware(settings => settings.AddMethodProperty = true)
                 .UsePropertyQuota(WellKnownThrottlingProperties.Method, quotaOptionsProvider);
@@ -57,7 +57,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// <para>See <see cref="IVostokThrottlingBuilder.UsePropertyQuota"/> for additional info on property quotas.</para>
         /// </summary>
         [NotNull]
-        public static IVostokThrottlingBuilder UseUrlQuota([NotNull] this IVostokThrottlingBuilder builder, [NotNull] Func<PropertyQuotaOptions> quotaOptionsProvider) => 
+        public static IVostokThrottlingBuilder UseUrlQuota([NotNull] this IVostokThrottlingBuilder builder, [NotNull] Func<PropertyQuotaOptions> quotaOptionsProvider) =>
             builder
                 .CustomizeMiddleware(settings => settings.AddUrlProperty = true)
                 .UsePropertyQuota(WellKnownThrottlingProperties.Url, quotaOptionsProvider);

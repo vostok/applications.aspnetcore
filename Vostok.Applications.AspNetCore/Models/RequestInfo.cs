@@ -17,15 +17,15 @@ namespace Vostok.Applications.AspNetCore.Models
         }
 
         public TimeSpan Timeout { get; }
-        
+
         public TimeSpan RemainingTimeout => Budget.Remaining;
-        
+
         public TimeBudget Budget { get; }
-        
+
         public RequestPriority Priority { get; }
-        
+
         public string ClientApplicationIdentity { get; }
-        
+
         public IPAddress ClientIpAddress { get; }
     }
 }

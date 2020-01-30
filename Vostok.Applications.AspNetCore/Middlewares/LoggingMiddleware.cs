@@ -39,6 +39,89 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             LogResponse(context.Request, context.Response, watch.Elapsed);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void AppendSegment(StringBuilder builder, object[] parameters, string templateSegment, object parameter, ref int parameterIndex)
+        {
+            builder.Append(templateSegment);
+
+            parameters[parameterIndex++] = parameter;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string GetClientConnectionInfo(HttpRequest request)
+        {
+            var connection = request.HttpContext.Connection;
+            return $"{connection.RemoteIpAddress}:{connection.RemotePort}";
+        }
+
+        private static string FormatPath(StringBuilder builder, HttpRequest request, LoggingCollectionSettings querySettings)
+        {
+            return FormatAndRollback(
+                builder,
+                b =>
+                {
+                    b.Append(request.Method);
+                    b.Append(" ");
+                    b.Append(request.Path);
+
+                    if (querySettings.IsEnabledForRequest(request))
+                    {
+                        if (querySettings.IsEnabledForAllKeys())
+                        {
+                            b.Append(request.QueryString);
+                        }
+                        else
+                        {
+                            var writtenFirst = false;
+
+                            foreach (var pair in request.Query.Where(kvp => querySettings.IsEnabledForKey(kvp.Key)))
+                            {
+                                if (!writtenFirst)
+                                {
+                                    b.Append('?');
+                                    writtenFirst = true;
+                                }
+
+                                b.Append($"{pair.Key}={pair.Value}");
+                            }
+                        }
+                    }
+                });
+        }
+
+        private static string FormatHeaders(StringBuilder builder, IHeaderDictionary headers, LoggingCollectionSettings settings)
+        {
+            return FormatAndRollback(
+                builder,
+                b =>
+                {
+                    foreach (var (key, value) in headers)
+                    {
+                        if (!settings.IsEnabledForKey(key))
+                            continue;
+
+                        b.AppendLine();
+                        b.Append('\t');
+                        b.Append(key);
+                        b.Append(": ");
+                        b.Append(value);
+                    }
+                });
+        }
+
+        private static string FormatAndRollback(StringBuilder builder, Action<StringBuilder> format)
+        {
+            var positionBefore = builder.Length;
+
+            format(builder);
+
+            var result = builder.ToString(positionBefore, builder.Length - positionBefore);
+
+            builder.Length = positionBefore;
+
+            return result;
+        }
+
         private void LogRequest(HttpRequest request)
         {
             var requestInfo = FlowingContext.Globals.Get<IRequestInfo>();
@@ -89,7 +172,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 builder.Append(" Response headers: {ResponseHeaders}");
 
             var logEvent = new LogEvent(LogLevel.Info, PreciseDateTime.Now, builder.ToString())
-                .WithProperty("ResponseCode", (ResponseCode) response.StatusCode)
+                .WithProperty("ResponseCode", (ResponseCode)response.StatusCode)
                 .WithProperty("ElapsedTime", elapsed.ToPrettyString())
                 .WithProperty("ElapsedTimeMs", elapsed.TotalMilliseconds);
 
@@ -102,85 +185,6 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             log.Log(logEvent);
 
             StringBuilderCache.Release(builder);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void AppendSegment(StringBuilder builder, object[] parameters, string templateSegment, object parameter, ref int parameterIndex)
-        {
-            builder.Append(templateSegment);
-
-            parameters[parameterIndex++] = parameter;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string GetClientConnectionInfo(HttpRequest request)
-        {
-            var connection = request.HttpContext.Connection;
-            return $"{connection.RemoteIpAddress}:{connection.RemotePort}";
-        }
-
-        private static string FormatPath(StringBuilder builder, HttpRequest request, LoggingCollectionSettings querySettings)
-        {
-            return FormatAndRollback(builder, b =>
-            {
-                b.Append(request.Method);
-                b.Append(" ");
-                b.Append(request.Path);
-
-                if (querySettings.IsEnabledForRequest(request))
-                {
-                    if (querySettings.IsEnabledForAllKeys())
-                    {
-                        b.Append(request.QueryString);
-                    }
-                    else
-                    {
-                        var writtenFirst = false;
-
-                        foreach (var pair in request.Query.Where(kvp => querySettings.IsEnabledForKey(kvp.Key)))
-                        {
-                            if (!writtenFirst)
-                            {
-                                b.Append('?');
-                                writtenFirst = true;
-                            }
-
-                            b.Append($"{pair.Key}={pair.Value}");
-                        }
-                    }
-                }
-            });
-        }
-
-        private static string FormatHeaders(StringBuilder builder, IHeaderDictionary headers, LoggingCollectionSettings settings)
-        {
-            return FormatAndRollback(builder, b =>
-            {
-                foreach (var (key, value) in headers)
-                {
-                    if (!settings.IsEnabledForKey(key))
-                        continue;
-
-                    b.AppendLine();
-                    b.Append('\t');
-                    b.Append(key);
-                    b.Append(": ");
-                    b.Append(value);
-                }
-            });
-        }
-
-        private static string FormatAndRollback(StringBuilder builder, Action<StringBuilder> format)
-        {
-            var positionBefore = builder.Length;
-
-            format(builder);
-
-            var result = builder.ToString(positionBefore, builder.Length - positionBefore);
-
-            builder.Length = positionBefore;
-
-            return result;
         }
     }
 }

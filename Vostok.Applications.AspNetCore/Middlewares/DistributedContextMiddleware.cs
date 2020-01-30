@@ -12,11 +12,11 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     {
         private readonly DistributedContextSettings settings;
 
-        public DistributedContextMiddleware(DistributedContextSettings settings)
-            => this.settings = settings;
-
         static DistributedContextMiddleware()
             => FlowingContext.Configuration.RegisterDistributedGlobal(DistributedContextConstants.RequestPriorityGlobalName, new RequestPrioritySerializer());
+
+        public DistributedContextMiddleware(DistributedContextSettings settings)
+            => this.settings = settings;
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {

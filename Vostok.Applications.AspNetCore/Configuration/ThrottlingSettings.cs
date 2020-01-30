@@ -10,6 +10,13 @@ namespace Vostok.Applications.AspNetCore.Configuration
     public class ThrottlingSettings
     {
         /// <summary>
+        /// <para>Configuration of application's throttling metrics, enabled by default.</para>
+        /// <para>Set this property to <c>null</c> to disable throttling metrics.</para>
+        /// </summary>
+        [CanBeNull]
+        public ThrottlingMetricsOptions Metrics = new ThrottlingMetricsOptions();
+
+        /// <summary>
         /// <para>HTTP code to respond with when a request fails to pass throttling.</para>
         /// <para>Note that in some circumstances (expired timeout, large request body) client connection may be aborted instead.</para>
         /// </summary>
@@ -47,12 +54,5 @@ namespace Vostok.Applications.AspNetCore.Configuration
         /// </summary>
         [CanBeNull]
         public Func<HttpContext, bool> Enabled { get; set; }
-
-        /// <summary>
-        /// <para>Configuration of application's throttling metrics, enabled by default.</para>
-        /// <para>Set this property to <c>null</c> to disable throttling metrics.</para>
-        /// </summary>
-        [CanBeNull]
-        public ThrottlingMetricsOptions Metrics = new ThrottlingMetricsOptions();
     }
 }

@@ -13,10 +13,10 @@ namespace Vostok.Applications.AspNetCore.Helpers
         public HostBuilderWrapper(IHostBuilder builder)
             => this.builder = builder;
 
-        public IDictionary<object, object> Properties 
+        public IDictionary<object, object> Properties
             => builder.Properties;
 
-        public IHost Build() 
+        public IHost Build()
             => throw new NotSupportedException("Vostok application builder does not permit this operation.");
 
         public IHostBuilder ConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate) =>
