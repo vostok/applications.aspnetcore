@@ -37,7 +37,7 @@ namespace Vostok.Applications.AspNetCore
         {
             var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, disposables, initialized);
 
-            // Note(kungurtsev): for code, packed into another dll.
+            // Note(kungurtsev): for code, packed into other dll.
             builder.SetupPingApi(settings => settings.CommitHashProvider = GetCommitHash);
 
             Setup(builder, environment);
