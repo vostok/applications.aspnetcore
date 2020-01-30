@@ -1,3 +1,7 @@
+## 0.1.2 (30-01-2020):
+
+Added `VostokAspNetCoreApplication` without `Startup`.
+
 ## 0.1.1 (28-01-2020):
 
 * Added an option to disable WebHost.

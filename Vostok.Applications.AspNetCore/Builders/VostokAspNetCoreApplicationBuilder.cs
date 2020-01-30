@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.Middlewares;
+using Vostok.Applications.AspNetCore.Models;
 using Vostok.Applications.AspNetCore.StartupFilters;
 using Vostok.Commons.Helpers;
 using Vostok.Commons.Threading;
@@ -105,7 +106,9 @@ namespace Vostok.Applications.AspNetCore.Builders
                             webHostBuilder.UseKestrel(ConfigureKestrel);
                             webHostBuilder.UseSockets(ConfigureSocketTransport);
                             webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
-                            webHostBuilder.UseStartup<TStartup>();
+
+                            if (typeof(TStartup) != typeof(EmptyStartup))
+                                webHostBuilder.UseStartup<TStartup>();
 
                             webHostBuilderCustomization.Customize(webHostBuilder);
 
@@ -172,6 +175,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         private static void AddStartupFilter(IWebHostBuilder builder, IStartupFilter startupFilter) =>
             builder.ConfigureServices(services => services.AddTransient(_ => startupFilter));
 
+        private static void ConfigureSocketTransport(SocketTransportOptions options)
+            => options.NoDelay = true;
+
         private void EnsureUrlsNotChanged(string urlsBefore, string urlsAfter)
         {
             if (urlsAfter.Contains(urlsBefore))
@@ -208,9 +214,6 @@ namespace Vostok.Applications.AspNetCore.Builders
                 options.Limits.RequestHeadersTimeout = settings.RequestHeadersTimeout.Value;
         }
 
-        private static void ConfigureSocketTransport(SocketTransportOptions options)
-            => options.NoDelay = true;
-
         #region CreateComponents
 
         private IMiddleware CreateDatacenterAwarenessMiddleware()
@@ -240,8 +243,8 @@ namespace Vostok.Applications.AspNetCore.Builders
             {
                 IgnoredScopes = new HashSet<string>
                 {
-                    MicrosoftConstants.ActionLogScope, 
-                    MicrosoftConstants.HostingLogScope, 
+                    MicrosoftConstants.ActionLogScope,
+                    MicrosoftConstants.HostingLogScope,
                     MicrosoftConstants.ConnectionLogScope
                 }
             };
