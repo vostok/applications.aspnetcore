@@ -45,8 +45,8 @@ namespace Vostok.Applications.AspNetCore.Configuration
         public bool AddUrlProperty { get; set; }
 
         /// <summary>
-        /// <para>An additional properties, that will be passed to <see cref="IThrottlingProvider"/>.</para>
-        /// <para>Use <see cref="IVostokThrottlingBuilderExtensions.UseCustomPropertyQuota"/> extension to add throttling by custom property.</para>
+        /// <para>Additional properties to be extracted from <see cref="HttpContext"/> and passed to <see cref="IThrottlingProvider"/>.</para>
+        /// <para>Use <see cref="IVostokThrottlingBuilderExtensions.UseCustomPropertyQuota"/> extension to add throttling by a custom property.</para>
         /// </summary>
         [NotNull]
         public List<Func<HttpContext, (string propertyName, string propertyValue)>> AdditionalProperties { get; } = new List<Func<HttpContext, (string propertyName, string propertyValue)>>();
