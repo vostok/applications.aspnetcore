@@ -104,6 +104,12 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (settings.AddUrlProperty)
                 builder.AddUrl(UrlNormalizer.NormalizePath(context.Request.Path));
 
+            foreach (var additionalProperty in settings.AdditionalProperties)
+            {
+                var (propertyName, propertyValue) = additionalProperty(context);
+                builder.AddProperty(propertyName, propertyValue);
+            }
+
             return builder.Build();
         }
 

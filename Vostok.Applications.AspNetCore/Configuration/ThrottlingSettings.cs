@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
+using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Throttling;
 using Vostok.Throttling.Metrics;
 
@@ -41,6 +43,13 @@ namespace Vostok.Applications.AspNetCore.Configuration
         /// If set to <c>true</c>, the middleware will pass <see cref="WellKnownThrottlingProperties.Url"/> property to <see cref="IThrottlingProvider"/>.
         /// </summary>
         public bool AddUrlProperty { get; set; }
+
+        /// <summary>
+        /// <para>An additional properties, that will be passed to <see cref="IThrottlingProvider"/>.</para>
+        /// <para>Use <see cref="IVostokThrottlingBuilderExtensions.UseCustomPropertyQuota"/> extension to add throttling by custom property.</para>
+        /// </summary>
+        [NotNull]
+        public List<Func<HttpContext, (string propertyName, string propertyValue)>> AdditionalProperties { get; } = new List<Func<HttpContext, (string propertyName, string propertyValue)>>();
 
         /// <summary>
         /// <para>If set to <c>true</c>, disables throttling entirely for web socket requests.</para>
