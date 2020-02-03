@@ -1,3 +1,7 @@
+## 0.1.4 (03-02-2020):
+
+Added `UseCustomPropertyQuota` extension to configure throttling by custom property.
+
 ## 0.1.3 (30-01-2020):
 
 Extract commit hash from calling assembly instead of entry assembly.
