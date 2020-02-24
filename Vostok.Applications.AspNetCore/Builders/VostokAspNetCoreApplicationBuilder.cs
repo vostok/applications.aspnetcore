@@ -19,6 +19,7 @@ using Vostok.Commons.Time;
 using Vostok.Configuration.Microsoft;
 using Vostok.Context;
 using Vostok.Hosting.Abstractions;
+using Vostok.Logging.Abstractions;
 using Vostok.Logging.Microsoft;
 using Vostok.ServiceDiscovery.Abstractions;
 using Vostok.Throttling.Metrics;
@@ -92,15 +93,17 @@ namespace Vostok.Applications.AspNetCore.Builders
                             ConfigureUrl(webHostBuilder, environment);
                             var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
+                            var middlewareLog = CreateMiddlewareLog(environment.Log, loggingCustomization.Customize(new LoggingSettings()));
+
                             AddMiddlewares(
                                 webHostBuilder,
                                 CreateFillRequestInfoMiddleware(),
                                 CreateDistributedContextMiddleware(),
                                 CreateTracingMiddleware(),
-                                CreateThrottlingMiddleware(),
-                                CreateLoggingMiddleware(),
-                                CreateDatacenterAwarenessMiddleware(),
-                                CreateErrorHandlingMiddleware(),
+                                CreateThrottlingMiddleware(middlewareLog),
+                                CreateLoggingMiddleware(middlewareLog),
+                                CreateDatacenterAwarenessMiddleware(middlewareLog),
+                                CreateErrorHandlingMiddleware(middlewareLog),
                                 CreatePingApiMiddleware());
 
                             webHostBuilder.UseKestrel(ConfigureKestrel);
@@ -216,8 +219,8 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         #region CreateComponents
 
-        private IMiddleware CreateDatacenterAwarenessMiddleware()
-            => new DatacenterAwarenessMiddleware(datacenterAwarenessCustomization.Customize(new DatacenterAwarenessSettings()), environment.Datacenters, environment.Log);
+        private IMiddleware CreateDatacenterAwarenessMiddleware(ILog middlewareLog)
+            => new DatacenterAwarenessMiddleware(datacenterAwarenessCustomization.Customize(new DatacenterAwarenessSettings()), environment.Datacenters, middlewareLog);
 
         private IMiddleware CreateFillRequestInfoMiddleware()
             => new FillRequestInfoMiddleware(fillRequestInfoCustomization.Customize(new FillRequestInfoSettings()));
@@ -228,14 +231,24 @@ namespace Vostok.Applications.AspNetCore.Builders
         private IMiddleware CreateTracingMiddleware()
             => new TracingMiddleware(tracingCustomization.Customize(new TracingSettings()), environment.Tracer);
 
-        private IMiddleware CreateLoggingMiddleware()
-            => new LoggingMiddleware(loggingCustomization.Customize(new LoggingSettings()), environment.Log);
+        private IMiddleware CreateLoggingMiddleware(ILog middlewareLog)
+            => new LoggingMiddleware(loggingCustomization.Customize(new LoggingSettings()), middlewareLog);
 
         private IMiddleware CreatePingApiMiddleware()
             => new PingApiMiddleware(pingApiCustomization.Customize(new PingApiSettings()), initialized);
 
-        private IMiddleware CreateErrorHandlingMiddleware()
-            => new UnhandledErrorMiddleware(environment.Log);
+        private IMiddleware CreateErrorHandlingMiddleware(ILog middlewareLog)
+            => new UnhandledErrorMiddleware(middlewareLog);
+
+        private IMiddleware CreateThrottlingMiddleware(ILog middlewareLog)
+        {
+            var (provider, settings) = throttlingBuilder.Build();
+
+            if (settings.Metrics != null)
+                disposables.Add(environment.Metrics.Instance.CreateThrottlingMetrics(provider, settings.Metrics));
+
+            return new ThrottlingMiddleware(settings, provider, middlewareLog);
+        }
 
         private ILoggerProvider CreateMicrosoftLog()
         {
@@ -252,14 +265,14 @@ namespace Vostok.Applications.AspNetCore.Builders
             return new VostokLoggerProvider(environment.Log, microsoftLogCustomization.Customize(settings));
         }
 
-        private IMiddleware CreateThrottlingMiddleware()
+        public static ILog CreateMiddlewareLog(ILog log, LoggingSettings settings)
         {
-            var (provider, settings) = throttlingBuilder.Build();
+            foreach (var customization in settings.LogCustomizations)
+            {
+                log = customization(log);
+            }
 
-            if (settings.Metrics != null)
-                disposables.Add(environment.Metrics.Instance.CreateThrottlingMetrics(provider, settings.Metrics));
-
-            return new ThrottlingMiddleware(settings, provider, environment.Log);
+            return log;
         }
 
         #endregion

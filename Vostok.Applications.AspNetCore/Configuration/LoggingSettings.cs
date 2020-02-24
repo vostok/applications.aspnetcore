@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
+using Microsoft.AspNetCore.Http;
+using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Configuration
 {
@@ -48,5 +51,11 @@ namespace Vostok.Applications.AspNetCore.Configuration
             set =>
                 logResponseHeaders = value.ToCaseInsensitive() ?? throw new ArgumentNullException(nameof(LogResponseHeaders));
         }
+
+        /// <summary>
+        /// Additional log customizations.
+        /// </summary>
+        [NotNull]
+        public List<Func<ILog, ILog>> LogCustomizations { get; set; } = new List<Func<ILog, ILog>>();
     }
 }
