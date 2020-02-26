@@ -33,9 +33,11 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 spanBuilder.SetClientDetails(requestInfo.ClientApplicationIdentity, requestInfo.ClientIpAddress);
                 spanBuilder.SetRequestDetails(context.Request.Path, context.Request.Method, context.Request.ContentLength);
 
+                var traceId = spanBuilder.CurrentSpan?.TraceId.ToString();
                 if (settings.ResponseTraceIdHeader != null)
-                    context.Response.Headers[settings.ResponseTraceIdHeader] = spanBuilder.CurrentSpan?.TraceId.ToString();
+                    context.Response.Headers[settings.ResponseTraceIdHeader] = traceId;
 
+                context.TraceIdentifier = traceId;
                 await next(context).ConfigureAwait(false);
 
                 spanBuilder.SetResponseDetails(context.Response.StatusCode, context.Response.ContentLength);
