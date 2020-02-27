@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Commons.Environment;
 using Vostok.Commons.Threading;
@@ -21,15 +22,16 @@ namespace Vostok.Applications.AspNetCore
     /// </summary>
     [PublicAPI]
     [RequiresPort]
-    public abstract class VostokAspNetCoreApplication<TStartup> : VostokNetCoreApplication
+    public abstract class VostokAspNetCoreApplication<TStartup> : IVostokApplication, IDisposable
         where TStartup : class
     {
         private readonly List<IDisposable> disposables = new List<IDisposable>();
         private readonly AtomicBoolean initialized = new AtomicBoolean(false);
+        private volatile HostManager manager;
 
-        public new async Task InitializeAsync(IVostokHostingEnvironment environment)
+        public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
-            Log = typeof(TStartup) == typeof(EmptyStartup)
+            var log = typeof(TStartup) == typeof(EmptyStartup)
                 ? environment.Log.ForContext<VostokAspNetCoreApplication>()
                 : environment.Log.ForContext<VostokAspNetCoreApplication<TStartup>>();
 
@@ -40,14 +42,17 @@ namespace Vostok.Applications.AspNetCore
 
             Setup(builder, environment);
 
-            disposables.Add(Host = builder.Build());
+            manager = new HostManager(builder.Build(), log);
 
-            await StartHostAsync(environment).ConfigureAwait(false);
+            await manager.StartHostAsync(environment).ConfigureAwait(false);
 
-            await WarmupAsync(environment, Host.Services).ConfigureAwait(false);
+            await WarmupAsync(environment, manager.Host.Services).ConfigureAwait(false);
 
             initialized.TrySetTrue();
         }
+
+        public Task RunAsync(IVostokHostingEnvironment environment) =>
+            manager.RunHostAsync();
 
         /// <summary>
         /// Override this method to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middleware components.
@@ -62,10 +67,10 @@ namespace Vostok.Applications.AspNetCore
         public virtual Task WarmupAsync([NotNull] IVostokHostingEnvironment environment, [NotNull] IServiceProvider serviceProvider) =>
             Task.CompletedTask;
 
-        public new void Dispose()
+        public void Dispose()
         {
+            manager?.Dispose();
             disposables.ForEach(disposable => disposable?.Dispose());
-            base.Dispose();
         }
 
         private string GetCommitHash()

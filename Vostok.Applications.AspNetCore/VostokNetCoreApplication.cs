@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
-using Vostok.Commons.Helpers.Extensions;
+using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Abstractions;
 
@@ -17,66 +16,30 @@ namespace Vostok.Applications.AspNetCore
     [PublicAPI]
     public abstract class VostokNetCoreApplication : IVostokApplication, IDisposable
     {
-        private readonly List<IDisposable> disposables = new List<IDisposable>();
-
-        protected volatile IHostApplicationLifetime Lifetime;
-        protected volatile IHost Host;
-        protected volatile ILog Log;
+        private volatile HostManager manager;
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
-            Log = environment.Log.ForContext<VostokNetCoreApplication>();
-            
+            var log = environment.Log.ForContext<VostokNetCoreApplication>();
+
             var builder = new VostokNetCoreApplicationBuilder(environment);
 
             Setup(builder, environment);
 
-            disposables.Add(Host = builder.Build());
+            manager = new HostManager(builder.Build(), log);
 
-            await StartHostAsync(environment).ConfigureAwait(false);
+            await manager.StartHostAsync(environment).ConfigureAwait(false);
         }
 
         public Task RunAsync(IVostokHostingEnvironment environment) =>
-            RunHostAsync();
+            manager.RunHostAsync();
 
         /// <summary>
-        /// Override this method to configure <see cref="IHostBuilder"/> and customize built-in Vostok middleware components.
+        /// Implement this method to configure <see cref="IHostBuilder"/> and customize built-in Vostok middleware components.
         /// </summary>
-        public virtual void Setup([NotNull] IVostokNetCoreApplicationBuilder builder, [NotNull] IVostokHostingEnvironment environment)
-        {
-        }
+        public abstract void Setup([NotNull] IVostokNetCoreApplicationBuilder builder, [NotNull] IVostokHostingEnvironment environment);
 
         public void Dispose()
-            => disposables.ForEach(disposable => disposable?.Dispose());
-
-        protected async Task StartHostAsync(IVostokHostingEnvironment environment)
-        {
-            Lifetime = (IHostApplicationLifetime)Host.Services.GetService(typeof(IHostApplicationLifetime));
-
-            disposables.Add(
-                environment.ShutdownToken.Register(
-                    () => Host
-                        .StopAsync()
-                        .ContinueWith(t => Log.Error(t.Exception, "Failed to stop Host."), TaskContinuationOptions.OnlyOnFaulted)));
-
-            Log.Info("Starting Host.");
-
-            await Host.StartAsync(environment.ShutdownToken).ConfigureAwait(false);
-
-            await Lifetime.ApplicationStarted.WaitAsync().ConfigureAwait(false);
-
-            Log.Info("Host started.");
-        }
-
-        private async Task RunHostAsync()
-        {
-            await Lifetime.ApplicationStopping.WaitAsync().ConfigureAwait(false);
-            Log.Info("Stopping Host.");
-
-            await Lifetime.ApplicationStopped.WaitAsync().ConfigureAwait(false);
-            Log.Info("Host stopped.");
-
-            Host.Dispose();
-        }
+            => manager?.Dispose();
     }
 }
