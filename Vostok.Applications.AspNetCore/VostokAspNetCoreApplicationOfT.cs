@@ -42,7 +42,7 @@ namespace Vostok.Applications.AspNetCore
 
             Setup(builder, environment);
 
-            manager = new HostManager(builder.Build(), log);
+            disposables.Add(manager = new HostManager(builder.Build(), log));
 
             await manager.StartHostAsync(environment).ConfigureAwait(false);
 
@@ -67,11 +67,8 @@ namespace Vostok.Applications.AspNetCore
         public virtual Task WarmupAsync([NotNull] IVostokHostingEnvironment environment, [NotNull] IServiceProvider serviceProvider) =>
             Task.CompletedTask;
 
-        public void Dispose()
-        {
-            manager?.Dispose();
+        public void Dispose() =>
             disposables.ForEach(disposable => disposable?.Dispose());
-        }
 
         private string GetCommitHash()
         {
