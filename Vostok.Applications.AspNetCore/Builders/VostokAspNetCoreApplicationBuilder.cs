@@ -29,7 +29,6 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly IVostokHostingEnvironment environment;
         private readonly List<IDisposable> disposables;
         private readonly AtomicBoolean initialized;
-        private readonly AtomicBoolean webHostEnabled;
         private readonly VostokNetCoreApplicationBuilder innerBuilder;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
         private readonly Customization<KestrelSettings> kestrelCustomization;
@@ -46,8 +45,6 @@ namespace Vostok.Applications.AspNetCore.Builders
             this.environment = environment;
             this.disposables = disposables;
             this.initialized = initialized;
-
-            webHostEnabled = true;
 
             innerBuilder = new VostokNetCoreApplicationBuilder(environment);
             innerBuilder.SetupMicrosoftLog(
@@ -75,38 +72,35 @@ namespace Vostok.Applications.AspNetCore.Builders
             {
                 var hostBuilder = innerBuilder.CreateHostBuilder();
 
-                if (webHostEnabled)
-                {
-                    hostBuilder.ConfigureWebHost(
-                        webHostBuilder =>
-                        {
-                            ConfigureUrl(webHostBuilder, environment);
-                            var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+                hostBuilder.ConfigureWebHost(
+                    webHostBuilder =>
+                    {
+                        ConfigureUrl(webHostBuilder, environment);
+                        var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
-                            AddMiddlewares(
-                                webHostBuilder,
-                                CreateFillRequestInfoMiddleware(),
-                                CreateDistributedContextMiddleware(),
-                                CreateTracingMiddleware(),
-                                CreateThrottlingMiddleware(),
-                                CreateLoggingMiddleware(),
-                                CreateDatacenterAwarenessMiddleware(),
-                                CreateErrorHandlingMiddleware(),
-                                CreatePingApiMiddleware());
+                        AddMiddlewares(
+                            webHostBuilder,
+                            CreateFillRequestInfoMiddleware(),
+                            CreateDistributedContextMiddleware(),
+                            CreateTracingMiddleware(),
+                            CreateThrottlingMiddleware(),
+                            CreateLoggingMiddleware(),
+                            CreateDatacenterAwarenessMiddleware(),
+                            CreateErrorHandlingMiddleware(),
+                            CreatePingApiMiddleware());
 
-                            webHostBuilder.UseKestrel(ConfigureKestrel);
-                            webHostBuilder.UseSockets(ConfigureSocketTransport);
-                            webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
+                        webHostBuilder.UseKestrel(ConfigureKestrel);
+                        webHostBuilder.UseSockets(ConfigureSocketTransport);
+                        webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
 
-                            if (typeof(TStartup) != typeof(EmptyStartup))
-                                webHostBuilder.UseStartup<TStartup>();
+                        if (typeof(TStartup) != typeof(EmptyStartup))
+                            webHostBuilder.UseStartup<TStartup>();
 
-                            webHostBuilderCustomization.Customize(webHostBuilder);
+                        webHostBuilderCustomization.Customize(webHostBuilder);
 
-                            var urlsAfter = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
-                            EnsureUrlsNotChanged(urlsBefore, urlsAfter);
-                        });
-                }
+                        var urlsAfter = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+                        EnsureUrlsNotChanged(urlsBefore, urlsAfter);
+                    });
 
                 return hostBuilder.Build();
             }
@@ -211,12 +205,6 @@ namespace Vostok.Applications.AspNetCore.Builders
         #endregion
 
         #region SetupComponents
-
-        public IVostokAspNetCoreApplicationBuilder DisableWebHost()
-        {
-            webHostEnabled.Value = false;
-            return this;
-        }
 
         public IVostokAspNetCoreApplicationBuilder SetupGenericHost(Action<IHostBuilder> setup)
         {
