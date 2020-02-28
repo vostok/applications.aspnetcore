@@ -44,9 +44,9 @@ namespace Vostok.Applications.AspNetCore
 
             disposables.Add(manager = new HostManager(builder.Build(), log));
 
-            await manager.StartHostAsync(environment).ConfigureAwait(false);
+            await manager.StartHostAsync(environment.ShutdownToken).ConfigureAwait(false);
 
-            await WarmupAsync(environment, manager.Host.Services).ConfigureAwait(false);
+            await WarmupAsync(environment, manager.Services).ConfigureAwait(false);
 
             initialized.TrySetTrue();
         }

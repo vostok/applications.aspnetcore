@@ -10,7 +10,7 @@ using Vostok.Logging.Abstractions;
 namespace Vostok.Applications.AspNetCore
 {
     /// <summary>
-    /// <para><see cref="VostokNetCoreApplication"/> is the abstract class developers inherit from in order to create Vostok-compatible NetCore applications.</para>
+    /// <para><see cref="VostokNetCoreApplication"/> is the abstract class developers inherit from in order to create Vostok-compatible .Net Core applications based on Microsoft generic host.</para>
     /// <para>Implement <see cref="Setup"/> method to configure <see cref="IHostBuilder"/> (see <see cref="IVostokNetCoreApplicationBuilder"/>).</para>
     /// </summary>
     [PublicAPI]
@@ -28,14 +28,14 @@ namespace Vostok.Applications.AspNetCore
 
             manager = new HostManager(builder.Build(), log);
 
-            await manager.StartHostAsync(environment).ConfigureAwait(false);
+            await manager.StartHostAsync(environment.ShutdownToken).ConfigureAwait(false);
         }
 
         public Task RunAsync(IVostokHostingEnvironment environment) =>
             manager.RunHostAsync();
 
         /// <summary>
-        /// Implement this method to configure <see cref="IHostBuilder"/> and customize built-in Vostok middleware components.
+        /// Implement this method to configure <see cref="IHostBuilder"/>.
         /// </summary>
         public abstract void Setup([NotNull] IVostokNetCoreApplicationBuilder builder, [NotNull] IVostokHostingEnvironment environment);
 
