@@ -4,11 +4,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Commons.Environment;
-using Vostok.Commons.Helpers.Extensions;
 using Vostok.Commons.Threading;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Requirements;
@@ -28,13 +27,14 @@ namespace Vostok.Applications.AspNetCore
     {
         private readonly List<IDisposable> disposables = new List<IDisposable>();
         private readonly AtomicBoolean initialized = new AtomicBoolean(false);
-
-        private volatile IHostApplicationLifetime lifetime;
-        private volatile IHost host;
-        private volatile ILog log;
+        private volatile HostManager manager;
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
+            var log = typeof(TStartup) == typeof(EmptyStartup)
+                ? environment.Log.ForContext<VostokAspNetCoreApplication>()
+                : environment.Log.ForContext<VostokAspNetCoreApplication<TStartup>>();
+
             var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, disposables, initialized);
 
             // Note(kungurtsev): for code, packed into other dll.
@@ -42,17 +42,17 @@ namespace Vostok.Applications.AspNetCore
 
             Setup(builder, environment);
 
-            disposables.Add(host = builder.Build());
+            disposables.Add(manager = new HostManager(builder.Build(), log));
 
-            await StartHostAsync(environment).ConfigureAwait(false);
+            await manager.StartHostAsync(environment.ShutdownToken).ConfigureAwait(false);
 
-            await WarmupAsync(environment, host.Services).ConfigureAwait(false);
+            await WarmupAsync(environment, manager.Services).ConfigureAwait(false);
 
             initialized.TrySetTrue();
         }
 
         public Task RunAsync(IVostokHostingEnvironment environment) =>
-            RunHostAsync();
+            manager.RunHostAsync();
 
         /// <summary>
         /// Override this method to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middleware components.
@@ -67,42 +67,8 @@ namespace Vostok.Applications.AspNetCore
         public virtual Task WarmupAsync([NotNull] IVostokHostingEnvironment environment, [NotNull] IServiceProvider serviceProvider) =>
             Task.CompletedTask;
 
-        public void Dispose()
-            => disposables.ForEach(disposable => disposable?.Dispose());
-
-        private async Task StartHostAsync(IVostokHostingEnvironment environment)
-        {
-            log = typeof(TStartup) == typeof(EmptyStartup)
-                ? environment.Log.ForContext<VostokAspNetCoreApplication>()
-                : environment.Log.ForContext<VostokAspNetCoreApplication<TStartup>>();
-
-            lifetime = (IHostApplicationLifetime)host.Services.GetService(typeof(IHostApplicationLifetime));
-
-            disposables.Add(
-                environment.ShutdownToken.Register(
-                    () => host
-                        .StopAsync()
-                        .ContinueWith(t => log.Error(t.Exception, "Failed to stop Host."), TaskContinuationOptions.OnlyOnFaulted)));
-
-            log.Info("Starting Host.");
-
-            await host.StartAsync(environment.ShutdownToken).ConfigureAwait(false);
-
-            await lifetime.ApplicationStarted.WaitAsync().ConfigureAwait(false);
-
-            log.Info("Host started.");
-        }
-
-        private async Task RunHostAsync()
-        {
-            await lifetime.ApplicationStopping.WaitAsync().ConfigureAwait(false);
-            log.Info("Stopping Host.");
-
-            await lifetime.ApplicationStopped.WaitAsync().ConfigureAwait(false);
-            log.Info("Host stopped.");
-
-            host.Dispose();
-        }
+        public void Dispose() =>
+            disposables.ForEach(disposable => disposable?.Dispose());
 
         private string GetCommitHash()
         {

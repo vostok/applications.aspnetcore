@@ -15,8 +15,6 @@ namespace Vostok.Applications.AspNetCore.Builders
     [PublicAPI]
     public interface IVostokAspNetCoreApplicationBuilder
     {
-        IVostokAspNetCoreApplicationBuilder DisableWebHost();
-
         IVostokAspNetCoreApplicationBuilder SetupWebHost([NotNull] Action<IWebHostBuilder> setup);
 
         IVostokAspNetCoreApplicationBuilder SetupGenericHost([NotNull] Action<IHostBuilder> setup);
