@@ -1,3 +1,7 @@
+## 0.1.5 (02-03-2020):
+
+Added `VostokNetCoreApplication` instead of `DisableWebHost`.
+
 ## 0.1.4 (03-02-2020):
 
 Added `UseCustomPropertyQuota` extension to configure throttling by custom property.
