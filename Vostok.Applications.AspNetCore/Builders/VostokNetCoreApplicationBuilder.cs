@@ -42,6 +42,9 @@ namespace Vostok.Applications.AspNetCore.Builders
                     .AddVostok(environment.ConfigurationSource)
                     .AddVostok(environment.SecretConfigurationSource));
 
+            hostBuilder.ConfigureServices(
+                services => services.AddSingleton<IHostLifetime, EmptyHostLifetime>());
+
             RegisterTypes(hostBuilder, environment);
 
             genericHostCustomization.Customize(new HostBuilderWrapper(hostBuilder));

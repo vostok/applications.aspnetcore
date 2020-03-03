@@ -27,6 +27,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
         public async Task StartHostAsync(CancellationToken shutdownToken)
         {
             lifetime = (IHostApplicationLifetime)host.Services.GetService(typeof(IHostApplicationLifetime));
+            var environment = (IHostEnvironment)host.Services.GetService(typeof(IHostEnvironment));
 
             shutdownRegistration = shutdownToken.Register(
                 () => host
@@ -38,6 +39,8 @@ namespace Vostok.Applications.AspNetCore.Helpers
             await host.StartAsync(shutdownToken).ConfigureAwait(false);
 
             await lifetime.ApplicationStarted.WaitAsync().ConfigureAwait(false);
+
+            log.ForContext("Microsoft.Hosting.Lifetime").Info("Hosting environment: {HostingEnvironment}.", environment.EnvironmentName);
 
             log.Info("Host started.");
         }
