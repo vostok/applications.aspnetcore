@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {
-    public class EmptyHostLifetime : IHostLifetime
+    internal class EmptyHostLifetime : IHostLifetime
     {
         public Task StopAsync(CancellationToken cancellationToken) =>
             Task.CompletedTask;
