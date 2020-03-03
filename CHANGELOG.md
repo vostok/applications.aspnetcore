@@ -1,3 +1,8 @@
+## 0.1.6 (03-03-2020):
+
+* Fixed https://github.com/vostok/applications.aspnetcore/issues/6
+* Fixed https://github.com/vostok/applications.aspnetcore/issues/7
+
 ## 0.1.5 (02-03-2020):
 
 Added `VostokNetCoreApplication` instead of `DisableWebHost`.
