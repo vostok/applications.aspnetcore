@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets;
@@ -72,10 +73,18 @@ namespace Vostok.Applications.AspNetCore.Builders
             {
                 var hostBuilder = innerBuilder.CreateHostBuilder();
 
+                // (iloktionov): Consider using ConfigureWebHostDefaults here (we're currently unsure about IIS integration, host filtering and forwarding).
                 hostBuilder.ConfigureWebHost(
                     webHostBuilder =>
                     {
+                        webHostBuilder.ConfigureAppConfiguration((ctx, _) =>
+                        {
+                            if (ctx.HostingEnvironment.IsDevelopment())
+                                StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration);
+                        });
+
                         ConfigureUrl(webHostBuilder, environment);
+
                         var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
                         AddMiddlewares(
@@ -92,6 +101,8 @@ namespace Vostok.Applications.AspNetCore.Builders
                         webHostBuilder.UseKestrel(ConfigureKestrel);
                         webHostBuilder.UseSockets(ConfigureSocketTransport);
                         webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
+
+                        webHostBuilder.ConfigureServices(services => services.AddRouting());
 
                         if (typeof(TStartup) != typeof(EmptyStartup))
                             webHostBuilder.UseStartup<TStartup>();
@@ -145,7 +156,7 @@ namespace Vostok.Applications.AspNetCore.Builders
                 "To configure application url use VostokHostingEnvironmentSetup: `vostokHostingEnvironmentSetup.SetupServiceBeacon(serviceBeaconBuilder => serviceBeaconBuilder.SetupReplicaInfo(replicaInfo => replicaInfo.SetUrl(...)))`.");
         }
 
-        private void ConfigureKestrel(KestrelServerOptions options)
+        private void ConfigureKestrel(WebHostBuilderContext builderContext, KestrelServerOptions options)
         {
             var settings = kestrelCustomization.Customize(new KestrelSettings());
 
@@ -167,6 +178,8 @@ namespace Vostok.Applications.AspNetCore.Builders
 
             if (settings.RequestHeadersTimeout.HasValue)
                 options.Limits.RequestHeadersTimeout = settings.RequestHeadersTimeout.Value;
+
+            options.Configure(builderContext.Configuration.GetSection("Kestrel"));
         }
 
         #region CreateComponents
