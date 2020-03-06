@@ -9,15 +9,32 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Extensions.Logging.NUnit" Version="1.0.1"/>
     <PackageReference Include="FluentAssertions" Version="5.4.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
-    <PackageReference Include="NSubstitute" Version="3.1.0" />
-    <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.2"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0"/>
+    <PackageReference Include="NSubstitute" Version="3.1.0"/>
+    <PackageReference Include="NUnit" Version="3.12.0"/>
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Vostok.Applications.AspNetCore\Vostok.Applications.AspNetCore.csproj" />
+    <ProjectReference Include="..\Vostok.Applications.AspNetCore\Vostok.Applications.AspNetCore.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Vostok.Hosting.Abstractions, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.hosting.abstractions\Vostok.Hosting.Abstractions\bin\Release\netstandard2.0\Vostok.Hosting.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Vostok.Metrics, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.metrics\Vostok.Metrics\bin\Release\netstandard2.0\Vostok.Metrics.dll</HintPath>
+    </Reference>
+    <Reference Include="Vostok.ServiceDiscovery.Abstractions, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.servicediscovery.abstractions\Vostok.ServiceDiscovery.Abstractions\bin\Release\netstandard2.0\Vostok.ServiceDiscovery.Abstractions.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

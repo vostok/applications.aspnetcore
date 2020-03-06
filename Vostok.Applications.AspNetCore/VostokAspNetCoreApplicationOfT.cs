@@ -16,18 +16,21 @@ using Vostok.Logging.Abstractions;
 namespace Vostok.Applications.AspNetCore
 {
     /// <summary>
-    /// <para><see cref="VostokAspNetCoreApplication{TStartup}"/> is the abstract class developers inherit from in order to create Vostok-compatible AspNetCore services.</para>
-    /// <para>Implement <see cref="Setup"/> method to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middlewares (see <see cref="IVostokAspNetCoreApplicationBuilder"/>).</para>
-    /// <para>Override <see cref="WarmupAsync"/> method to perform any additional initialization after the DI container gets built but before the app gets registered in service discovery.</para>
+    /// <para><see cref="VostokAspNetCoreApplication{TStartup}" /> is the abstract class developers inherit from in order to create Vostok-compatible AspNetCore services.</para>
+    /// <para>Implement <see cref="Setup" /> method to configure <see cref="IWebHostBuilder" /> and customize built-in Vostok middlewares (see
+    /// <see
+    ///     cref="IVostokAspNetCoreApplicationBuilder" />
+    /// ).</para>
+    /// <para>Override <see cref="WarmupAsync" /> method to perform any additional initialization after the DI container gets built but before the app gets registered in service discovery.</para>
     /// </summary>
     [PublicAPI]
     [RequiresPort]
     public abstract class VostokAspNetCoreApplication<TStartup> : IVostokApplication, IDisposable
         where TStartup : class
     {
+        internal volatile HostManager Manager;
         private readonly List<IDisposable> disposables = new List<IDisposable>();
         private readonly AtomicBoolean initialized = new AtomicBoolean(false);
-        private volatile HostManager manager;
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
@@ -42,20 +45,20 @@ namespace Vostok.Applications.AspNetCore
 
             Setup(builder, environment);
 
-            disposables.Add(manager = new HostManager(builder.Build(), log));
+            disposables.Add(Manager = new HostManager(builder.Build(), log));
 
-            await manager.StartHostAsync(environment.ShutdownToken).ConfigureAwait(false);
+            await Manager.StartHostAsync(environment.ShutdownToken).ConfigureAwait(false);
 
-            await WarmupAsync(environment, manager.Services).ConfigureAwait(false);
+            await WarmupAsync(environment, Manager.Services).ConfigureAwait(false);
 
             initialized.TrySetTrue();
         }
 
         public Task RunAsync(IVostokHostingEnvironment environment) =>
-            manager.RunHostAsync();
+            Manager.RunHostAsync();
 
         /// <summary>
-        /// Override this method to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middleware components.
+        /// Override this method to configure <see cref="IWebHostBuilder" /> and customize built-in Vostok middleware components.
         /// </summary>
         public virtual void Setup([NotNull] IVostokAspNetCoreApplicationBuilder builder, [NotNull] IVostokHostingEnvironment environment)
         {
