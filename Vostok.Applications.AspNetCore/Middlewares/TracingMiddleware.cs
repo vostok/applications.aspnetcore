@@ -42,7 +42,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 TracingLogPropertiesFormatter.FormatPrefix(
                     spanBuilder.CurrentSpan.ParentSpanId ?? spanBuilder.CurrentSpan.SpanId) ?? string.Empty))
             {
-                spanBuilder.SetClientDetails(requestInfo.ClientApplicationIdentity, requestInfo.ClientIpAddress);
+                spanBuilder.SetClientDetails(requestInfo?.ClientApplicationIdentity, requestInfo?.ClientIpAddress);
                 spanBuilder.SetRequestDetails(context.Request.Path, context.Request.Method, context.Request.ContentLength);
 
                 if (options.Value.ResponseTraceIdHeader != null)

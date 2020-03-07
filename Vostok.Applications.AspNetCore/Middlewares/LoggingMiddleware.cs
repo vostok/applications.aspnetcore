@@ -135,7 +135,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             var requestInfo = FlowingContext.Globals.Get<IRequestInfo>();
             var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
 
-            var addClientIdentity = requestInfo.ClientApplicationIdentity != null;
+            var addClientIdentity = requestInfo?.ClientApplicationIdentity != null;
             var addBodySize = request.ContentLength > 0L;
             var addHeaders = options.Value.LogRequestHeaders.IsEnabledForRequest(request);
 
@@ -149,7 +149,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 AppendSegment(builder, parameters, " '{ClientIdentity}' at", requestInfo.ClientApplicationIdentity, ref parametersIndex);
 
             AppendSegment(builder, parameters, " '{RequestConnection}'", GetClientConnectionInfo(request), ref parametersIndex);
-            AppendSegment(builder, parameters, " with timeout = {Timeout}", requestInfo.Timeout.ToPrettyString(), ref parametersIndex);
+            AppendSegment(builder, parameters, " with timeout = {Timeout}", requestInfo?.Timeout.ToPrettyString() ?? "unknown", ref parametersIndex);
 
             builder.Append('.');
 

@@ -52,7 +52,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             var info = FlowingContext.Globals.Get<IRequestInfo>();
             var properties = BuildThrottlingProperties(context, info);
 
-            using (var result = await provider.ThrottleAsync(properties, info.RemainingTimeout))
+            using (var result = await provider.ThrottleAsync(properties, info?.RemainingTimeout))
             {
                 if (result.Status == ThrottlingStatus.Passed)
                 {
@@ -103,10 +103,10 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             var builder = new ThrottlingPropertiesBuilder();
 
             if (options.Value.AddConsumerProperty)
-                builder.AddConsumer(info.ClientApplicationIdentity);
+                builder.AddConsumer(info?.ClientApplicationIdentity);
 
             if (options.Value.AddPriorityProperty)
-                builder.AddPriority(info.Priority.ToString());
+                builder.AddPriority(info?.Priority.ToString());
 
             if (options.Value.AddMethodProperty)
                 builder.AddPriority(context.Request.Method);
@@ -128,7 +128,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 "Request from '{ClientIdentity}' at {RequestConnection} spent {ThrottlingWaitTime} on throttling.",
                 new
                 {
-                    ClientIdentity = info.ClientApplicationIdentity,
+                    ClientIdentity = info?.ClientApplicationIdentity ?? "unknown",
                     RequestConnection = GetClientConnectionInfo(context),
                     ThrottlingWaitTime = result.WaitTime.ToPrettyString(),
                     ThrottlingWaitTimeMs = result.WaitTime.TotalMilliseconds
@@ -137,7 +137,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         private void LogFailure(HttpContext context, IRequestInfo info, IThrottlingResult result)
             => log.Error(
                 "Dropping request from '{ClientIdentity}' at {RequestConnection} due to throttling status {ThrottlingStatus}. Rejection reason = '{RejectionReason}'.",
-                info.ClientApplicationIdentity,
+                info?.ClientApplicationIdentity ?? "unknown",
                 GetClientConnectionInfo(context),
                 result.Status,
                 result.RejectionReason);
