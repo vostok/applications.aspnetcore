@@ -29,7 +29,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             this.next = next ?? throw new ArgumentNullException(nameof(next));
             this.options = options ?? throw new ArgumentNullException(nameof(options));
             this.datacenters = datacenters ?? throw new ArgumentNullException(nameof(datacenters));
-            this.log = log ?? throw new ArgumentNullException(nameof(log));
+            this.log = (log ?? throw new ArgumentNullException(nameof(log))).ForContext<DatacenterAwarenessMiddleware>();
         }
 
         public async Task InvokeAsync(HttpContext context)

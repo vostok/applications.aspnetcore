@@ -35,7 +35,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         {
             this.next = next ?? throw new ArgumentNullException(nameof(next));
             this.options = options ?? throw new ArgumentNullException(nameof(options));
-            this.log = log ?? throw new ArgumentNullException(nameof(log));
+            this.log = (log ?? throw new ArgumentNullException(nameof(log))).ForContext<LoggingMiddleware>();
         }
 
         public async Task InvokeAsync(HttpContext context)

@@ -38,7 +38,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             this.next = next ?? throw new ArgumentNullException(nameof(next));
             this.options = options ?? throw new ArgumentNullException(nameof(options));
             this.provider = provider ?? throw new ArgumentNullException(nameof(provider));
-            this.log = log ?? throw new ArgumentNullException(nameof(log));
+            this.log = (log ?? throw new ArgumentNullException(nameof(log))).ForContext<ThrottlingMiddleware>();
         }
 
         public async Task InvokeAsync(HttpContext context)
