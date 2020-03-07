@@ -30,6 +30,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly IVostokHostingEnvironment environment;
         private readonly List<IDisposable> disposables;
         private readonly AtomicBoolean initialized;
+        private readonly AtomicBoolean webHostEnabled;
         private readonly VostokNetCoreApplicationBuilder innerBuilder;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
         private readonly Customization<KestrelSettings> kestrelCustomization;
@@ -46,6 +47,8 @@ namespace Vostok.Applications.AspNetCore.Builders
             this.environment = environment;
             this.disposables = disposables;
             this.initialized = initialized;
+
+            webHostEnabled = true;
 
             innerBuilder = new VostokNetCoreApplicationBuilder(environment);
             innerBuilder.SetupMicrosoftLog(
@@ -73,45 +76,49 @@ namespace Vostok.Applications.AspNetCore.Builders
             {
                 var hostBuilder = innerBuilder.CreateHostBuilder();
 
-                // (iloktionov): Consider using ConfigureWebHostDefaults here (we're currently unsure about IIS integration, host filtering and forwarding).
-                hostBuilder.ConfigureWebHost(
-                    webHostBuilder =>
-                    {
-                        webHostBuilder.ConfigureAppConfiguration((ctx, _) =>
+                if (webHostEnabled)
+                {
+                    // (iloktionov): Consider using ConfigureWebHostDefaults here (we're currently unsure about IIS integration, host filtering and forwarding).
+                    hostBuilder.ConfigureWebHost(
+                        webHostBuilder =>
                         {
-                            if (ctx.HostingEnvironment.IsDevelopment())
-                                StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration);
+                            webHostBuilder.ConfigureAppConfiguration(
+                                (ctx, _) =>
+                                {
+                                    if (ctx.HostingEnvironment.IsDevelopment())
+                                        StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration);
+                                });
+
+                            ConfigureUrl(webHostBuilder, environment);
+
+                            var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+
+                            AddMiddlewares(
+                                webHostBuilder,
+                                CreateFillRequestInfoMiddleware(),
+                                CreateDistributedContextMiddleware(),
+                                CreateTracingMiddleware(),
+                                CreateThrottlingMiddleware(),
+                                CreateLoggingMiddleware(),
+                                CreateDatacenterAwarenessMiddleware(),
+                                CreateErrorHandlingMiddleware(),
+                                CreatePingApiMiddleware());
+
+                            webHostBuilder.UseKestrel(ConfigureKestrel);
+                            webHostBuilder.UseSockets(ConfigureSocketTransport);
+                            webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
+
+                            webHostBuilder.ConfigureServices(services => services.AddRouting());
+
+                            if (typeof(TStartup) != typeof(EmptyStartup))
+                                webHostBuilder.UseStartup<TStartup>();
+
+                            webHostBuilderCustomization.Customize(webHostBuilder);
+
+                            var urlsAfter = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
+                            EnsureUrlsNotChanged(urlsBefore, urlsAfter);
                         });
-
-                        ConfigureUrl(webHostBuilder, environment);
-
-                        var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
-
-                        AddMiddlewares(
-                            webHostBuilder,
-                            CreateFillRequestInfoMiddleware(),
-                            CreateDistributedContextMiddleware(),
-                            CreateTracingMiddleware(),
-                            CreateThrottlingMiddleware(),
-                            CreateLoggingMiddleware(),
-                            CreateDatacenterAwarenessMiddleware(),
-                            CreateErrorHandlingMiddleware(),
-                            CreatePingApiMiddleware());
-
-                        webHostBuilder.UseKestrel(ConfigureKestrel);
-                        webHostBuilder.UseSockets(ConfigureSocketTransport);
-                        webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
-
-                        webHostBuilder.ConfigureServices(services => services.AddRouting());
-
-                        if (typeof(TStartup) != typeof(EmptyStartup))
-                            webHostBuilder.UseStartup<TStartup>();
-
-                        webHostBuilderCustomization.Customize(webHostBuilder);
-
-                        var urlsAfter = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
-                        EnsureUrlsNotChanged(urlsBefore, urlsAfter);
-                    });
+                }
 
                 return hostBuilder.Build();
             }
@@ -222,6 +229,12 @@ namespace Vostok.Applications.AspNetCore.Builders
         public IVostokAspNetCoreApplicationBuilder SetupGenericHost(Action<IHostBuilder> setup)
         {
             innerBuilder.SetupGenericHost(setup);
+            return this;
+        }
+
+        public IVostokAspNetCoreApplicationBuilder DisableWebHost()
+        {
+            webHostEnabled.Value = false;
             return this;
         }
 
