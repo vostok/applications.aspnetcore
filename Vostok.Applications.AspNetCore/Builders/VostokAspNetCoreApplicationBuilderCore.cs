@@ -11,6 +11,9 @@ namespace Vostok.Applications.AspNetCore.Builders
     {
         public IVostokAspNetCoreApplicationBuilder SetupGenericHost(Action<IHostBuilder> setup)
             => Setup(() => hostFactory.SetupHost(setup));
+
+        public IVostokAspNetCoreApplicationBuilder DisableWebHost()
+            => Setup(webHostBuilder.Disable);
     }
 }
 #endif

@@ -18,11 +18,6 @@ namespace Vostok.Applications.AspNetCore.Builders
     public partial interface IVostokAspNetCoreApplicationBuilder
     {
         /// <summary>
-        /// Disables web host and HTTP server entirely.
-        /// </summary>
-        IVostokAspNetCoreApplicationBuilder DisableWebHost();
-
-        /// <summary>
         /// Disables all built-in Vostok middlewares. 
         /// </summary>
         IVostokAspNetCoreApplicationBuilder DisableVostokMiddlewares();
