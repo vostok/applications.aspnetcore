@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Configuration;
@@ -24,10 +22,10 @@ namespace Vostok.Applications.AspNetCore.Builders
     {
         private readonly IVostokHostingEnvironment environment;
         private readonly AtomicBoolean webHostEnabled;
-        private readonly VostokNetCoreApplicationBuilder innerBuilder;
+        private readonly VostokKestrelBuilder kestrelBuilder;
         private readonly VostokMiddlewaresBuilder middlewaresBuilder;
+        private readonly VostokNetCoreApplicationBuilder baseHostBuilder;
         private readonly Customization<IWebHostBuilder> webHostBuilderCustomization;
-        private readonly Customization<KestrelSettings> kestrelCustomization;
 
         private readonly VostokThrottlingBuilder throttlingBuilder;
 
@@ -37,8 +35,8 @@ namespace Vostok.Applications.AspNetCore.Builders
 
             webHostEnabled = true;
 
-            innerBuilder = new VostokNetCoreApplicationBuilder(environment);
-            innerBuilder.SetupMicrosoftLog(
+            baseHostBuilder = new VostokNetCoreApplicationBuilder(environment);
+            baseHostBuilder.SetupMicrosoftLog(
                 s => s.IgnoredScopes = new HashSet<string>
                 {
                     MicrosoftConstants.ActionLogScope,
@@ -46,18 +44,18 @@ namespace Vostok.Applications.AspNetCore.Builders
                     MicrosoftConstants.ConnectionLogScope
                 });
 
+            kestrelBuilder = new VostokKestrelBuilder();
             throttlingBuilder = new VostokThrottlingBuilder(environment, disposables);
             middlewaresBuilder = new VostokMiddlewaresBuilder(throttlingBuilder, initialized);
 
             webHostBuilderCustomization = new Customization<IWebHostBuilder>();
-            kestrelCustomization = new Customization<KestrelSettings>();
         }
 
         public IHost Build()
         {
             using (FlowingContext.Globals.Use(environment))
             {
-                var hostBuilder = innerBuilder.CreateHostBuilder();
+                var hostBuilder = baseHostBuilder.CreateHostBuilder();
 
                 if (webHostEnabled)
                 {
@@ -70,8 +68,8 @@ namespace Vostok.Applications.AspNetCore.Builders
 
                             var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
-                            webHostBuilder.UseKestrel(ConfigureKestrel);
-                            webHostBuilder.UseSockets(ConfigureSocketTransport);
+                            webHostBuilder.UseKestrel(kestrelBuilder.ConfigureKestrel);
+                            webHostBuilder.UseSockets(kestrelBuilder.ConfigureSocketTransport);
                             webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
 
                             if (typeof(TStartup) != typeof(EmptyStartup))
@@ -98,9 +96,6 @@ namespace Vostok.Applications.AspNetCore.Builders
             builder.ConfigureServices(services => services.AddTransient<IStartupFilter>(_ => new UrlPathStartupFilter(environment)));
         }
 
-        private static void ConfigureSocketTransport(SocketTransportOptions options)
-            => options.NoDelay = true;
-
         private void EnsureUrlsNotChanged(string urlsBefore, string urlsAfter)
         {
             if (urlsAfter.Contains(urlsBefore))
@@ -113,35 +108,11 @@ namespace Vostok.Applications.AspNetCore.Builders
                 "To configure application url use VostokHostingEnvironmentSetup: `vostokHostingEnvironmentSetup.SetupServiceBeacon(serviceBeaconBuilder => serviceBeaconBuilder.SetupReplicaInfo(replicaInfo => replicaInfo.SetUrl(...)))`.");
         }
 
-        private void ConfigureKestrel(WebHostBuilderContext builderContext, KestrelServerOptions options)
-        {
-            var settings = kestrelCustomization.Customize(new KestrelSettings());
-
-            options.AddServerHeader = false;
-            options.AllowSynchronousIO = false;
-
-            options.Limits.MaxConcurrentConnections = null;
-            options.Limits.MaxRequestBufferSize = 256 * 1024;
-            options.Limits.MaxResponseBufferSize = 256 * 1024;
-            options.Limits.Http2.MaxStreamsPerConnection = 1000;
-
-            options.Limits.MaxRequestBodySize = settings.MaxRequestBodySize;
-            options.Limits.MaxRequestLineSize = settings.MaxRequestLineSize;
-            options.Limits.MaxRequestHeadersTotalSize = settings.MaxRequestHeadersSize;
-            options.Limits.MaxConcurrentUpgradedConnections = settings.MaxConcurrentWebSocketConnections;
-
-            if (settings.KeepAliveTimeout.HasValue)
-                options.Limits.KeepAliveTimeout = settings.KeepAliveTimeout.Value;
-
-            if (settings.RequestHeadersTimeout.HasValue)
-                options.Limits.RequestHeadersTimeout = settings.RequestHeadersTimeout.Value;
-        }
-
         #region SetupComponents
 
         public IVostokAspNetCoreApplicationBuilder SetupGenericHost(Action<IHostBuilder> setup)
         {
-            innerBuilder.SetupGenericHost(setup);
+            baseHostBuilder.SetupGenericHost(setup);
             return this;
         }
 
@@ -159,55 +130,55 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public IVostokAspNetCoreApplicationBuilder SetupKestrel(Action<KestrelSettings> setup)
         {
-            kestrelCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+            kestrelBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
             return this;
         }
 
         public IVostokAspNetCoreApplicationBuilder SetupDatacenterAwareness(Action<DatacenterAwarenessSettings> setup)
         {
-            middlewaresBuilder.Customize(setup);
+            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
             return this;
         }
 
         public IVostokAspNetCoreApplicationBuilder SetupRequestInfoFilling(Action<FillRequestInfoSettings> setup)
         {
-            middlewaresBuilder.Customize(setup); 
+            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))); 
             return this;
         }
 
         public IVostokAspNetCoreApplicationBuilder SetupDistributedContext(Action<DistributedContextSettings> setup)
         {
-            middlewaresBuilder.Customize(setup); 
+            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))); 
             return this;
         }
 
         public IVostokAspNetCoreApplicationBuilder SetupTracing(Action<TracingSettings> setup)
         {
-            middlewaresBuilder.Customize(setup);
+            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
             return this;
         }
 
         public IVostokAspNetCoreApplicationBuilder SetupLogging(Action<LoggingSettings> setup)
         {
-            middlewaresBuilder.Customize(setup);
+            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
             return this;
         }
 
         public IVostokAspNetCoreApplicationBuilder SetupPingApi(Action<PingApiSettings> setup)
         {
-            middlewaresBuilder.Customize(setup);
+            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
+            return this;
+        }
+
+        public IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog(Action<VostokLoggerProviderSettings> setup)
+        {
+            baseHostBuilder.SetupMicrosoftLog(setup ?? throw new ArgumentNullException(nameof(setup)));
             return this;
         }
 
         public IVostokAspNetCoreApplicationBuilder SetupThrottling(Action<IVostokThrottlingBuilder> setup)
         {
             setup(throttlingBuilder);
-            return this;
-        }
-
-        public IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog(Action<VostokLoggerProviderSettings> setup)
-        {
-            innerBuilder.SetupMicrosoftLog(setup);
             return this;
         }
 
