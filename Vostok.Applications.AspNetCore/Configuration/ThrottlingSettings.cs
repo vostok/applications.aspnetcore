@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Throttling;
 
 namespace Vostok.Applications.AspNetCore.Configuration
 {
+    /// <summary>
+    /// Represents configuration of <see cref="ThrottlingMiddleware"/>.
+    /// </summary>
     [PublicAPI]
     public class ThrottlingSettings
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
@@ -13,15 +14,21 @@ using Vostok.Context;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class FillRequestInfoMiddleware
+    /// <summary>
+    /// Populates an <see cref="IRequestInfo"/> object from request properties and stores as a <see cref="FlowingContext"/> global for the lifetime of the request.
+    /// </summary>
+    [PublicAPI]
+    public class FillRequestInfoMiddleware
     {
         private readonly RequestDelegate next;
         private readonly IOptions<FillRequestInfoSettings> options;
 
-        public FillRequestInfoMiddleware(RequestDelegate next, IOptions<FillRequestInfoSettings> options)
+        public FillRequestInfoMiddleware(
+            [NotNull] RequestDelegate next,
+            [NotNull] IOptions<FillRequestInfoSettings> options)
         {
-            this.next = next;
-            this.options = options;
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         public async Task InvokeAsync(HttpContext context)

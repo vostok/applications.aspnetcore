@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -8,17 +9,24 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class UnhandledErrorMiddleware
+    /// <summary>
+    /// Catches and logs unhandled exception on low level. Upon catching one, serves an error response.
+    /// </summary>
+    [PublicAPI]
+    public class UnhandledErrorMiddleware
     {
         private readonly RequestDelegate next;
         private readonly IOptions<UnhandledErrorsSettings> options;
         private readonly ILog log;
 
-        public UnhandledErrorMiddleware(RequestDelegate next, IOptions<UnhandledErrorsSettings> options, ILog log)
+        public UnhandledErrorMiddleware(
+            [NotNull] RequestDelegate next,
+            [NotNull] IOptions<UnhandledErrorsSettings> options,
+            [NotNull] ILog log)
         {
-            this.options = options;
-            this.next = next;
-            this.log = log;
+            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.log = log ?? throw new ArgumentNullException(nameof(log));
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -51,7 +59,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (response.HasStarted)
                 return;
 
-            response.StatusCode = options.Value.RejectionResponseCode;
+            response.StatusCode = options.Value.ErrorResponseCode;
         }
     }
 }

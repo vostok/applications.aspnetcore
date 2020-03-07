@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
+using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Commons.Time;
 
 namespace Vostok.Applications.AspNetCore.Configuration
 {
+    /// <summary>
+    /// Represents configuration of <see cref="FillRequestInfoMiddleware"/>.
+    /// </summary>
     [PublicAPI]
     public class FillRequestInfoSettings
     {

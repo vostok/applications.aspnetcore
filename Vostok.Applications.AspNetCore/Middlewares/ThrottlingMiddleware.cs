@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
@@ -14,7 +15,11 @@ using Vostok.Throttling;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class ThrottlingMiddleware
+    /// <summary>
+    /// Limits request parallelism. See <see cref="IThrottlingProvider"/> for more info.
+    /// </summary>
+    [PublicAPI]
+    public class ThrottlingMiddleware
     {
         private const long LargeRequestBodySize = 4 * 1024;
         private static readonly TimeSpan LongThrottlingWaitTime = 500.Milliseconds();
@@ -24,12 +29,16 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         private readonly IThrottlingProvider provider;
         private readonly ILog log;
 
-        public ThrottlingMiddleware(RequestDelegate next, IOptions<ThrottlingSettings> options, IThrottlingProvider provider, ILog log)
+        public ThrottlingMiddleware(
+            [NotNull] RequestDelegate next,
+            [NotNull] IOptions<ThrottlingSettings> options,
+            [NotNull] IThrottlingProvider provider,
+            [NotNull] ILog log)
         {
-            this.next = next;
-            this.options = options;
-            this.provider = provider;
-            this.log = log;
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            this.log = log ?? throw new ArgumentNullException(nameof(log));
         }
 
         public async Task InvokeAsync(HttpContext context)

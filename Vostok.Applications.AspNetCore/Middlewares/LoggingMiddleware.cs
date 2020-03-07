@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
@@ -15,7 +16,11 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class LoggingMiddleware
+    /// <summary>
+    /// Logs incoming requests and outgoing responses.
+    /// </summary>
+    [PublicAPI]
+    public class LoggingMiddleware
     {
         private const int StringBuilderCapacity = 256;
 
@@ -23,11 +28,14 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         private readonly IOptions<LoggingSettings> options;
         private readonly ILog log;
 
-        public LoggingMiddleware(RequestDelegate next, IOptions<LoggingSettings> options, ILog log)
+        public LoggingMiddleware(
+            [NotNull] RequestDelegate next,
+            [NotNull] IOptions<LoggingSettings> options,
+            [NotNull] ILog log)
         {
-            this.next = next;
-            this.options = options;
-            this.log = log;
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.log = log ?? throw new ArgumentNullException(nameof(log));
         }
 
         public async Task InvokeAsync(HttpContext context)

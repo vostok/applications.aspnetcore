@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
@@ -6,17 +8,23 @@ using Vostok.Commons.Environment;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class PingApiMiddleware
+    /// <summary>
+    /// Handles diagnostic <c>/_status/ping</c> and <c>/_status/version</c> requests.
+    /// </summary>
+    [PublicAPI]
+    public class PingApiMiddleware
     {
         private readonly RequestDelegate next;
         private readonly IOptions<PingApiSettings> options;
 
         private volatile string defaultCommitHash;
 
-        public PingApiMiddleware(RequestDelegate next, IOptions<PingApiSettings> options)
+        public PingApiMiddleware(
+            [NotNull] RequestDelegate next,
+            [NotNull] IOptions<PingApiSettings> options)
         {
-            this.next = next;
-            this.options = options;
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         public Task InvokeAsync(HttpContext context)

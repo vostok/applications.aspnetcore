@@ -1,13 +1,17 @@
 ﻿using JetBrains.Annotations;
+using Vostok.Applications.AspNetCore.Middlewares;
 
 namespace Vostok.Applications.AspNetCore.Configuration
 {
+    /// <summary>
+    /// Represents configuration of <see cref="UnhandledErrorMiddleware"/>.
+    /// </summary>
     [PublicAPI]
     public class UnhandledErrorsSettings
     {
         /// <summary>
         /// Error response code to be used when an unhandled exception is observed.
         /// </summary>
-        public int RejectionResponseCode { get; set; } = 500;
+        public int ErrorResponseCode { get; set; } = 500;
     }
 }

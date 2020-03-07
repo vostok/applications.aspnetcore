@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
@@ -7,19 +9,27 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class DatacenterAwarenessMiddleware
+    /// <summary>
+    /// Rejects incoming requests when local datacenter is not active.
+    /// </summary>
+    [PublicAPI]
+    public class DatacenterAwarenessMiddleware
     {
         private readonly RequestDelegate next;
         private readonly IOptions<DatacenterAwarenessSettings> options;
         private readonly IDatacenters datacenters;
         private readonly ILog log;
 
-        public DatacenterAwarenessMiddleware(RequestDelegate next, IOptions<DatacenterAwarenessSettings> options, IDatacenters datacenters, ILog log)
+        public DatacenterAwarenessMiddleware(
+            [NotNull] RequestDelegate next,
+            [NotNull] IOptions<DatacenterAwarenessSettings> options,
+            [NotNull] IDatacenters datacenters,
+            [NotNull] ILog log)
         {
-            this.next = next;
-            this.options = options;
-            this.datacenters = datacenters;
-            this.log = log;
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.datacenters = datacenters ?? throw new ArgumentNullException(nameof(datacenters));
+            this.log = log ?? throw new ArgumentNullException(nameof(log));
         }
 
         public async Task InvokeAsync(HttpContext context)

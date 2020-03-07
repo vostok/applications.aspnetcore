@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
@@ -11,17 +13,24 @@ using Vostok.Tracing.Extensions.Http;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class TracingMiddleware
+    /// <summary>
+    /// Populates <see cref="TraceContext"/> and creates spans of kind <see cref="WellKnownSpanKinds.HttpRequest.Server"/>.
+    /// </summary>
+    [PublicAPI]
+    public class TracingMiddleware
     {
         private readonly RequestDelegate next;
         private readonly IOptions<TracingSettings> options;
         private readonly ITracer tracer;
 
-        public TracingMiddleware(RequestDelegate next, IOptions<TracingSettings> options, ITracer tracer)
+        public TracingMiddleware(
+            [NotNull] RequestDelegate next,
+            [NotNull] IOptions<TracingSettings> options,
+            [NotNull] ITracer tracer)
         {
-            this.next = next;
-            this.options = options;
-            this.tracer = tracer;
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.tracer = tracer ?? throw new ArgumentNullException(nameof(tracer));
         }
 
         public async Task InvokeAsync(HttpContext context)

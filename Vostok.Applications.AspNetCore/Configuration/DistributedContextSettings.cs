@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
+using Vostok.Applications.AspNetCore.Middlewares;
 
 namespace Vostok.Applications.AspNetCore.Configuration
 {
+    /// <summary>
+    /// Represents configuration of <see cref="DistributedContextMiddleware"/>.
+    /// </summary>
     [PublicAPI]
     public class DistributedContextSettings
     {
