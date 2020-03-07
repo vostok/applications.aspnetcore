@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Clusterclient.Core.Model;
@@ -19,13 +20,13 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         private const int StringBuilderCapacity = 256;
 
         private readonly RequestDelegate next;
-        private readonly LoggingSettings settings;
+        private readonly IOptions<LoggingSettings> options;
         private readonly ILog log;
 
-        public LoggingMiddleware(RequestDelegate next, LoggingSettings settings, ILog log)
+        public LoggingMiddleware(RequestDelegate next, IOptions<LoggingSettings> options, ILog log)
         {
             this.next = next;
-            this.settings = settings;
+            this.options = options;
             this.log = log;
         }
 
@@ -128,13 +129,13 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
             var addClientIdentity = requestInfo.ClientApplicationIdentity != null;
             var addBodySize = request.ContentLength > 0L;
-            var addHeaders = settings.LogRequestHeaders.IsEnabledForRequest(request);
+            var addHeaders = options.Value.LogRequestHeaders.IsEnabledForRequest(request);
 
             var parametersCount = 3 + (addClientIdentity ? 1 : 0) + (addBodySize ? 1 : 0) + (addHeaders ? 1 : 0);
             var parameters = new object[parametersCount];
             var parametersIndex = 0;
 
-            AppendSegment(builder, parameters, "Received request '{Request}' from", FormatPath(builder, request, settings.LogQueryString), ref parametersIndex);
+            AppendSegment(builder, parameters, "Received request '{Request}' from", FormatPath(builder, request, options.Value.LogQueryString), ref parametersIndex);
 
             if (addClientIdentity)
                 AppendSegment(builder, parameters, " '{ClientIdentity}' at", requestInfo.ClientApplicationIdentity, ref parametersIndex);
@@ -148,7 +149,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 AppendSegment(builder, parameters, " Body size = {BodySize}.", request.ContentLength, ref parametersIndex);
 
             if (addHeaders)
-                AppendSegment(builder, parameters, " Request headers: {RequestHeaders}", FormatHeaders(builder, request.Headers, settings.LogRequestHeaders), ref parametersIndex);
+                AppendSegment(builder, parameters, " Request headers: {RequestHeaders}", FormatHeaders(builder, request.Headers, options.Value.LogRequestHeaders), ref parametersIndex);
 
             log.Info(builder.ToString(), parameters);
 
@@ -160,7 +161,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
 
             var addBodySize = response.ContentLength > 0;
-            var addHeaders = settings.LogResponseHeaders.IsEnabledForRequest(request);
+            var addHeaders = options.Value.LogResponseHeaders.IsEnabledForRequest(request);
 
             builder.Append("Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.");
 
@@ -179,7 +180,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 logEvent = logEvent.WithProperty("BodySize", response.ContentLength);
 
             if (addHeaders)
-                logEvent = logEvent.WithProperty("ResponseHeaders", FormatHeaders(builder, response.Headers, settings.LogResponseHeaders));
+                logEvent = logEvent.WithProperty("ResponseHeaders", FormatHeaders(builder, response.Headers, options.Value.LogResponseHeaders));
 
             log.Log(logEvent);
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Clusterclient.Core.Model;
@@ -19,14 +20,14 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         private static readonly TimeSpan LongThrottlingWaitTime = 500.Milliseconds();
 
         private readonly RequestDelegate next;
-        private readonly ThrottlingSettings settings;
+        private readonly IOptions<ThrottlingSettings> options;
         private readonly IThrottlingProvider provider;
         private readonly ILog log;
 
-        public ThrottlingMiddleware(RequestDelegate next, ThrottlingSettings settings, IThrottlingProvider provider, ILog log)
+        public ThrottlingMiddleware(RequestDelegate next, IOptions<ThrottlingSettings> options, IThrottlingProvider provider, ILog log)
         {
             this.next = next;
-            this.settings = settings;
+            this.options = options;
             this.provider = provider;
             this.log = log;
         }
@@ -63,7 +64,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 }
                 else
                 {
-                    context.Response.StatusCode = settings.RejectionResponseCode;
+                    context.Response.StatusCode = options.Value.RejectionResponseCode;
                     context.Response.Headers.ContentLength = 0L;
                 }
             }
@@ -79,10 +80,10 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
         private bool IsDisabled(HttpContext context)
         {
-            if (settings.DisableForWebSockets && context.WebSockets.IsWebSocketRequest)
+            if (options.Value.DisableForWebSockets && context.WebSockets.IsWebSocketRequest)
                 return true;
 
-            if (settings.Enabled != null && !settings.Enabled(context))
+            if (options.Value.Enabled != null && !options.Value.Enabled(context))
                 return true;
 
             return false;
@@ -92,19 +93,19 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         {
             var builder = new ThrottlingPropertiesBuilder();
 
-            if (settings.AddConsumerProperty)
+            if (options.Value.AddConsumerProperty)
                 builder.AddConsumer(info.ClientApplicationIdentity);
 
-            if (settings.AddPriorityProperty)
+            if (options.Value.AddPriorityProperty)
                 builder.AddPriority(info.Priority.ToString());
 
-            if (settings.AddMethodProperty)
+            if (options.Value.AddMethodProperty)
                 builder.AddPriority(context.Request.Method);
 
-            if (settings.AddUrlProperty)
+            if (options.Value.AddUrlProperty)
                 builder.AddUrl(UrlNormalizer.NormalizePath(context.Request.Path));
 
-            foreach (var additionalProperty in settings.AdditionalProperties)
+            foreach (var additionalProperty in options.Value.AdditionalProperties)
             {
                 var (propertyName, propertyValue) = additionalProperty(context);
                 builder.AddProperty(propertyName, propertyValue);

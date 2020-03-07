@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Clusterclient.Core.Model;
@@ -15,12 +16,12 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     internal class FillRequestInfoMiddleware
     {
         private readonly RequestDelegate next;
-        private readonly FillRequestInfoSettings settings;
+        private readonly IOptions<FillRequestInfoSettings> options;
 
-        public FillRequestInfoMiddleware(RequestDelegate next, FillRequestInfoSettings settings)
+        public FillRequestInfoMiddleware(RequestDelegate next, IOptions<FillRequestInfoSettings> options)
         {
             this.next = next;
-            this.settings = settings;
+            this.options = options;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -44,7 +45,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (NumericTypeParser<double>.TryParse(request.Headers[HeaderNames.RequestTimeout], out var seconds))
                 return seconds.Seconds();
 
-            return ObtainFromProviders(request, settings.AdditionalTimeoutProviders) ?? settings.DefaultTimeoutProvider(request);
+            return ObtainFromProviders(request, options.Value.AdditionalTimeoutProviders) ?? options.Value.DefaultTimeoutProvider(request);
         }
 
         private RequestPriority GetPriority(HttpRequest request)
@@ -52,7 +53,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (Enum.TryParse(request.Headers[HeaderNames.RequestPriority], true, out RequestPriority priority))
                 return priority;
 
-            return ObtainFromProviders(request, settings.AdditionalPriorityProviders) ?? settings.DefaultPriorityProvider(request);
+            return ObtainFromProviders(request, options.Value.AdditionalPriorityProviders) ?? options.Value.DefaultPriorityProvider(request);
         }
 
         private string GetClientApplicationIdentity(HttpRequest request)
@@ -61,7 +62,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (!string.IsNullOrEmpty(clientApplicationIdentity))
                 return clientApplicationIdentity;
 
-            return ObtainFromProviders(request, settings.AdditionalClientIdentityProviders);
+            return ObtainFromProviders(request, options.Value.AdditionalClientIdentityProviders);
         }
     }
 }
