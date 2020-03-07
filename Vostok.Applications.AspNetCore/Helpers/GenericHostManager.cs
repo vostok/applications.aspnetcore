@@ -43,7 +43,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
             await lifetime.ApplicationStarted.WaitAsync();
 
-            log.Info("Generic host has been started.");
+            log.Info("Generic host has started.");
         }
 
         public async Task RunHostAsync()

@@ -15,18 +15,18 @@ namespace Vostok.Applications.AspNetCore.Helpers
 {
     internal class WebHostManager : IDisposable
     {
-        private readonly IWebHost webHost;
+        private readonly IWebHost host;
         private readonly ILog log;
         private volatile IApplicationLifetime lifetime;
         private volatile IDisposable shutdownRegistration;
 
-        public WebHostManager(IWebHost webHost, ILog log)
+        public WebHostManager(IWebHost host, ILog log)
         {
-            this.webHost = webHost;
+            this.host = host;
             this.log = log;
         }
 
-        public IServiceProvider Services => webHost.Services;
+        public IServiceProvider Services => host.Services;
 
         public async Task StartHostAsync(CancellationToken shutdownToken)
         {
@@ -35,37 +35,37 @@ namespace Vostok.Applications.AspNetCore.Helpers
             var environment = (IHostingEnvironment)Services.GetService(typeof(IHostingEnvironment));
 
             shutdownRegistration = shutdownToken.Register(
-                () => webHost
+                () => host
                     .StopAsync()
-                    .ContinueWith(t => log.Error(t.Exception, "Failed to stop WebHost."), TaskContinuationOptions.OnlyOnFaulted));
+                    .ContinueWith(t => log.Error(t.Exception, "Failed to stop web host."), TaskContinuationOptions.OnlyOnFaulted));
 
-            log.Info("Starting WebHost.");
+            log.Info("Web host is starting..");
 
             log.Info("Hosting environment: {HostingEnvironment}.", environment.EnvironmentName);
 
-            await webHost.StartAsync(shutdownToken);
+            await host.StartAsync(shutdownToken);
 
             await lifetime.ApplicationStarted.WaitAsync();
 
-            log.Info("WebHost started.");
+            log.Info("Web host has started.");
         }
 
         public async Task RunHostAsync()
         {
             await lifetime.ApplicationStopping.WaitAsync();
 
-            log.Info("Stopping WebHost.");
+            log.Info("Web host is stopping..");
 
             await lifetime.ApplicationStopped.WaitAsync();
 
-            log.Info("WebHost stopped.");
+            log.Info("Web host has been stopped.");
 
-            webHost.Dispose();
+            host.Dispose();
         }
 
         public void Dispose()
         {
-            webHost?.Dispose();
+            host?.Dispose();
             shutdownRegistration?.Dispose();
         }
     }
