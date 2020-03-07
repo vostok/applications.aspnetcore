@@ -18,16 +18,18 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     {
         private const int StringBuilderCapacity = 256;
 
+        private readonly RequestDelegate next;
         private readonly LoggingSettings settings;
         private readonly ILog log;
 
-        public LoggingMiddleware(LoggingSettings settings, ILog log)
+        public LoggingMiddleware(RequestDelegate next, LoggingSettings settings, ILog log)
         {
+            this.next = next;
             this.settings = settings;
             this.log = log;
         }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
             LogRequest(context.Request);
 

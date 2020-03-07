@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Commons.Environment;
@@ -8,16 +7,18 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 {
     internal class PingApiMiddleware
     {
+        private readonly RequestDelegate next;
         private readonly PingApiSettings settings;
 
         private volatile string defaultCommitHash;
 
-        public PingApiMiddleware([NotNull] PingApiSettings settings)
+        public PingApiMiddleware(RequestDelegate next, PingApiSettings settings)
         {
+            this.next = next;
             this.settings = settings;
         }
 
-        public Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public Task InvokeAsync(HttpContext context)
         {
             var request = context.Request;
 

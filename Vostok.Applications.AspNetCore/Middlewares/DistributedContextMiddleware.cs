@@ -10,15 +10,19 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 {
     internal class DistributedContextMiddleware
     {
+        private readonly RequestDelegate next;
         private readonly DistributedContextSettings settings;
 
         static DistributedContextMiddleware()
             => FlowingContext.Configuration.RegisterDistributedGlobal(DistributedContextConstants.RequestPriorityGlobalName, new RequestPrioritySerializer());
 
-        public DistributedContextMiddleware(DistributedContextSettings settings)
-            => this.settings = settings;
+        public DistributedContextMiddleware(RequestDelegate next, DistributedContextSettings settings)
+        {
+            this.next = next;
+            this.settings = settings;
+        }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
             FlowingContext.RestoreDistributedProperties(context.Request.Headers[HeaderNames.ContextProperties]);
             FlowingContext.RestoreDistributedGlobals(context.Request.Headers[HeaderNames.ContextGlobals]);

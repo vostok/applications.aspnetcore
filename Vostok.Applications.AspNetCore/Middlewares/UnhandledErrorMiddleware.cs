@@ -8,12 +8,16 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 {
     internal class UnhandledErrorMiddleware
     {
+        private readonly RequestDelegate next;
         private readonly ILog log;
 
-        public UnhandledErrorMiddleware(ILog log)
-            => this.log = log;
+        public UnhandledErrorMiddleware(RequestDelegate next, ILog log)
+        {
+            this.next = next;
+            this.log = log;
+        }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {

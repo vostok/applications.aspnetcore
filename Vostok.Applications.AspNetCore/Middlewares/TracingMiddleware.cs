@@ -12,16 +12,18 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 {
     internal class TracingMiddleware
     {
+        private readonly RequestDelegate next;
         private readonly TracingSettings settings;
         private readonly ITracer tracer;
 
-        public TracingMiddleware(TracingSettings settings, ITracer tracer)
+        public TracingMiddleware(RequestDelegate next, TracingSettings settings, ITracer tracer)
         {
+            this.next = next;
             this.settings = settings;
             this.tracer = tracer;
         }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
             var requestInfo = FlowingContext.Globals.Get<IRequestInfo>();
 

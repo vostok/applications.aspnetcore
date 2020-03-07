@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Models;
@@ -15,12 +14,16 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 {
     internal class FillRequestInfoMiddleware
     {
+        private readonly RequestDelegate next;
         private readonly FillRequestInfoSettings settings;
 
-        public FillRequestInfoMiddleware([NotNull] FillRequestInfoSettings settings)
-            => this.settings = settings;
+        public FillRequestInfoMiddleware(RequestDelegate next, FillRequestInfoSettings settings)
+        {
+            this.next = next;
+            this.settings = settings;
+        }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
             IRequestInfo requestInfo = new RequestInfo(
                 GetTimeout(context.Request),
