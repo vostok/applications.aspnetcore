@@ -42,25 +42,30 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            LogRequest(context.Request);
+            if (options.Value.LogRequests)
+                LogRequest(context.Request);
 
             var watch = Stopwatch.StartNew();
             var tracingContext = FlowingContext.Globals.Get<TraceContext>();
             var operationContext = FlowingContext.Globals.Get<OperationContextValue>();
 
-            context.Response.OnCompleted(
-                () =>
-                {
-                    using (FlowingContext.Globals.Use(tracingContext))
-                    using (FlowingContext.Globals.Use(operationContext))
-                        LogResponseCompleted(watch.Elapsed);
+            if (options.Value.LogResponseCompletion)
+            {
+                context.Response.OnCompleted(
+                    () =>
+                    {
+                        using (FlowingContext.Globals.Use(tracingContext))
+                        using (FlowingContext.Globals.Use(operationContext))
+                            LogResponseCompleted(watch.Elapsed);
 
-                    return Task.CompletedTask;
-                });
+                        return Task.CompletedTask;
+                    });
+            }
 
             await next(context);
 
-            LogResponse(context.Request, context.Response, watch.Elapsed);
+            if (options.Value.LogResponses)
+                LogResponse(context.Request, context.Response, watch.Elapsed);
         }
 
         private void LogRequest(HttpRequest request)
