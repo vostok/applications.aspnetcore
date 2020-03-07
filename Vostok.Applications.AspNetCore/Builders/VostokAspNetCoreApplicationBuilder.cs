@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets;
@@ -78,37 +77,28 @@ namespace Vostok.Applications.AspNetCore.Builders
 
                 if (webHostEnabled)
                 {
-                    // (iloktionov): Consider using ConfigureWebHostDefaults here (we're currently unsure about IIS integration, host filtering and forwarding).
-                    hostBuilder.ConfigureWebHost(
+                    hostBuilder.ConfigureServices(
+                        services => AddMiddlewares(
+                            services,
+                            CreateFillRequestInfoMiddleware(),
+                            CreateDistributedContextMiddleware(),
+                            CreateTracingMiddleware(),
+                            CreateThrottlingMiddleware(),
+                            CreateLoggingMiddleware(),
+                            CreateDatacenterAwarenessMiddleware(),
+                            CreateErrorHandlingMiddleware(),
+                            CreatePingApiMiddleware()));
+
+                    hostBuilder.ConfigureWebHostDefaults(
                         webHostBuilder =>
                         {
-                            webHostBuilder.ConfigureAppConfiguration(
-                                (ctx, _) =>
-                                {
-                                    if (ctx.HostingEnvironment.IsDevelopment())
-                                        StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration);
-                                });
-
                             ConfigureUrl(webHostBuilder, environment);
 
                             var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
-                            AddMiddlewares(
-                                webHostBuilder,
-                                CreateFillRequestInfoMiddleware(),
-                                CreateDistributedContextMiddleware(),
-                                CreateTracingMiddleware(),
-                                CreateThrottlingMiddleware(),
-                                CreateLoggingMiddleware(),
-                                CreateDatacenterAwarenessMiddleware(),
-                                CreateErrorHandlingMiddleware(),
-                                CreatePingApiMiddleware());
-
                             webHostBuilder.UseKestrel(ConfigureKestrel);
                             webHostBuilder.UseSockets(ConfigureSocketTransport);
                             webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
-
-                            webHostBuilder.ConfigureServices(services => services.AddRouting());
 
                             if (typeof(TStartup) != typeof(EmptyStartup))
                                 webHostBuilder.UseStartup<TStartup>();
@@ -124,16 +114,16 @@ namespace Vostok.Applications.AspNetCore.Builders
             }
         }
 
-        private static void AddMiddlewares(IWebHostBuilder builder, params IMiddleware[] middlewares)
+        private static void AddMiddlewares(IServiceCollection services, params IMiddleware[] middlewares)
         {
             foreach (var middleware in middlewares)
-                builder.ConfigureServices(services => services.AddSingleton(middleware.GetType(), middleware));
+                services.AddSingleton(middleware.GetType(), middleware);
 
-            AddStartupFilter(
-                builder,
-                new AddMiddlewaresStartupFilter(
-                    middlewares.Select(m => m.GetType()).ToArray()));
+            AddStartupFilter(services, new AddMiddlewaresStartupFilter(middlewares.Select(m => m.GetType()).ToArray()));
         }
+
+        private static void AddStartupFilter(IServiceCollection services, IStartupFilter startupFilter) =>
+            services.AddTransient(_ => startupFilter);
 
         private static void ConfigureUrl(IWebHostBuilder builder, IVostokHostingEnvironment environment)
         {
@@ -142,11 +132,8 @@ namespace Vostok.Applications.AspNetCore.Builders
 
             builder = builder.UseUrls($"{url.Scheme}://*:{url.Port}/");
 
-            AddStartupFilter(builder, new UrlPathStartupFilter(environment));
+            builder.ConfigureServices(services => AddStartupFilter(services, new UrlPathStartupFilter(environment)));
         }
-
-        private static void AddStartupFilter(IWebHostBuilder builder, IStartupFilter startupFilter) =>
-            builder.ConfigureServices(services => services.AddTransient(_ => startupFilter));
 
         private static void ConfigureSocketTransport(SocketTransportOptions options)
             => options.NoDelay = true;
@@ -185,8 +172,6 @@ namespace Vostok.Applications.AspNetCore.Builders
 
             if (settings.RequestHeadersTimeout.HasValue)
                 options.Limits.RequestHeadersTimeout = settings.RequestHeadersTimeout.Value;
-
-            options.Configure(builderContext.Configuration.GetSection("Kestrel"));
         }
 
         #region CreateComponents
