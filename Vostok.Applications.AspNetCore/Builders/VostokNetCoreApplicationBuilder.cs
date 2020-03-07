@@ -1,10 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Commons.Helpers;
-using Vostok.Configuration.Microsoft;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
 
@@ -31,20 +29,13 @@ namespace Vostok.Applications.AspNetCore.Builders
         {
             var hostBuilder = Host.CreateDefaultBuilder();
 
-            hostBuilder.ConfigureLogging(
-                loggingBuilder => loggingBuilder
-                    .ClearProviders()
-                    .AddProvider(CreateMicrosoftLog()));
+            hostBuilder.ConfigureLogging(log => log.AddVostokLogging(environment, microsoftLogCustomization.Customize(new VostokLoggerProviderSettings())));
 
-            hostBuilder.ConfigureAppConfiguration(
-                configurationBuilder => configurationBuilder
-                    .AddVostok(environment.ConfigurationSource)
-                    .AddVostok(environment.SecretConfigurationSource));
+            hostBuilder.ConfigureAppConfiguration(config => config.AddVostokSources(environment));
 
-            hostBuilder.ConfigureServices(
-                services => services.AddSingleton<IHostLifetime, EmptyHostLifetime>());
+            hostBuilder.ConfigureServices(services => services.AddSingleton<IHostLifetime, EmptyHostLifetime>());
 
-            RegisterTypes(hostBuilder, environment);
+            hostBuilder.ConfigureServices(services => services.AddVostokEnvironment(environment));
 
             genericHostCustomization.Customize(new HostBuilderWrapper(hostBuilder));
 
@@ -62,11 +53,5 @@ namespace Vostok.Applications.AspNetCore.Builders
             microsoftLogCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
             return this;
         }
-
-        private static void RegisterTypes(IHostBuilder builder, IVostokHostingEnvironment environment) 
-            => builder.ConfigureServices(services => services.AddVostokEnvironment(environment));
-
-        private ILoggerProvider CreateMicrosoftLog() 
-            => new VostokLoggerProvider(environment.Log, microsoftLogCustomization.Customize(new VostokLoggerProviderSettings()));
     }
 }
