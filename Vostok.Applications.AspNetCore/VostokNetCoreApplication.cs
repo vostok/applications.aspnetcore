@@ -28,7 +28,7 @@ namespace Vostok.Applications.AspNetCore
 
             manager = new HostManager(builder.Build(), log);
 
-            await manager.StartHostAsync(environment.ShutdownToken).ConfigureAwait(false);
+            await manager.StartHostAsync(environment.ShutdownToken);
         }
 
         public Task RunAsync(IVostokHostingEnvironment environment) =>

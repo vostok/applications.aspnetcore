@@ -17,7 +17,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         {
             try
             {
-                await next(context).ConfigureAwait(false);
+                await next(context);
             }
             catch (Exception error)
             {

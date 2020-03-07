@@ -29,7 +29,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             foreach (var action in settings.AdditionalActions)
                 action(context.Request);
 
-            await next(context).ConfigureAwait(false);
+            await next(context);
         }
     }
 }
