@@ -26,7 +26,7 @@ namespace Vostok.Applications.AspNetCore
     {
         private readonly List<IDisposable> disposables = new List<IDisposable>();
         private readonly AtomicBoolean initialized = new AtomicBoolean(false);
-        private volatile HostManager manager;
+        private volatile GenericHostManager manager;
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
@@ -34,12 +34,11 @@ namespace Vostok.Applications.AspNetCore
 
             var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, disposables, initialized);
 
-            // Note(kungurtsev): for code, packed into other dll.
             builder.SetupPingApi(settings => settings.CommitHashProvider = GetCommitHash);
 
             Setup(builder, environment);
 
-            disposables.Add(manager = new HostManager(builder.BuildHost(), log));
+            disposables.Add(manager = new GenericHostManager(builder.BuildHost(), log));
 
             await manager.StartHostAsync(environment.ShutdownToken);
 

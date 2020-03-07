@@ -6,11 +6,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {
-    internal class HostBuilderWrapper : IHostBuilder
+    internal class GenericHostBuilderWrapper : IHostBuilder
     {
         private readonly IHostBuilder builder;
 
-        public HostBuilderWrapper(IHostBuilder builder)
+        public GenericHostBuilderWrapper(IHostBuilder builder)
             => this.builder = builder;
 
         public IDictionary<object, object> Properties
