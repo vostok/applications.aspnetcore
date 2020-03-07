@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.IIS.Core;
 using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Helpers;
@@ -60,6 +61,12 @@ namespace Vostok.Applications.AspNetCore.Builders
             return this;
         }
 
+        public IVostokAspNetCoreApplicationBuilder DisableDefaultMiddlewares()
+        {
+            middlewaresBuilder.Disable();
+            return this;
+        }
+
         public IVostokAspNetCoreApplicationBuilder DisableWebHost()
         {
             webHostBuilder.Disable();
@@ -114,7 +121,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             return this;
         }
 
-        public IVostokAspNetCoreApplicationBuilder SetupUnhanndledErrors(Action<UnhandledErrorsSettings> setup)
+        public IVostokAspNetCoreApplicationBuilder SetupUnhandledErrors(Action<UnhandledErrorsSettings> setup)
         {
             middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
             return this;

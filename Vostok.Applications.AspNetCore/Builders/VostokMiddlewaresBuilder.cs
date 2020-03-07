@@ -11,6 +11,7 @@ namespace Vostok.Applications.AspNetCore.Builders
 {
     internal class VostokMiddlewaresBuilder
     {
+        private readonly AtomicBoolean enabled = true;
         private readonly VostokThrottlingBuilder throttlingBuilder;
         private readonly Customization<TracingSettings> tracingCustomization = new Customization<TracingSettings>();
         private readonly Customization<LoggingSettings> loggingCustomization = new Customization<LoggingSettings>();
@@ -26,6 +27,9 @@ namespace Vostok.Applications.AspNetCore.Builders
 
             Customize(pingApi => pingApi.InitializationCheck = () => applicationInitialized);
         }
+
+        public void Disable()
+            => enabled.Value = false;
 
         public void Customize(Action<TracingSettings> customization)
             => tracingCustomization.AddCustomization(customization);
@@ -50,6 +54,9 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public void Register(IServiceCollection services)
         {
+            if (!enabled)
+                return;
+
             services.AddSingleton(throttlingBuilder.BuildProvider());
 
             services.Configure<TracingSettings>(settings => tracingCustomization.Customize(settings));

@@ -16,6 +16,8 @@ namespace Vostok.Applications.AspNetCore.Builders
     public interface IVostokAspNetCoreApplicationBuilder
     {
         IVostokAspNetCoreApplicationBuilder DisableWebHost();
+
+        IVostokAspNetCoreApplicationBuilder DisableDefaultMiddlewares();
         
         IVostokAspNetCoreApplicationBuilder SetupWebHost([NotNull] Action<IWebHostBuilder> setup);
 
@@ -37,7 +39,7 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         IVostokAspNetCoreApplicationBuilder SetupDistributedContext([NotNull] Action<DistributedContextSettings> setup);
         
-        IVostokAspNetCoreApplicationBuilder SetupUnhanndledErrors([NotNull] Action<UnhandledErrorsSettings> setup);
+        IVostokAspNetCoreApplicationBuilder SetupUnhandledErrors([NotNull] Action<UnhandledErrorsSettings> setup);
 
         IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog([NotNull] Action<VostokLoggerProviderSettings> setup);
     }
