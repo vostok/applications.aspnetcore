@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Helpers;
+using Vostok.Commons.Environment;
 using Vostok.Commons.Threading;
 using Vostok.Context;
 using Vostok.Hosting.Abstractions;
@@ -47,6 +49,8 @@ namespace Vostok.Applications.AspNetCore.Builders
             throttlingBuilder = new VostokThrottlingBuilder(environment, disposables);
             middlewaresBuilder = new VostokMiddlewaresBuilder(throttlingBuilder, initialized);
             webHostBuilder = new VostokWebHostBuilder<TStartup>(environment, kestrelBuilder, middlewaresBuilder);
+
+            SetupPingApi(settings => settings.CommitHashProvider = GetCommitHash);
         }
 
         public Host BuildHost()
@@ -58,6 +62,20 @@ namespace Vostok.Applications.AspNetCore.Builders
                 webHostBuilder.ConfigureWebHost(hostBuilder);
 
                 return hostBuilder.Build();
+            }
+        }
+
+        private static string GetCommitHash()
+        {
+            try
+            {
+                var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetAssembly(typeof(VostokAspNetCoreApplication<>));
+
+                return AssemblyCommitHashExtractor.ExtractFromAssembly(assembly);
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
 

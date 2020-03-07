@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
-using Vostok.Commons.Environment;
 using Vostok.Commons.Threading;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Requirements;
@@ -39,8 +37,6 @@ namespace Vostok.Applications.AspNetCore
 
             var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, disposables, initialized);
 
-            builder.SetupPingApi(settings => settings.CommitHashProvider = GetCommitHash);
-
             Setup(builder, environment);
 
             disposables.Add(manager = new HostManager(builder.BuildHost(), log));
@@ -70,17 +66,5 @@ namespace Vostok.Applications.AspNetCore
 
         public void Dispose() =>
             disposables.ForEach(disposable => disposable?.Dispose());
-
-        private string GetCommitHash()
-        {
-            try
-            {
-                return AssemblyCommitHashExtractor.ExtractFromAssembly(Assembly.GetAssembly(GetType()));
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
     }
 }
