@@ -40,7 +40,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             webHostBuilder = new VostokWebHostBuilder<TStartup>(environment, kestrelBuilder, middlewaresBuilder);
         }
 
-        public IHost Build()
+        public IHost BuildHost()
         {
             using (FlowingContext.Globals.Use(environment))
             {

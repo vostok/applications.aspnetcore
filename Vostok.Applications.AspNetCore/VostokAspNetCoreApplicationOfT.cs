@@ -39,7 +39,7 @@ namespace Vostok.Applications.AspNetCore
 
             Setup(builder, environment);
 
-            disposables.Add(manager = new HostManager(builder.Build(), log));
+            disposables.Add(manager = new HostManager(builder.BuildHost(), log));
 
             await manager.StartHostAsync(environment.ShutdownToken);
 

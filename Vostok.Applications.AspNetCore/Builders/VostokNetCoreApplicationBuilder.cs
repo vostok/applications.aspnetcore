@@ -13,7 +13,6 @@ namespace Vostok.Applications.AspNetCore.Builders
     internal class VostokNetCoreApplicationBuilder : IVostokNetCoreApplicationBuilder
     {
         private readonly IVostokHostingEnvironment environment;
-
         private readonly Customization<IHostBuilder> genericHostCustomization;
         private readonly Customization<VostokLoggerProviderSettings> microsoftLogCustomization;
 
@@ -25,7 +24,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             microsoftLogCustomization = new Customization<VostokLoggerProviderSettings>();
         }
 
-        public IHost Build() =>
+        public IHost BuildHost() =>
             CreateHostBuilder().Build();
 
         public IHostBuilder CreateHostBuilder()

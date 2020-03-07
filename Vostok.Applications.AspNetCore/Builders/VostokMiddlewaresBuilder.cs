@@ -46,7 +46,7 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public void Register(IServiceCollection services)
         {
-            services.AddSingleton(throttlingBuilder.Build());
+            services.AddSingleton(throttlingBuilder.BuildProvider());
 
             services.Configure<TracingSettings>(settings => tracingCustomization.Customize(settings));
             services.Configure<LoggingSettings>(settings => loggingCustomization.Customize(settings));

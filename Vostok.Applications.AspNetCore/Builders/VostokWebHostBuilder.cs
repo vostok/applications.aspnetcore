@@ -19,8 +19,8 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly VostokKestrelBuilder kestrelBuilder;
         private readonly VostokMiddlewaresBuilder middlewaresBuilder;
 
-        private readonly AtomicBoolean webHostEnabled = true;
-        private readonly Customization<IWebHostBuilder> webHostCustomization = new Customization<IWebHostBuilder>();
+        private readonly AtomicBoolean webHostEnabled;
+        private readonly Customization<IWebHostBuilder> webHostCustomization;
 
         public VostokWebHostBuilder(
             IVostokHostingEnvironment environment, 
@@ -30,6 +30,9 @@ namespace Vostok.Applications.AspNetCore.Builders
             this.environment = environment;
             this.kestrelBuilder = kestrelBuilder;
             this.middlewaresBuilder = middlewaresBuilder;
+
+            webHostEnabled = true;
+            webHostCustomization = new Customization<IWebHostBuilder>();
         }
 
         public void Disable()
@@ -71,7 +74,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             if (!environment.ServiceBeacon.ReplicaInfo.TryGetUrl(out var url))
                 throw new Exception("Port or url should be configured in ServiceBeacon using VostokHostingEnvironmentSetup.");
 
-            webHostBuilder = webHostBuilder.UseUrls($"{url.Scheme}://*:{url.Port}/");
+            webHostBuilder.UseUrls($"{url.Scheme}://*:{url.Port}/");
 
             webHostBuilder.ConfigureServices(services => services.AddTransient<IStartupFilter>(_ => new UrlPathStartupFilter(environment)));
         }
