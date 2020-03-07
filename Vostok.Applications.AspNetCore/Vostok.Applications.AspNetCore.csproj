@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\vostok.devtools\library-common-props\Main-Project.props" />
   <Import Project="..\..\vostok.devtools\git-commit-to-assembly-title\Vostok.Tools.GitCommit2AssemblyTitle.props" />
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
@@ -23,6 +23,12 @@
     <OutputType>Library</OutputType>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0"/>
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\AssemblyCommitHashExtractor.cs" Link="Commons\AssemblyCommitHashExtractor.cs" />
     <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\AssemblyTitleParser.cs" Link="Commons\AssemblyTitleParser.cs" />
