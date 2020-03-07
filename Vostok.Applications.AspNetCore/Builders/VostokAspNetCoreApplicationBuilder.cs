@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.IIS.Core;
 using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Helpers;
@@ -56,86 +55,50 @@ namespace Vostok.Applications.AspNetCore.Builders
         #region SetupComponents
 
         public IVostokAspNetCoreApplicationBuilder SetupGenericHost(Action<IHostBuilder> setup)
-        {
-            baseHostBuilder.SetupGenericHost(setup);
-            return this;
-        }
+            => Setup(() => baseHostBuilder.SetupGenericHost(setup));
 
         public IVostokAspNetCoreApplicationBuilder DisableDefaultMiddlewares()
-        {
-            middlewaresBuilder.Disable();
-            return this;
-        }
+            => Setup(middlewaresBuilder.Disable);
 
         public IVostokAspNetCoreApplicationBuilder DisableWebHost()
-        {
-            webHostBuilder.Disable();
-            return this;
-        }
+            => Setup(webHostBuilder.Disable);
 
         public IVostokAspNetCoreApplicationBuilder SetupWebHost(Action<IWebHostBuilder> setup)
-        {
-            webHostBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
-            return this;
-        }
+            => Setup(() => webHostBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupKestrel(Action<KestrelSettings> setup)
-        {
-            kestrelBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
-            return this;
-        }
+            => Setup(() => kestrelBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupDatacenterAwareness(Action<DatacenterAwarenessSettings> setup)
-        {
-            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
-            return this;
-        }
+            => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupRequestInfoFilling(Action<FillRequestInfoSettings> setup)
-        {
-            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))); 
-            return this;
-        }
+            => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupDistributedContext(Action<DistributedContextSettings> setup)
-        {
-            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))); 
-            return this;
-        }
+            => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupTracing(Action<TracingSettings> setup)
-        {
-            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
-            return this;
-        }
+            => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupLogging(Action<LoggingSettings> setup)
-        {
-            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
-            return this;
-        }
+            => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupPingApi(Action<PingApiSettings> setup)
-        {
-            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
-            return this;
-        }
+            => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupUnhandledErrors(Action<UnhandledErrorsSettings> setup)
-        {
-            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
-            return this;
-        }
+            => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog(Action<VostokLoggerProviderSettings> setup)
-        {
-            baseHostBuilder.SetupMicrosoftLog(setup ?? throw new ArgumentNullException(nameof(setup)));
-            return this;
-        }
+            => Setup(() => baseHostBuilder.SetupMicrosoftLog(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupThrottling(Action<IVostokThrottlingBuilder> setup)
+            => Setup(() => setup(throttlingBuilder));
+
+        private IVostokAspNetCoreApplicationBuilder Setup(Action setup)
         {
-            setup(throttlingBuilder);
+            setup();
             return this;
         }
 
