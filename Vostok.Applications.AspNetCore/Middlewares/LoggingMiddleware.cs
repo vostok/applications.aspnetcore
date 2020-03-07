@@ -34,7 +34,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
             var watch = Stopwatch.StartNew();
 
-            await next(context).ConfigureAwait(false);
+            await next(context);
 
             LogResponse(context.Request, context.Response, watch.Elapsed);
         }

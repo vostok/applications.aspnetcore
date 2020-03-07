@@ -34,21 +34,21 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         {
             if (IsDisabled(context))
             {
-                await next(context).ConfigureAwait(false);
+                await next(context);
                 return;
             }
 
             var info = FlowingContext.Globals.Get<IRequestInfo>();
             var properties = BuildThrottlingProperties(context, info);
 
-            using (var result = await provider.ThrottleAsync(properties, info.RemainingTimeout).ConfigureAwait(false))
+            using (var result = await provider.ThrottleAsync(properties, info.RemainingTimeout))
             {
                 if (result.Status == ThrottlingStatus.Passed)
                 {
                     if (result.WaitTime >= LongThrottlingWaitTime)
                         LogWaitTime(context, info, result);
 
-                    await next(context).ConfigureAwait(false);
+                    await next(context);
 
                     return;
                 }

@@ -30,7 +30,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 return;
             }
 
-            await next(context).ConfigureAwait(false);
+            await next(context);
         }
     }
 }

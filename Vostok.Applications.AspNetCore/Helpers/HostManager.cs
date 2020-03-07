@@ -38,20 +38,20 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
             log.Info("Hosting environment: {HostingEnvironment}.", environment.EnvironmentName);
 
-            await host.StartAsync(shutdownToken).ConfigureAwait(false);
+            await host.StartAsync(shutdownToken);
 
-            await lifetime.ApplicationStarted.WaitAsync().ConfigureAwait(false);
+            await lifetime.ApplicationStarted.WaitAsync();
 
             log.Info("Host started.");
         }
 
         public async Task RunHostAsync()
         {
-            await lifetime.ApplicationStopping.WaitAsync().ConfigureAwait(false);
+            await lifetime.ApplicationStopping.WaitAsync();
 
             log.Info("Stopping Host.");
 
-            await lifetime.ApplicationStopped.WaitAsync().ConfigureAwait(false);
+            await lifetime.ApplicationStopped.WaitAsync();
 
             log.Info("Host stopped.");
 
