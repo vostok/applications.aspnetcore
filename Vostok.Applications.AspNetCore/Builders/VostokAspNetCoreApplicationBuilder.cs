@@ -41,7 +41,9 @@ namespace Vostok.Applications.AspNetCore.Builders
                 s => s.IgnoredScopes = new HashSet<string>
                 {
                     MicrosoftConstants.ActionLogScope,
+                    MicrosoftConstants.ActionLogScopeOld,
                     MicrosoftConstants.HostingLogScope,
+                    MicrosoftConstants.HostingLogScopeOld,
                     MicrosoftConstants.ConnectionLogScope
                 });
 
