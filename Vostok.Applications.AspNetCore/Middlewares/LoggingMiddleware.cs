@@ -103,16 +103,16 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 builder,
                 b =>
                 {
-                    foreach (var (key, value) in headers)
+                    foreach (var pair in headers)
                     {
-                        if (!settings.IsEnabledForKey(key))
+                        if (!settings.IsEnabledForKey(pair.Key))
                             continue;
 
                         b.AppendLine();
                         b.Append('\t');
-                        b.Append(key);
+                        b.Append(pair.Key);
                         b.Append(": ");
-                        b.Append(value);
+                        b.Append(pair.Value);
                     }
                 });
         }
