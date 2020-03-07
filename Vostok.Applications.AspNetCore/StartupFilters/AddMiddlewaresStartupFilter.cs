@@ -9,7 +9,7 @@ namespace Vostok.Applications.AspNetCore.StartupFilters
     {
         private readonly IReadOnlyList<Type> middlewaresTypes;
 
-        public AddMiddlewaresStartupFilter(params Type[] middlewaresTypes)
+        public AddMiddlewaresStartupFilter(IReadOnlyList<Type> middlewaresTypes)
             => this.middlewaresTypes = middlewaresTypes;
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)

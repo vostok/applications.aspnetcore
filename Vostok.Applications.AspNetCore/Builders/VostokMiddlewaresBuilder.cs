@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Configuration;
@@ -11,8 +12,8 @@ namespace Vostok.Applications.AspNetCore.Builders
 {
     internal class VostokMiddlewaresBuilder
     {
-        private readonly AtomicBoolean enabled = true;
         private readonly VostokThrottlingBuilder throttlingBuilder;
+
         private readonly Customization<TracingSettings> tracingCustomization = new Customization<TracingSettings>();
         private readonly Customization<LoggingSettings> loggingCustomization = new Customization<LoggingSettings>();
         private readonly Customization<PingApiSettings> pingApiCustomization = new Customization<PingApiSettings>();
@@ -20,6 +21,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly Customization<FillRequestInfoSettings> fillRequestInfoCustomization = new Customization<FillRequestInfoSettings>();
         private readonly Customization<DistributedContextSettings> distributedContextCustomization = new Customization<DistributedContextSettings>();
         private readonly Customization<DatacenterAwarenessSettings> datacenterAwarenessCustomization = new Customization<DatacenterAwarenessSettings>();
+
+        private readonly AtomicBoolean disabled = false;
+        private readonly HashSet<Type> disabledMiddlewares = new HashSet<Type>();
 
         public VostokMiddlewaresBuilder(VostokThrottlingBuilder throttlingBuilder, AtomicBoolean applicationInitialized)
         {
@@ -29,7 +33,10 @@ namespace Vostok.Applications.AspNetCore.Builders
         }
 
         public void Disable()
-            => enabled.Value = false;
+            => disabled.Value = true;
+
+        public void Disable<TMiddleware>()
+            => disabledMiddlewares.Add(typeof(TMiddleware));
 
         public void Customize(Action<TracingSettings> customization)
             => tracingCustomization.AddCustomization(customization);
@@ -54,31 +61,38 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public void Register(IServiceCollection services)
         {
-            if (!enabled)
+            var middlewares = new List<Type>();
+
+            if (IsEnabled<TracingMiddleware>())
+                services.AddSingleton(throttlingBuilder.BuildProvider());
+
+            Register<FillRequestInfoSettings, FillRequestInfoMiddleware>(services, fillRequestInfoCustomization, middlewares);
+            Register<DistributedContextSettings, DistributedContextMiddleware>(services, distributedContextCustomization, middlewares);
+            Register<TracingSettings, TracingMiddleware>(services, tracingCustomization, middlewares);
+            Register<ThrottlingSettings, ThrottlingMiddleware>(services, throttlingBuilder.MiddlewareCustomization, middlewares);
+            Register<LoggingSettings, LoggingMiddleware>(services, loggingCustomization, middlewares);
+            Register<DatacenterAwarenessSettings, DatacenterAwarenessMiddleware > (services, datacenterAwarenessCustomization, middlewares);
+            Register<UnhandledErrorsSettings, UnhandledErrorMiddleware> (services, errorHandlingCustomization, middlewares);
+            Register<PingApiSettings, PingApiMiddleware> (services, pingApiCustomization, middlewares);
+
+            if (middlewares.Count == 0)
                 return;
 
-            services.AddSingleton(throttlingBuilder.BuildProvider());
-
-            services.Configure<TracingSettings>(settings => tracingCustomization.Customize(settings));
-            services.Configure<LoggingSettings>(settings => loggingCustomization.Customize(settings));
-            services.Configure<PingApiSettings>(settings => pingApiCustomization.Customize(settings));
-            services.Configure<ThrottlingSettings>(settings => throttlingBuilder.MiddlewareCustomization.Customize(settings));
-            services.Configure<UnhandledErrorsSettings>(settings => errorHandlingCustomization.Customize(settings));
-            services.Configure<FillRequestInfoSettings>(settings => fillRequestInfoCustomization.Customize(settings));
-            services.Configure<DistributedContextSettings>(settings => distributedContextCustomization.Customize(settings));
-            services.Configure<DatacenterAwarenessSettings>(settings => datacenterAwarenessCustomization.Customize(settings));
-
-            var addMiddlewaresFilter = new AddMiddlewaresStartupFilter(
-                typeof(FillRequestInfoMiddleware),
-                typeof(DistributedContextMiddleware),
-                typeof(TracingMiddleware),
-                typeof(ThrottlingMiddleware),
-                typeof(LoggingMiddleware),
-                typeof(DatacenterAwarenessMiddleware),
-                typeof(UnhandledErrorMiddleware),
-                typeof(PingApiMiddleware));
-
-            services.AddTransient<IStartupFilter>(_ => addMiddlewaresFilter);
+            services.AddTransient<IStartupFilter>(_ => new AddMiddlewaresStartupFilter(middlewares));
         }
+
+        private void Register<TSettings, TMiddleware>(IServiceCollection services, Customization<TSettings> customization, List<Type> middlewares)
+            where TSettings : class
+        {
+            if (IsEnabled<TMiddleware>())
+            {
+                services.Configure<TSettings>(settings => customization.Customize(settings));
+
+                middlewares.Add(typeof(TMiddleware));
+            }
+        }
+
+        private bool IsEnabled<TMiddleware>()
+            => !disabled && !disabledMiddlewares.Contains(typeof(TMiddleware));
     }
 }

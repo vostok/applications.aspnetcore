@@ -57,8 +57,11 @@ namespace Vostok.Applications.AspNetCore.Builders
         public IVostokAspNetCoreApplicationBuilder SetupGenericHost(Action<IHostBuilder> setup)
             => Setup(() => baseHostBuilder.SetupGenericHost(setup));
 
-        public IVostokAspNetCoreApplicationBuilder DisableDefaultMiddlewares()
+        public IVostokAspNetCoreApplicationBuilder DisableVostokMiddlewares()
             => Setup(middlewaresBuilder.Disable);
+
+        public IVostokAspNetCoreApplicationBuilder DisableVostokMiddleware<TMiddleware>()
+            => Setup(middlewaresBuilder.Disable<TMiddleware>);
 
         public IVostokAspNetCoreApplicationBuilder DisableWebHost()
             => Setup(webHostBuilder.Disable);
