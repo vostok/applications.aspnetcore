@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Vostok.Applications.AspNetCore.Configuration;
@@ -73,7 +72,6 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                context.Request.ContentLength > LargeRequestBodySize ||
                context.Request.Headers[HeaderNames.TransferEncoding] == "chunked";
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string GetClientConnectionInfo(HttpContext context)
             => $"{context.Connection.RemoteIpAddress}:{context.Connection.RemotePort}";
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -39,7 +38,6 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             LogResponse(context.Request, context.Response, watch.Elapsed);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void AppendSegment(StringBuilder builder, object[] parameters, string templateSegment, object parameter, ref int parameterIndex)
         {
             builder.Append(templateSegment);
@@ -47,7 +45,6 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             parameters[parameterIndex++] = parameter;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string GetClientConnectionInfo(HttpRequest request)
         {
             var connection = request.HttpContext.Connection;
