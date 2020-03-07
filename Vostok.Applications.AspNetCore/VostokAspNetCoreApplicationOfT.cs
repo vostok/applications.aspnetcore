@@ -5,12 +5,17 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
-using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Commons.Environment;
 using Vostok.Commons.Threading;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Logging.Abstractions;
+
+#if NETCOREAPP3_1
+using HostManager = Vostok.Applications.AspNetCore.Helpers.GenericHostManager;
+#else
+using HostManager = Vostok.Applications.AspNetCore.Helpers.WebHostManager;
+#endif
 
 namespace Vostok.Applications.AspNetCore
 {
@@ -26,7 +31,7 @@ namespace Vostok.Applications.AspNetCore
     {
         private readonly List<IDisposable> disposables = new List<IDisposable>();
         private readonly AtomicBoolean initialized = new AtomicBoolean(false);
-        private volatile GenericHostManager manager;
+        private volatile HostManager manager;
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
@@ -38,7 +43,7 @@ namespace Vostok.Applications.AspNetCore
 
             Setup(builder, environment);
 
-            disposables.Add(manager = new GenericHostManager(builder.BuildHost(), log));
+            disposables.Add(manager = new HostManager(builder.BuildHost(), log));
 
             await manager.StartHostAsync(environment.ShutdownToken);
 

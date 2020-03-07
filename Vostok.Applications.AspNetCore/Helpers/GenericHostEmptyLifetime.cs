@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿#if NETCOREAPP3_1
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
@@ -13,3 +14,4 @@ namespace Vostok.Applications.AspNetCore.Helpers
             Task.CompletedTask;
     }
 }
+#endif

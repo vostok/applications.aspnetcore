@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETCOREAPP3_1
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,3 +39,4 @@ namespace Vostok.Applications.AspNetCore.Helpers
             builder.UseServiceProviderFactory(factory);
     }
 }
+#endif

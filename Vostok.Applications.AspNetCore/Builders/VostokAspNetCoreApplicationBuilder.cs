@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Commons.Threading;
@@ -9,9 +8,19 @@ using Vostok.Context;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
 
+#if NETCOREAPP3_1
+using Host = Microsoft.Extensions.Hosting.IHost;
+using HostFactory = Vostok.Applications.AspNetCore.Helpers.GenericHostFactory;
+#else
+using Host = Microsoft.AspNetCore.Hosting.IWebHost;
+using HostFactory = Vostok.Applications.AspNetCore.Helpers.WebHostFactory;
+#endif
+
+// ReSharper disable PartialTypeWithSinglePart
+
 namespace Vostok.Applications.AspNetCore.Builders
 {
-    internal class VostokAspNetCoreApplicationBuilder<TStartup> : IVostokAspNetCoreApplicationBuilder
+    internal partial class VostokAspNetCoreApplicationBuilder<TStartup> : IVostokAspNetCoreApplicationBuilder
         where TStartup : class
     {
         private readonly IVostokHostingEnvironment environment;
@@ -19,14 +28,14 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly VostokThrottlingBuilder throttlingBuilder;
         private readonly VostokMiddlewaresBuilder middlewaresBuilder;
         private readonly VostokWebHostBuilder<TStartup> webHostBuilder;
-        private readonly GenericHostFactory genericHostFactory;
+        private readonly HostFactory hostFactory;
 
         public VostokAspNetCoreApplicationBuilder(IVostokHostingEnvironment environment, List<IDisposable> disposables, AtomicBoolean initialized)
         {
             this.environment = environment;
 
-            genericHostFactory = new GenericHostFactory(environment);
-            genericHostFactory.SetupLogger(
+            hostFactory = new HostFactory(environment);
+            hostFactory.SetupLogger(
                 s => s.IgnoredScopes = new HashSet<string>
                 {
                     MicrosoftConstants.ActionLogScope,
@@ -40,11 +49,11 @@ namespace Vostok.Applications.AspNetCore.Builders
             webHostBuilder = new VostokWebHostBuilder<TStartup>(environment, kestrelBuilder, middlewaresBuilder);
         }
 
-        public IHost BuildHost()
+        public Host BuildHost()
         {
             using (FlowingContext.Globals.Use(environment))
             {
-                var hostBuilder = genericHostFactory.CreateHostBuilder();
+                var hostBuilder = hostFactory.CreateHostBuilder();
 
                 webHostBuilder.ConfigureWebHost(hostBuilder);
 
@@ -54,11 +63,8 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         #region SetupComponents
 
-        public IVostokAspNetCoreApplicationBuilder SetupGenericHost(Action<IHostBuilder> setup)
-            => Setup(() => genericHostFactory.SetupHost(setup));
-
         public IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog(Action<VostokLoggerProviderSettings> setup)
-            => Setup(() => genericHostFactory.SetupLogger(setup ?? throw new ArgumentNullException(nameof(setup))));
+            => Setup(() => hostFactory.SetupLogger(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupKestrel(Action<KestrelSettings> setup)
             => Setup(() => kestrelBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));

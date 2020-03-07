@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETCOREAPP3_1
+using System;
 using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Logging.Microsoft;
@@ -25,3 +26,4 @@ namespace Vostok.Applications.AspNetCore.Builders
         }
     }
 }
+#endif

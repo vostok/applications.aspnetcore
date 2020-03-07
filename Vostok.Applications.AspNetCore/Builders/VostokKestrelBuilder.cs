@@ -38,6 +38,10 @@ namespace Vostok.Applications.AspNetCore.Builders
         }
 
         public void ConfigureSocketTransport(SocketTransportOptions options)
-            => options.NoDelay = true;
+        {
+            #if NETCOREAPP3_1
+            options.NoDelay = true;
+            #endif
+        } 
     }
 }

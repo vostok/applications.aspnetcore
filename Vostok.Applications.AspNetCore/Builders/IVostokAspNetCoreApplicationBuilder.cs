@@ -1,10 +1,11 @@
 ﻿using System;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Logging.Microsoft;
+
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace Vostok.Applications.AspNetCore.Builders
 {
@@ -14,7 +15,7 @@ namespace Vostok.Applications.AspNetCore.Builders
     /// <para>Allows to configure/disable <see cref="IWebHostBuilder"/> and customize built-in Vostok middlewares.</para>
     /// </summary>
     [PublicAPI]
-    public interface IVostokAspNetCoreApplicationBuilder
+    public partial interface IVostokAspNetCoreApplicationBuilder
     {
         /// <summary>
         /// Disables web host and HTTP server entirely.
@@ -46,11 +47,6 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// Applies an arbitrary customization to web host.
         /// </summary>
         IVostokAspNetCoreApplicationBuilder SetupWebHost([NotNull] Action<IWebHostBuilder> setup);
-
-        /// <summary>
-        /// Applies an arbitrary customization to generic host.
-        /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupGenericHost([NotNull] Action<IHostBuilder> setup);
 
         /// <summary>
         /// Customizes Kestrel settings.

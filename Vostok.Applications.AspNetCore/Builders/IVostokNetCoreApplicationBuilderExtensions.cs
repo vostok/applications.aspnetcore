@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿#if NETCOREAPP3_1
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -12,3 +13,4 @@ namespace Vostok.Applications.AspNetCore.Builders
             => builder.SetupGenericHost(b => b.ConfigureServices(services => services.AddHostedService<THostedService>()));
     }
 }
+#endif

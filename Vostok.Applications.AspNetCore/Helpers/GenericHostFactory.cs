@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETCOREAPP3_1
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Vostok.Commons.Helpers;
@@ -47,3 +48,4 @@ namespace Vostok.Applications.AspNetCore.Helpers
             => loggerCustomization.Customize(new VostokLoggerProviderSettings());
     }
 }
+#endif

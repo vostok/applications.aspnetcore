@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Applications.AspNetCore.StartupFilters;
 using Vostok.Commons.Helpers;
@@ -10,9 +9,11 @@ using Vostok.Commons.Time;
 using Vostok.Hosting.Abstractions;
 using Vostok.ServiceDiscovery.Abstractions;
 
+// ReSharper disable PartialTypeWithSinglePart
+
 namespace Vostok.Applications.AspNetCore.Builders
 {
-    internal class VostokWebHostBuilder<TStartup>
+    internal partial class VostokWebHostBuilder<TStartup>
         where TStartup : class
     {
         private readonly IVostokHostingEnvironment environment;
@@ -41,17 +42,14 @@ namespace Vostok.Applications.AspNetCore.Builders
         public void Customize(Action<IWebHostBuilder> customization)
             => webHostCustomization.AddCustomization(customization);
 
-        public void ConfigureWebHost(IHostBuilder genericHostBuilder)
+        public void ConfigureWebHost(IWebHostBuilder webHostBuilder)
         {
-            if (webHostEnabled)
-            {
-                genericHostBuilder.ConfigureServices(middlewaresBuilder.Register);
+            webHostBuilder.ConfigureServices(middlewaresBuilder.Register);
 
-                genericHostBuilder.ConfigureWebHostDefaults(ConfigureWebHost);
-            }
+            ConfigureWebHostInternal(webHostBuilder);
         }
 
-        private void ConfigureWebHost(IWebHostBuilder webHostBuilder)
+        private void ConfigureWebHostInternal(IWebHostBuilder webHostBuilder)
         {
             ConfigureUrl(webHostBuilder);
 

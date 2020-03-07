@@ -4,16 +4,16 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 using Vostok.Commons.Helpers.Extensions;
 using Vostok.Logging.Abstractions;
 using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 // ReSharper disable MethodSupportsCancellation
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {
-    internal class WebHostManager
+    internal class WebHostManager : IDisposable
     {
         private readonly IWebHost webHost;
         private readonly ILog log;
@@ -32,7 +32,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
         {
             lifetime = (IApplicationLifetime)Services.GetService(typeof(IApplicationLifetime));
 
-            var environment = (IHostEnvironment)Services.GetService(typeof(IHostEnvironment));
+            var environment = (IHostingEnvironment)Services.GetService(typeof(IHostingEnvironment));
 
             shutdownRegistration = shutdownToken.Register(
                 () => webHost
