@@ -13,6 +13,8 @@ using Vostok.Commons.Formatting;
 using Vostok.Commons.Time;
 using Vostok.Context;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Abstractions.Values;
+using Vostok.Tracing.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
@@ -43,11 +45,95 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             LogRequest(context.Request);
 
             var watch = Stopwatch.StartNew();
+            var tracingContext = FlowingContext.Globals.Get<TraceContext>();
+            var operationContext = FlowingContext.Globals.Get<OperationContextValue>();
+
+            context.Response.OnCompleted(
+                () =>
+                {
+                    using (FlowingContext.Globals.Use(tracingContext))
+                    using (FlowingContext.Globals.Use(operationContext))
+                        LogResponseCompleted(watch.Elapsed);
+
+                    return Task.CompletedTask;
+                });
 
             await next(context);
 
             LogResponse(context.Request, context.Response, watch.Elapsed);
         }
+
+        private void LogRequest(HttpRequest request)
+        {
+            var requestInfo = FlowingContext.Globals.Get<IRequestInfo>();
+            var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
+
+            var addClientIdentity = requestInfo?.ClientApplicationIdentity != null;
+            var addBodySize = request.ContentLength > 0L;
+            var addHeaders = options.Value.LogRequestHeaders.IsEnabledForRequest(request);
+
+            var parametersCount = 3 + (addClientIdentity ? 1 : 0) + (addBodySize ? 1 : 0) + (addHeaders ? 1 : 0);
+            var parameters = new object[parametersCount];
+            var parametersIndex = 0;
+
+            AppendSegment(builder, parameters, "Received request '{Request}' from", FormatPath(builder, request, options.Value.LogQueryString), ref parametersIndex);
+
+            if (addClientIdentity)
+                AppendSegment(builder, parameters, " '{ClientIdentity}' at", requestInfo.ClientApplicationIdentity, ref parametersIndex);
+
+            AppendSegment(builder, parameters, " '{RequestConnection}'", GetClientConnectionInfo(request), ref parametersIndex);
+            AppendSegment(builder, parameters, " with timeout = {Timeout}", requestInfo?.Timeout.ToPrettyString() ?? "unknown", ref parametersIndex);
+
+            builder.Append('.');
+
+            if (addBodySize)
+                AppendSegment(builder, parameters, " Body size = {BodySize}.", request.ContentLength, ref parametersIndex);
+
+            if (addHeaders)
+                AppendSegment(builder, parameters, " Request headers: {RequestHeaders}", FormatHeaders(builder, request.Headers, options.Value.LogRequestHeaders), ref parametersIndex);
+
+            log.Info(builder.ToString(), parameters);
+
+            StringBuilderCache.Release(builder);
+        }
+
+        private void LogResponse(HttpRequest request, HttpResponse response, TimeSpan elapsed)
+        {
+            var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
+
+            var addBodySize = response.ContentLength > 0;
+            var addHeaders = options.Value.LogResponseHeaders.IsEnabledForRequest(request);
+
+            builder.Append("Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.");
+
+            if (addBodySize)
+                builder.Append(" Body size = {BodySize}.");
+
+            if (addHeaders)
+                builder.Append(" Response headers: {ResponseHeaders}");
+
+            var logEvent = new LogEvent(LogLevel.Info, PreciseDateTime.Now, builder.ToString())
+                .WithProperty("ResponseCode", (ResponseCode)response.StatusCode)
+                .WithProperty("ElapsedTime", elapsed.ToPrettyString())
+                .WithProperty("ElapsedTimeMs", elapsed.TotalMilliseconds);
+
+            if (addBodySize)
+                logEvent = logEvent.WithProperty("BodySize", response.ContentLength);
+
+            if (addHeaders)
+                logEvent = logEvent.WithProperty("ResponseHeaders", FormatHeaders(builder, response.Headers, options.Value.LogResponseHeaders));
+
+            log.Log(logEvent);
+
+            StringBuilderCache.Release(builder);
+        }
+
+        private void LogResponseCompleted(TimeSpan elapsed)
+            => log.Info("Response has completed in {ElapsedTime}.", new
+            {
+                ElapsedTime = elapsed.ToPrettyString(),
+                ElapsedTimeMs = elapsed.TotalMilliseconds,
+            });
 
         private static void AppendSegment(StringBuilder builder, object[] parameters, string templateSegment, object parameter, ref int parameterIndex)
         {
@@ -128,71 +214,6 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             builder.Length = positionBefore;
 
             return result;
-        }
-
-        private void LogRequest(HttpRequest request)
-        {
-            var requestInfo = FlowingContext.Globals.Get<IRequestInfo>();
-            var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
-
-            var addClientIdentity = requestInfo?.ClientApplicationIdentity != null;
-            var addBodySize = request.ContentLength > 0L;
-            var addHeaders = options.Value.LogRequestHeaders.IsEnabledForRequest(request);
-
-            var parametersCount = 3 + (addClientIdentity ? 1 : 0) + (addBodySize ? 1 : 0) + (addHeaders ? 1 : 0);
-            var parameters = new object[parametersCount];
-            var parametersIndex = 0;
-
-            AppendSegment(builder, parameters, "Received request '{Request}' from", FormatPath(builder, request, options.Value.LogQueryString), ref parametersIndex);
-
-            if (addClientIdentity)
-                AppendSegment(builder, parameters, " '{ClientIdentity}' at", requestInfo.ClientApplicationIdentity, ref parametersIndex);
-
-            AppendSegment(builder, parameters, " '{RequestConnection}'", GetClientConnectionInfo(request), ref parametersIndex);
-            AppendSegment(builder, parameters, " with timeout = {Timeout}", requestInfo?.Timeout.ToPrettyString() ?? "unknown", ref parametersIndex);
-
-            builder.Append('.');
-
-            if (addBodySize)
-                AppendSegment(builder, parameters, " Body size = {BodySize}.", request.ContentLength, ref parametersIndex);
-
-            if (addHeaders)
-                AppendSegment(builder, parameters, " Request headers: {RequestHeaders}", FormatHeaders(builder, request.Headers, options.Value.LogRequestHeaders), ref parametersIndex);
-
-            log.Info(builder.ToString(), parameters);
-
-            StringBuilderCache.Release(builder);
-        }
-
-        private void LogResponse(HttpRequest request, HttpResponse response, TimeSpan elapsed)
-        {
-            var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
-
-            var addBodySize = response.ContentLength > 0;
-            var addHeaders = options.Value.LogResponseHeaders.IsEnabledForRequest(request);
-
-            builder.Append("Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.");
-
-            if (addBodySize)
-                builder.Append(" Body size = {BodySize}.");
-
-            if (addHeaders)
-                builder.Append(" Response headers: {ResponseHeaders}");
-
-            var logEvent = new LogEvent(LogLevel.Info, PreciseDateTime.Now, builder.ToString())
-                .WithProperty("ResponseCode", (ResponseCode)response.StatusCode)
-                .WithProperty("ElapsedTime", elapsed.ToPrettyString())
-                .WithProperty("ElapsedTimeMs", elapsed.TotalMilliseconds);
-
-            if (addBodySize)
-                logEvent = logEvent.WithProperty("BodySize", response.ContentLength);
-
-            if (addHeaders)
-                logEvent = logEvent.WithProperty("ResponseHeaders", FormatHeaders(builder, response.Headers, options.Value.LogResponseHeaders));
-
-            log.Log(logEvent);
-
-            StringBuilderCache.Release(builder);
         }
     }
 }
