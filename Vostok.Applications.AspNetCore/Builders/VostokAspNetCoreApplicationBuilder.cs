@@ -192,7 +192,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             => new LoggingMiddleware(loggingCustomization.Customize(new LoggingSettings()), environment.Log);
 
         private IMiddleware CreatePingApiMiddleware()
-            => new PingApiMiddleware(pingApiCustomization.Customize(new PingApiSettings()), initialized);
+            => new PingApiMiddleware(pingApiCustomization.Customize(new PingApiSettings { InitializationCheck = () => initialized }));
 
         private IMiddleware CreateErrorHandlingMiddleware()
             => new UnhandledErrorMiddleware(environment.Log);
