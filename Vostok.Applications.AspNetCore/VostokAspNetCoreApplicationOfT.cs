@@ -6,7 +6,6 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Helpers;
-using Vostok.Applications.AspNetCore.Models;
 using Vostok.Commons.Environment;
 using Vostok.Commons.Threading;
 using Vostok.Hosting.Abstractions;
@@ -31,9 +30,7 @@ namespace Vostok.Applications.AspNetCore
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
-            var log = typeof(TStartup) == typeof(EmptyStartup)
-                ? environment.Log.ForContext<VostokAspNetCoreApplication>()
-                : environment.Log.ForContext<VostokAspNetCoreApplication<TStartup>>();
+            var log = environment.Log.ForContext<VostokAspNetCoreApplication>();
 
             var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, disposables, initialized);
 
