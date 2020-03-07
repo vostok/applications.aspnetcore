@@ -36,6 +36,8 @@ namespace Vostok.Applications.AspNetCore.Builders
         IVostokAspNetCoreApplicationBuilder SetupRequestInfoFilling([NotNull] Action<FillRequestInfoSettings> setup);
 
         IVostokAspNetCoreApplicationBuilder SetupDistributedContext([NotNull] Action<DistributedContextSettings> setup);
+        
+        IVostokAspNetCoreApplicationBuilder SetupUnhanndledErrors([NotNull] Action<UnhandledErrorsSettings> setup);
 
         IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog([NotNull] Action<VostokLoggerProviderSettings> setup);
     }

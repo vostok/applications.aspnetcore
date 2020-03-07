@@ -114,6 +114,12 @@ namespace Vostok.Applications.AspNetCore.Builders
             return this;
         }
 
+        public IVostokAspNetCoreApplicationBuilder SetupUnhanndledErrors(Action<UnhandledErrorsSettings> setup)
+        {
+            middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup)));
+            return this;
+        }
+
         public IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog(Action<VostokLoggerProviderSettings> setup)
         {
             baseHostBuilder.SetupMicrosoftLog(setup ?? throw new ArgumentNullException(nameof(setup)));

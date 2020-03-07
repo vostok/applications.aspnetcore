@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
@@ -9,10 +11,12 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     internal class UnhandledErrorMiddleware
     {
         private readonly RequestDelegate next;
+        private readonly IOptions<UnhandledErrorsSettings> options;
         private readonly ILog log;
 
-        public UnhandledErrorMiddleware(RequestDelegate next, ILog log)
+        public UnhandledErrorMiddleware(RequestDelegate next, IOptions<UnhandledErrorsSettings> options, ILog log)
         {
+            this.options = options;
             this.next = next;
             this.log = log;
         }
@@ -41,13 +45,13 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         private static bool IsCancellationError(Exception error)
             => error is TaskCanceledException || error is OperationCanceledException || error is ConnectionResetException;
 
-        private static void RespondWithError(HttpContext context)
+        private void RespondWithError(HttpContext context)
         {
             var response = context.Response;
             if (response.HasStarted)
                 return;
 
-            response.StatusCode = 500;
+            response.StatusCode = options.Value.RejectionResponseCode;
         }
     }
 }

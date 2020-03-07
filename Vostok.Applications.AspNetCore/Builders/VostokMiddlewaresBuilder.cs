@@ -15,6 +15,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly Customization<TracingSettings> tracingCustomization = new Customization<TracingSettings>();
         private readonly Customization<LoggingSettings> loggingCustomization = new Customization<LoggingSettings>();
         private readonly Customization<PingApiSettings> pingApiCustomization = new Customization<PingApiSettings>();
+        private readonly Customization<UnhandledErrorsSettings> errorHandlingCustomization = new Customization<UnhandledErrorsSettings>();
         private readonly Customization<FillRequestInfoSettings> fillRequestInfoCustomization = new Customization<FillRequestInfoSettings>();
         private readonly Customization<DistributedContextSettings> distributedContextCustomization = new Customization<DistributedContextSettings>();
         private readonly Customization<DatacenterAwarenessSettings> datacenterAwarenessCustomization = new Customization<DatacenterAwarenessSettings>();
@@ -35,6 +36,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         public void Customize(Action<PingApiSettings> customization)
             => pingApiCustomization.AddCustomization(customization);
 
+        public void Customize(Action<UnhandledErrorsSettings> customization)
+            => errorHandlingCustomization.AddCustomization(customization);
+
         public void Customize(Action<FillRequestInfoSettings> customization)
             => fillRequestInfoCustomization.AddCustomization(customization);
 
@@ -52,6 +56,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             services.Configure<LoggingSettings>(settings => loggingCustomization.Customize(settings));
             services.Configure<PingApiSettings>(settings => pingApiCustomization.Customize(settings));
             services.Configure<ThrottlingSettings>(settings => throttlingBuilder.MiddlewareCustomization.Customize(settings));
+            services.Configure<UnhandledErrorsSettings>(settings => errorHandlingCustomization.Customize(settings));
             services.Configure<FillRequestInfoSettings>(settings => fillRequestInfoCustomization.Customize(settings));
             services.Configure<DistributedContextSettings>(settings => distributedContextCustomization.Customize(settings));
             services.Configure<DatacenterAwarenessSettings>(settings => datacenterAwarenessCustomization.Customize(settings));
