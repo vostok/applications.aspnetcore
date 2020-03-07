@@ -3,6 +3,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Vostok.Commons.Helpers;
+using Vostok.Commons.Time;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
 
@@ -29,9 +30,15 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
             hostBuilder.ConfigureAppConfiguration(config => config.AddVostokSources(environment));
 
-            hostBuilder.ConfigureServices(services => services.AddSingleton<IHostLifetime, GenericHostEmptyLifetime>());
+            hostBuilder.ConfigureServices(
+                services =>
+                {
+                    services.AddSingleton<IHostLifetime, GenericHostEmptyLifetime>();
+                    
+                    services.AddVostokEnvironment(environment);
 
-            hostBuilder.ConfigureServices(services => services.AddVostokEnvironment(environment));
+                    services.Configure<HostOptions>(options => options.ShutdownTimeout = environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
+                });
 
             hostCustomization.Customize(new GenericHostBuilderWrapper(hostBuilder));
 
