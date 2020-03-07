@@ -1,7 +1,12 @@
+## 0.1.7 (07-03-2020):
+
+* https://github.com/vostok/applications.aspnetcore/issues/9
+* https://github.com/vostok/applications.aspnetcore/issues/10
+
 ## 0.1.6 (03-03-2020):
 
-* Fixed https://github.com/vostok/applications.aspnetcore/issues/6
-* Fixed https://github.com/vostok/applications.aspnetcore/issues/7
+* https://github.com/vostok/applications.aspnetcore/issues/6
+* https://github.com/vostok/applications.aspnetcore/issues/7
 
 ## 0.1.5 (02-03-2020):
 
