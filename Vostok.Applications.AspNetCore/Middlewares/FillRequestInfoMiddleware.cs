@@ -13,7 +13,7 @@ using Vostok.Context;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class FillRequestInfoMiddleware : IMiddleware
+    internal class FillRequestInfoMiddleware
     {
         private readonly FillRequestInfoSettings settings;
 

@@ -6,7 +6,7 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class UnhandledErrorMiddleware : IMiddleware
+    internal class UnhandledErrorMiddleware
     {
         private readonly ILog log;
 

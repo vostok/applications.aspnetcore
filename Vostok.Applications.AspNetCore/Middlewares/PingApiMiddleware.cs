@@ -6,7 +6,7 @@ using Vostok.Commons.Environment;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class PingApiMiddleware : IMiddleware
+    internal class PingApiMiddleware
     {
         private readonly PingApiSettings settings;
 

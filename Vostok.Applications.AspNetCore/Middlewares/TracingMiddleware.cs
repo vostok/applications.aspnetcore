@@ -10,7 +10,7 @@ using Vostok.Tracing.Extensions.Http;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class TracingMiddleware : IMiddleware
+    internal class TracingMiddleware
     {
         private readonly TracingSettings settings;
         private readonly ITracer tracer;

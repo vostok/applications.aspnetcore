@@ -13,7 +13,7 @@ using Vostok.Throttling;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class ThrottlingMiddleware : IMiddleware
+    internal class ThrottlingMiddleware
     {
         private const long LargeRequestBodySize = 4 * 1024;
         private static readonly TimeSpan LongThrottlingWaitTime = 500.Milliseconds();

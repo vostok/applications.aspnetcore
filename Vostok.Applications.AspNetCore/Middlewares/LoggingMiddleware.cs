@@ -14,7 +14,7 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class LoggingMiddleware : IMiddleware
+    internal class LoggingMiddleware
     {
         private const int StringBuilderCapacity = 256;
 

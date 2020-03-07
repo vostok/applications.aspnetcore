@@ -6,7 +6,7 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class DatacenterAwarenessMiddleware : IMiddleware
+    internal class DatacenterAwarenessMiddleware
     {
         private readonly DatacenterAwarenessSettings settings;
         private readonly IDatacenters datacenters;

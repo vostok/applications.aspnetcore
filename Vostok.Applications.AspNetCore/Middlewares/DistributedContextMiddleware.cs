@@ -8,7 +8,7 @@ using Vostok.Context;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class DistributedContextMiddleware : IMiddleware
+    internal class DistributedContextMiddleware
     {
         private readonly DistributedContextSettings settings;
 
