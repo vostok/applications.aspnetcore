@@ -11,26 +11,26 @@ namespace Vostok.Applications.AspNetCore.Helpers
 {
     internal class HostManager : IDisposable
     {
-        internal readonly IHost Host;
+        private readonly IHost host;
         private readonly ILog log;
         private volatile IHostApplicationLifetime lifetime;
         private volatile IDisposable shutdownRegistration;
 
         public HostManager(IHost host, ILog log)
         {
-            Host = host;
+            this.host = host;
             this.log = log;
         }
 
-        public IServiceProvider Services => Host.Services;
+        public IServiceProvider Services => host.Services;
 
         public async Task StartHostAsync(CancellationToken shutdownToken)
         {
-            lifetime = (IHostApplicationLifetime)Host.Services.GetService(typeof(IHostApplicationLifetime));
-            var environment = (IHostEnvironment)Host.Services.GetService(typeof(IHostEnvironment));
+            lifetime = (IHostApplicationLifetime)host.Services.GetService(typeof(IHostApplicationLifetime));
+            var environment = (IHostEnvironment)host.Services.GetService(typeof(IHostEnvironment));
 
             shutdownRegistration = shutdownToken.Register(
-                () => Host
+                () => host
                     .StopAsync()
                     .ContinueWith(t => log.Error(t.Exception, "Failed to stop Host."), TaskContinuationOptions.OnlyOnFaulted));
 
@@ -38,7 +38,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
             log.Info("Hosting environment: {HostingEnvironment}.", environment.EnvironmentName);
 
-            await Host.StartAsync(shutdownToken).ConfigureAwait(false);
+            await host.StartAsync(shutdownToken).ConfigureAwait(false);
 
             await lifetime.ApplicationStarted.WaitAsync().ConfigureAwait(false);
 
@@ -55,12 +55,12 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
             log.Info("Host stopped.");
 
-            Host.Dispose();
+            host.Dispose();
         }
 
         public void Dispose()
         {
-            Host?.Dispose();
+            host?.Dispose();
             shutdownRegistration?.Dispose();
         }
     }

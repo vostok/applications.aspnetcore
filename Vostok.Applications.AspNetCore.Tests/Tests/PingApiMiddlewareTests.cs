@@ -10,7 +10,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
     public class PingApiMiddlewareTests : ControllerTests
     {
         [Test]
-        public async Task Get_ShouldReturnOk_WhenReplicaInitialized()
+        public async Task GetPing_ShouldReturnOk_WhenReplicaInitialized()
         {
             var response = await Client.GetAsync<PingApiResponse>("/_status/ping");
 

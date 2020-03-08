@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.TestHost;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Hosting.Abstractions;
 
@@ -19,8 +18,6 @@ namespace Vostok.Applications.AspNetCore.Tests
         {
             foreach (var configuration in configurations)
                 configuration(builder);
-
-            builder.SetupWebHost(s => s.UseTestServer());
         }
     }
 }
