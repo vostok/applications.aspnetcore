@@ -16,8 +16,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     {
         private readonly RequestDelegate next;
         private readonly IOptions<PingApiSettings> options;
-
-        private volatile string defaultCommitHash;
+        private volatile string commitHash;
 
         public PingApiMiddleware(
             [NotNull] RequestDelegate next,
@@ -62,9 +61,15 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         }
 
         private string GetHealthStatus()
-            => options.Value.InitializationCheck?.Invoke() ?? true ? options.Value.HealthCheck?.Invoke() ?? true ? "Ok" : "Warn" : "Init";
+        {
+            var isInitialized = options.Value.InitializationCheck?.Invoke() ?? true;
+            if (isInitialized)
+                return options.Value.HealthCheck?.Invoke() ?? true ? "Ok" : "Warn";
+
+            return "Init";
+        }
 
         private string ObtainCommitHash()
-            => options.Value.CommitHashProvider?.Invoke() ?? (defaultCommitHash ?? (defaultCommitHash = AssemblyCommitHashExtractor.ExtractFromEntryAssembly()));
+            => commitHash ?? (commitHash = options.Value.CommitHashProvider?.Invoke() ?? AssemblyCommitHashExtractor.ExtractFromEntryAssembly());
     }
 }
