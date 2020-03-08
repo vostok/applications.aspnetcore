@@ -63,7 +63,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         {
             var middlewares = new List<Type>();
 
-            if (IsEnabled<TracingMiddleware>())
+            if (IsEnabled<ThrottlingMiddleware>())
                 services.AddSingleton(throttlingBuilder.BuildProvider());
 
             Register<FillRequestInfoSettings, FillRequestInfoMiddleware>(services, fillRequestInfoCustomization, middlewares);
