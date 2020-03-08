@@ -1,6 +1,9 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using NUnit.Framework;
+using Vostok.Applications.AspNetCore.Tests.Extensions;
+using Vostok.Applications.AspNetCore.Tests.Models;
 using Vostok.Clusterclient.Core;
 using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Transport;
@@ -37,6 +40,7 @@ namespace Vostok.Applications.AspNetCore.Tests
             var hostSettings = new VostokHostSettings(app, b => SetupEnvironment(b, serverPort));
             var host = new VostokHost(hostSettings);
             host.RunAsync();
+            WaitHostInitialization();
         }
 
         private static void SetupEnvironment(IVostokHostingEnvironmentBuilder b, int port)
@@ -62,6 +66,23 @@ namespace Vostok.Applications.AspNetCore.Tests
                     s.ClusterProvider = new FixedClusterProvider($"http://localhost:{port}");
                     s.SetupUniversalTransport();
                 });
+        }
+
+        private static void WaitHostInitialization()
+        {
+            for (var i = 0; i < 10; i++)
+            {
+                try
+                {
+                    var pingApiResponse = Client.GetAsync<PingApiResponse>("/_status/ping").GetAwaiter().GetResult();
+                    if (pingApiResponse.Status == "Ok")
+                        return;
+                }
+                catch
+                {
+                    Thread.Sleep(500);
+                }
+            }
         }
 
         private static int GetFreePort()
