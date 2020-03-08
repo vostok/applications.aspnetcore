@@ -25,12 +25,8 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly AtomicBoolean disabled = false;
         private readonly HashSet<Type> disabledMiddlewares = new HashSet<Type>();
 
-        public VostokMiddlewaresBuilder(VostokThrottlingBuilder throttlingBuilder, AtomicBoolean applicationInitialized)
-        {
-            this.throttlingBuilder = throttlingBuilder;
-
-            Customize(pingApi => pingApi.InitializationCheck = () => applicationInitialized);
-        }
+        public VostokMiddlewaresBuilder(VostokThrottlingBuilder throttlingBuilder)
+            => this.throttlingBuilder = throttlingBuilder;
 
         public void Disable()
             => disabled.Value = true;
