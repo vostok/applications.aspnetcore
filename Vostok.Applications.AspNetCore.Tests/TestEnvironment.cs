@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using NUnit.Framework;
-using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Clusterclient.Core;
 using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Transport;
@@ -36,7 +33,7 @@ namespace Vostok.Applications.AspNetCore.Tests
 
         private static void StartHost(int serverPort)
         {
-            var app = new TestVostokAspNetCoreApplication(new List<Action<IVostokAspNetCoreApplicationBuilder>>());
+            var app = new TestVostokAspNetCoreApplication();
             var hostSettings = new VostokHostSettings(app, b => SetupEnvironment(b, serverPort));
             var host = new VostokHost(hostSettings);
             host.RunAsync();
