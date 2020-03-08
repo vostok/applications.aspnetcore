@@ -46,11 +46,12 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 LogRequest(context.Request);
 
             var watch = Stopwatch.StartNew();
-            var tracingContext = FlowingContext.Globals.Get<TraceContext>();
-            var operationContext = FlowingContext.Globals.Get<OperationContextValue>();
-
+           
             if (options.Value.LogResponseCompletion)
             {
+                var tracingContext = FlowingContext.Globals.Get<TraceContext>();
+                var operationContext = FlowingContext.Globals.Get<OperationContextValue>();
+
                 context.Response.OnCompleted(
                     () =>
                     {
