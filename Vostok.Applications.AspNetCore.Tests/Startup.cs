@@ -15,7 +15,8 @@ namespace Vostok.Applications.AspNetCore.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson();
         }
 
         public void Configure(IApplicationBuilder app)
