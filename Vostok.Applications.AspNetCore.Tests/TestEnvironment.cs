@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using NUnit.Framework;
@@ -19,6 +20,8 @@ namespace Vostok.Applications.AspNetCore.Tests
     {
         public static IClusterClient Client;
         public static ILog Log;
+        public static bool IsHealthy = true;
+        public static string CommitHash = Guid.NewGuid().ToString();
 
         [OneTimeSetUp]
         public void SetUp()
