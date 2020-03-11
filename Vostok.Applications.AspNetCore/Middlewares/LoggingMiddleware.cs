@@ -27,7 +27,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         private const int StringBuilderCapacity = 256;
 
         private readonly RequestDelegate next;
-        private readonly IOptions<LoggingSettings> options;
+        private readonly LoggingSettings options;
         private readonly ILog log;
 
         public LoggingMiddleware(
@@ -36,18 +36,18 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             [NotNull] ILog log)
         {
             this.next = next ?? throw new ArgumentNullException(nameof(next));
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
             this.log = (log ?? throw new ArgumentNullException(nameof(log))).ForContext<LoggingMiddleware>();
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (options.Value.LogRequests)
+            if (options.LogRequests)
                 LogRequest(context.Request);
 
             var watch = Stopwatch.StartNew();
            
-            if (options.Value.LogResponseCompletion)
+            if (options.LogResponseCompletion)
             {
                 var tracingContext = FlowingContext.Globals.Get<TraceContext>();
                 var operationContext = FlowingContext.Globals.Get<OperationContextValue>();
@@ -65,7 +65,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
             await next(context);
 
-            if (options.Value.LogResponses)
+            if (options.LogResponses)
                 LogResponse(context.Request, context.Response, watch.Elapsed);
         }
 
@@ -76,13 +76,13 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
             var addClientIdentity = requestInfo?.ClientApplicationIdentity != null;
             var addBodySize = request.ContentLength > 0L;
-            var addHeaders = options.Value.LogRequestHeaders.IsEnabledForRequest(request);
+            var addHeaders = options.LogRequestHeaders.IsEnabledForRequest(request);
 
             var parametersCount = 3 + (addClientIdentity ? 1 : 0) + (addBodySize ? 1 : 0) + (addHeaders ? 1 : 0);
             var parameters = new object[parametersCount];
             var parametersIndex = 0;
 
-            AppendSegment(builder, parameters, "Received request '{Request}' from", FormatPath(builder, request, options.Value.LogQueryString), ref parametersIndex);
+            AppendSegment(builder, parameters, "Received request '{Request}' from", FormatPath(builder, request, options.LogQueryString), ref parametersIndex);
 
             if (addClientIdentity)
                 AppendSegment(builder, parameters, " '{ClientIdentity}' at", requestInfo.ClientApplicationIdentity, ref parametersIndex);
@@ -96,7 +96,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 AppendSegment(builder, parameters, " Body size = {BodySize}.", request.ContentLength, ref parametersIndex);
 
             if (addHeaders)
-                AppendSegment(builder, parameters, " Request headers: {RequestHeaders}", FormatHeaders(builder, request.Headers, options.Value.LogRequestHeaders), ref parametersIndex);
+                AppendSegment(builder, parameters, " Request headers: {RequestHeaders}", FormatHeaders(builder, request.Headers, options.LogRequestHeaders), ref parametersIndex);
 
             log.Info(builder.ToString(), parameters);
 
@@ -108,7 +108,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             var builder = StringBuilderCache.Acquire(StringBuilderCapacity);
 
             var addBodySize = response.ContentLength > 0;
-            var addHeaders = options.Value.LogResponseHeaders.IsEnabledForRequest(request);
+            var addHeaders = options.LogResponseHeaders.IsEnabledForRequest(request);
 
             builder.Append("Response code = {ResponseCode:D} ('{ResponseCode}'). Time = {ElapsedTime}.");
 
@@ -127,7 +127,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 logEvent = logEvent.WithProperty("BodySize", response.ContentLength);
 
             if (addHeaders)
-                logEvent = logEvent.WithProperty("ResponseHeaders", FormatHeaders(builder, response.Headers, options.Value.LogResponseHeaders));
+                logEvent = logEvent.WithProperty("ResponseHeaders", FormatHeaders(builder, response.Headers, options.LogResponseHeaders));
 
             log.Log(logEvent);
 

@@ -25,7 +25,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         private static readonly TimeSpan LongThrottlingWaitTime = 500.Milliseconds();
 
         private readonly RequestDelegate next;
-        private readonly IOptions<ThrottlingSettings> options;
+        private readonly ThrottlingSettings options;
         private readonly IThrottlingProvider provider;
         private readonly ILog log;
 
@@ -36,7 +36,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             [NotNull] ILog log)
         {
             this.next = next ?? throw new ArgumentNullException(nameof(next));
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
             this.provider = provider ?? throw new ArgumentNullException(nameof(provider));
             this.log = (log ?? throw new ArgumentNullException(nameof(log))).ForContext<ThrottlingMiddleware>();
         }
@@ -73,7 +73,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 }
                 else
                 {
-                    context.Response.StatusCode = options.Value.RejectionResponseCode;
+                    context.Response.StatusCode = options.RejectionResponseCode;
                     context.Response.Headers.ContentLength = 0L;
                 }
             }
@@ -89,10 +89,10 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
         private bool IsDisabled(HttpContext context)
         {
-            if (options.Value.DisableForWebSockets && context.WebSockets.IsWebSocketRequest)
+            if (options.DisableForWebSockets && context.WebSockets.IsWebSocketRequest)
                 return true;
 
-            if (options.Value.Enabled != null && !options.Value.Enabled(context))
+            if (options.Enabled != null && !options.Enabled(context))
                 return true;
 
             return false;
@@ -102,19 +102,19 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         {
             var builder = new ThrottlingPropertiesBuilder();
 
-            if (options.Value.AddConsumerProperty)
+            if (options.AddConsumerProperty)
                 builder.AddConsumer(info?.ClientApplicationIdentity);
 
-            if (options.Value.AddPriorityProperty)
+            if (options.AddPriorityProperty)
                 builder.AddPriority(info?.Priority.ToString());
 
-            if (options.Value.AddMethodProperty)
+            if (options.AddMethodProperty)
                 builder.AddPriority(context.Request.Method);
 
-            if (options.Value.AddUrlProperty)
+            if (options.AddUrlProperty)
                 builder.AddUrl(UrlNormalizer.NormalizePath(context.Request.Path));
 
-            foreach (var additionalProperty in options.Value.AdditionalProperties)
+            foreach (var additionalProperty in options.AdditionalProperties)
             {
                 var (propertyName, propertyValue) = additionalProperty(context);
                 builder.AddProperty(propertyName, propertyValue);

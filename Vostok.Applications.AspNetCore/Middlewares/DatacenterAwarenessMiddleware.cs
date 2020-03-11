@@ -16,7 +16,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     public class DatacenterAwarenessMiddleware
     {
         private readonly RequestDelegate next;
-        private readonly IOptions<DatacenterAwarenessSettings> options;
+        private readonly DatacenterAwarenessSettings options;
         private readonly IDatacenters datacenters;
         private readonly ILog log;
 
@@ -27,16 +27,16 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             [NotNull] ILog log)
         {
             this.next = next ?? throw new ArgumentNullException(nameof(next));
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
             this.datacenters = datacenters ?? throw new ArgumentNullException(nameof(datacenters));
             this.log = (log ?? throw new ArgumentNullException(nameof(log))).ForContext<DatacenterAwarenessMiddleware>();
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (options.Value.RejectRequestsWhenDatacenterIsInactive && !datacenters.LocalDatacenterIsActive())
+            if (options.RejectRequestsWhenDatacenterIsInactive && !datacenters.LocalDatacenterIsActive())
             {
-                context.Response.StatusCode = options.Value.RejectionResponseCode;
+                context.Response.StatusCode = options.RejectionResponseCode;
 
                 log.Warn("Rejecting request as local datacenter '{Datacenter}' is not active.", datacenters.GetLocalDatacenter());
 

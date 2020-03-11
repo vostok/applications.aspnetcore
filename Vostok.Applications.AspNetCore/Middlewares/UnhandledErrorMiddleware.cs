@@ -16,7 +16,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     public class UnhandledErrorMiddleware
     {
         private readonly RequestDelegate next;
-        private readonly IOptions<UnhandledErrorsSettings> options;
+        private readonly UnhandledErrorsSettings options;
         private readonly ILog log;
 
         public UnhandledErrorMiddleware(
@@ -24,7 +24,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             [NotNull] IOptions<UnhandledErrorsSettings> options,
             [NotNull] ILog log)
         {
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
             this.next = next ?? throw new ArgumentNullException(nameof(next));
             this.log = (log ?? throw new ArgumentNullException(nameof(log))).ForContext<UnhandledErrorMiddleware>();
         }
@@ -59,7 +59,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (response.HasStarted)
                 return;
 
-            response.StatusCode = options.Value.ErrorResponseCode;
+            response.StatusCode = options.ErrorResponseCode;
         }
     }
 }

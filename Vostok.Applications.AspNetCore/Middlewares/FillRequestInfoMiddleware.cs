@@ -21,14 +21,14 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     public class FillRequestInfoMiddleware
     {
         private readonly RequestDelegate next;
-        private readonly IOptions<FillRequestInfoSettings> options;
+        private readonly FillRequestInfoSettings options;
 
         public FillRequestInfoMiddleware(
             [NotNull] RequestDelegate next,
             [NotNull] IOptions<FillRequestInfoSettings> options)
         {
             this.next = next ?? throw new ArgumentNullException(nameof(next));
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -52,7 +52,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (NumericTypeParser<double>.TryParse(request.Headers[HeaderNames.RequestTimeout], out var seconds))
                 return seconds.Seconds();
 
-            return ObtainFromProviders(request, options.Value.AdditionalTimeoutProviders) ?? options.Value.DefaultTimeoutProvider(request);
+            return ObtainFromProviders(request, options.AdditionalTimeoutProviders) ?? options.DefaultTimeoutProvider(request);
         }
 
         private RequestPriority GetPriority(HttpRequest request)
@@ -60,7 +60,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (Enum.TryParse(request.Headers[HeaderNames.RequestPriority], true, out RequestPriority priority))
                 return priority;
 
-            return ObtainFromProviders(request, options.Value.AdditionalPriorityProviders) ?? options.Value.DefaultPriorityProvider(request);
+            return ObtainFromProviders(request, options.AdditionalPriorityProviders) ?? options.DefaultPriorityProvider(request);
         }
 
         private string GetClientApplicationIdentity(HttpRequest request)
@@ -69,7 +69,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (!string.IsNullOrEmpty(clientApplicationIdentity))
                 return clientApplicationIdentity;
 
-            return ObtainFromProviders(request, options.Value.AdditionalClientIdentityProviders);
+            return ObtainFromProviders(request, options.AdditionalClientIdentityProviders);
         }
     }
 }

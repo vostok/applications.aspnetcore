@@ -18,7 +18,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     public class DistributedContextMiddleware
     {
         private readonly RequestDelegate next;
-        private readonly IOptions<DistributedContextSettings> options;
+        private readonly DistributedContextSettings options;
 
         static DistributedContextMiddleware()
             => FlowingContext.Configuration.RegisterDistributedGlobal(DistributedContextConstants.RequestPriorityGlobalName, new RequestPrioritySerializer());
@@ -28,7 +28,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             [NotNull] IOptions<DistributedContextSettings> options)
         {
             this.next = next ?? throw new ArgumentNullException(nameof(next));
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -44,7 +44,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 FlowingContext.Globals.Set(priority);
             }
 
-            foreach (var action in options.Value.AdditionalActions)
+            foreach (var action in options.AdditionalActions)
                 action(context.Request);
 
             await next(context);

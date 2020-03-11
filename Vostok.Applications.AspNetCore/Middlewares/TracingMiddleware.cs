@@ -20,7 +20,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     public class TracingMiddleware
     {
         private readonly RequestDelegate next;
-        private readonly IOptions<TracingSettings> options;
+        private readonly TracingSettings options;
         private readonly ITracer tracer;
 
         public TracingMiddleware(
@@ -29,7 +29,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             [NotNull] ITracer tracer)
         {
             this.next = next ?? throw new ArgumentNullException(nameof(next));
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
             this.tracer = tracer ?? throw new ArgumentNullException(nameof(tracer));
         }
 
@@ -45,8 +45,8 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 spanBuilder.SetClientDetails(requestInfo?.ClientApplicationIdentity, requestInfo?.ClientIpAddress);
                 spanBuilder.SetRequestDetails(context.Request.Path, context.Request.Method, context.Request.ContentLength);
 
-                if (options.Value.ResponseTraceIdHeader != null)
-                    context.Response.Headers[options.Value.ResponseTraceIdHeader] = spanBuilder.CurrentSpan?.TraceId.ToString();
+                if (options.ResponseTraceIdHeader != null)
+                    context.Response.Headers[options.ResponseTraceIdHeader] = spanBuilder.CurrentSpan?.TraceId.ToString();
 
                 await next(context);
 
