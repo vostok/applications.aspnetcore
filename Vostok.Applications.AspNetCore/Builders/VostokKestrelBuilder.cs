@@ -23,7 +23,10 @@ namespace Vostok.Applications.AspNetCore.Builders
             options.Limits.MaxConcurrentConnections = null;
             options.Limits.MaxRequestBufferSize = 256 * 1024;
             options.Limits.MaxResponseBufferSize = 256 * 1024;
+
+            #if NETCOREAPP3_1
             options.Limits.Http2.MaxStreamsPerConnection = 1000;
+            #endif
 
             options.Limits.MaxRequestBodySize = settings.MaxRequestBodySize;
             options.Limits.MaxRequestLineSize = settings.MaxRequestLineSize;

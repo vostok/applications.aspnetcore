@@ -27,7 +27,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0"/>
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.7"/>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\AssemblyCommitHashExtractor.cs" Link="Commons\AssemblyCommitHashExtractor.cs" />

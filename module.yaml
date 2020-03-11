@@ -51,7 +51,7 @@ v3_1 > notests *default:
   install:
     - Vostok.Applications.AspNetCore/bin/Release/netcoreapp3.1/Vostok.Applications.AspNetCore.dll
 
-v2_2 > notests:
+v2_1 > notests:
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
@@ -60,7 +60,7 @@ v2_2 > notests:
 
   install:
     - Vostok.Applications.AspNetCore/bin/Release/netstandard2.0/Vostok.Applications.AspNetCore.dll
-    - nuget Microsoft.AspNetCore/2.2
+    - nuget Microsoft.AspNetCore/2.1.7
 
 full-build > notests:
   deps:
