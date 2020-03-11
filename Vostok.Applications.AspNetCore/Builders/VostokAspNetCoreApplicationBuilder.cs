@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Helpers;
-using Vostok.Commons.Environment;
-using Vostok.Commons.Threading;
 using Vostok.Context;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
@@ -32,7 +29,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly VostokWebHostBuilder<TStartup> webHostBuilder;
         private readonly HostFactory hostFactory;
 
-        public VostokAspNetCoreApplicationBuilder(IVostokHostingEnvironment environment, List<IDisposable> disposables, AtomicBoolean initialized)
+        public VostokAspNetCoreApplicationBuilder(IVostokHostingEnvironment environment, List<IDisposable> disposables)
         {
             this.environment = environment;
 
@@ -51,12 +48,6 @@ namespace Vostok.Applications.AspNetCore.Builders
             throttlingBuilder = new VostokThrottlingBuilder(environment, disposables);
             middlewaresBuilder = new VostokMiddlewaresBuilder(throttlingBuilder);
             webHostBuilder = new VostokWebHostBuilder<TStartup>(environment, kestrelBuilder, middlewaresBuilder);
-
-            SetupPingApi(settings =>
-            {
-                settings.CommitHashProvider = GetCommitHash;
-                settings.InitializationCheck = () => initialized;
-            });
         }
 
         public Host BuildHost()
@@ -68,20 +59,6 @@ namespace Vostok.Applications.AspNetCore.Builders
                 webHostBuilder.ConfigureWebHost(hostBuilder);
 
                 return hostBuilder.Build();
-            }
-        }
-
-        private static string GetCommitHash()
-        {
-            try
-            {
-                var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetAssembly(typeof(VostokAspNetCoreApplication<>));
-
-                return AssemblyCommitHashExtractor.ExtractFromAssembly(assembly);
-            }
-            catch (Exception)
-            {
-                return null;
             }
         }
 
