@@ -1,7 +1,7 @@
 ## 0.1.8 (13-03-2020):
 
 Major changes in this release:
-* Multitargeting. In addition to `netcoreapp3.1` we now also target `netstandard2.0` and Asp.NET Core 2.1 (see https://github.com/vostok/applications.aspnetcore/issues/8). It's also reflected in Cement `module.yaml` as two new module configurations: `v3_1` (default) and `v2_2`. This allows to use the library in .NET Framework applications.
+* Multitargeting. In addition to `netcoreapp3.1` we now also target `netstandard2.0` and Asp.NET Core 2.1 (see https://github.com/vostok/applications.aspnetcore/issues/8). It's also reflected in Cement `module.yaml` as two new module configurations: `v3_1` (default) and `v2_1`. This allows to use the library in .NET Framework applications.
 * Built-in middlewares no longer implement `IMiddleware` interface.
 * Built-in middlewares are no longer instantiated manually.
 * Built-in middlewares now use options pattern to receive configuration from DI container.
