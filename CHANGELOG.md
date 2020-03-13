@@ -1,3 +1,24 @@
+## 0.1.8 (13-03-2020):
+
+Major changes in this release:
+* Multitargeting. In addition to `netcoreapp3.1` we now also target `netstandard2.0` and Asp.NET Core 2.1 (see https://github.com/vostok/applications.aspnetcore/issues/8). It's also reflected in Cement `module.yaml` as two new module configurations: `v3_1` (default) and `v2_2`. This allows to use the library in .NET Framework applications.
+* Built-in middlewares no longer implement `IMiddleware` interface.
+* Built-in middlewares are no longer instantiated manually.
+* Built-in middlewares now use options pattern to receive configuration from DI container.
+* Built-in middleware classes are all public now.
+* Built-in middlewares can now be disabled, both entirely and selectively.
+* Built-in middlewares can now be added with public `IApplicationBuilder` extensions.
+* Significant internal refactoring necessitated by multitargeting approach.
+
+Minor changes:
+* (**Breaking change!**) `ThrottlingMetricsOptions` have been moved from `ThrottlingSettings` to an `IVostokThrottlingBuilder` property.
+* `UnhandledExceptionMiddleware` now has its own settings class.
+* All middlewares now enrich their log instances with source context.
+* `LoggingMiddleware`, `TracingMiddleware` and `ThrottlingMiddleware` now tolerate absence of the `FillRequestInfoMiddleware`.
+* `LoggingMiddleware` now also logs response completion time, which includes the time it takes to send data to the client (save for small buffered writes).
+* Added xml-docs for `IVostokAspNetCoreApplicationBuilder` methods.
+* Added configuration of generic host shutdown timeout based on Vostok environment.
+
 ## 0.1.7 (07-03-2020):
 
 * https://github.com/vostok/applications.aspnetcore/issues/9
