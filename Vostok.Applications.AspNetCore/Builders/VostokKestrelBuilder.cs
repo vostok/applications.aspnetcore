@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Commons.Helpers;
 
@@ -20,13 +19,8 @@ namespace Vostok.Applications.AspNetCore.Builders
             options.AddServerHeader = false;
             options.AllowSynchronousIO = false;
 
-            options.Limits.MaxConcurrentConnections = null;
             options.Limits.MaxRequestBufferSize = 256 * 1024;
             options.Limits.MaxResponseBufferSize = 256 * 1024;
-
-            #if NETCOREAPP3_1
-            options.Limits.Http2.MaxStreamsPerConnection = 1000;
-            #endif
 
             options.Limits.MaxRequestBodySize = settings.MaxRequestBodySize;
             options.Limits.MaxRequestLineSize = settings.MaxRequestLineSize;
@@ -39,12 +33,5 @@ namespace Vostok.Applications.AspNetCore.Builders
             if (settings.RequestHeadersTimeout.HasValue)
                 options.Limits.RequestHeadersTimeout = settings.RequestHeadersTimeout.Value;
         }
-
-        public void ConfigureSocketTransport(SocketTransportOptions options)
-        {
-            #if NETCOREAPP3_1
-            options.NoDelay = true;
-            #endif
-        } 
     }
 }

@@ -56,7 +56,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             var urlsBefore = webHostBuilder.GetSetting(WebHostDefaults.ServerUrlsKey);
 
             webHostBuilder.UseKestrel(kestrelBuilder.ConfigureKestrel);
-            webHostBuilder.UseSockets(kestrelBuilder.ConfigureSocketTransport);
+            webHostBuilder.UseSockets();
             webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
 
             if (typeof(TStartup) != typeof(EmptyStartup))
