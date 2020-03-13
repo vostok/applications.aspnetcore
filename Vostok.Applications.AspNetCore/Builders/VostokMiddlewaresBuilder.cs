@@ -17,7 +17,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly Customization<TracingSettings> tracingCustomization = new Customization<TracingSettings>();
         private readonly Customization<LoggingSettings> loggingCustomization = new Customization<LoggingSettings>();
         private readonly Customization<PingApiSettings> pingApiCustomization = new Customization<PingApiSettings>();
-        private readonly Customization<UnhandledErrorsSettings> errorHandlingCustomization = new Customization<UnhandledErrorsSettings>();
+        private readonly Customization<UnhandledExceptionSettings> errorHandlingCustomization = new Customization<UnhandledExceptionSettings>();
         private readonly Customization<FillRequestInfoSettings> fillRequestInfoCustomization = new Customization<FillRequestInfoSettings>();
         private readonly Customization<DistributedContextSettings> distributedContextCustomization = new Customization<DistributedContextSettings>();
         private readonly Customization<DatacenterAwarenessSettings> datacenterAwarenessCustomization = new Customization<DatacenterAwarenessSettings>();
@@ -43,7 +43,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         public void Customize(Action<PingApiSettings> customization)
             => pingApiCustomization.AddCustomization(customization);
 
-        public void Customize(Action<UnhandledErrorsSettings> customization)
+        public void Customize(Action<UnhandledExceptionSettings> customization)
             => errorHandlingCustomization.AddCustomization(customization);
 
         public void Customize(Action<FillRequestInfoSettings> customization)
@@ -68,7 +68,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             Register<ThrottlingSettings, ThrottlingMiddleware>(services, throttlingBuilder.MiddlewareCustomization, middlewares);
             Register<LoggingSettings, LoggingMiddleware>(services, loggingCustomization, middlewares);
             Register<DatacenterAwarenessSettings, DatacenterAwarenessMiddleware > (services, datacenterAwarenessCustomization, middlewares);
-            Register<UnhandledErrorsSettings, UnhandledErrorMiddleware> (services, errorHandlingCustomization, middlewares);
+            Register<UnhandledExceptionSettings, UnhandledExceptionMiddleware> (services, errorHandlingCustomization, middlewares);
             Register<PingApiSettings, PingApiMiddleware> (services, pingApiCustomization, middlewares);
 
             if (middlewares.Count == 0)

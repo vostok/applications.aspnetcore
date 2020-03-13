@@ -32,7 +32,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         ///     <item><description><see cref="ThrottlingMiddleware"/></description></item>
         ///     <item><description><see cref="LoggingMiddleware"/></description></item>
         ///     <item><description><see cref="DatacenterAwarenessMiddleware"/></description></item>
-        ///     <item><description><see cref="UnhandledErrorMiddleware"/></description></item>
+        ///     <item><description><see cref="UnhandledExceptionMiddleware"/></description></item>
         ///     <item><description><see cref="PingApiMiddleware"/></description></item>
         /// </list>
         /// </summary>
@@ -84,9 +84,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         IVostokAspNetCoreApplicationBuilder SetupDistributedContext([NotNull] Action<DistributedContextSettings> setup);
 
         /// <summary>
-        /// Customizes built-in <see cref="UnhandledErrorMiddleware"/>.
+        /// Customizes built-in <see cref="UnhandledExceptionMiddleware"/>.
         /// </summary>
-        IVostokAspNetCoreApplicationBuilder SetupUnhandledErrors([NotNull] Action<UnhandledErrorsSettings> setup);
+        IVostokAspNetCoreApplicationBuilder SetupUnhandledExceptions([NotNull] Action<UnhandledExceptionSettings> setup);
 
         /// <summary>
         /// Customizes the adapter between Vostok <see cref="Vostok.Logging.Abstractions.ILog"/> and Microsoft <see cref="Microsoft.Extensions.Logging.ILogger"/>.

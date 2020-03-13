@@ -13,20 +13,20 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     /// Catches and logs unhandled exception on low level. Upon catching one, serves an error response.
     /// </summary>
     [PublicAPI]
-    public class UnhandledErrorMiddleware
+    public class UnhandledExceptionMiddleware
     {
         private readonly RequestDelegate next;
-        private readonly UnhandledErrorsSettings options;
+        private readonly UnhandledExceptionSettings options;
         private readonly ILog log;
 
-        public UnhandledErrorMiddleware(
+        public UnhandledExceptionMiddleware(
             [NotNull] RequestDelegate next,
-            [NotNull] IOptions<UnhandledErrorsSettings> options,
+            [NotNull] IOptions<UnhandledExceptionSettings> options,
             [NotNull] ILog log)
         {
             this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
             this.next = next ?? throw new ArgumentNullException(nameof(next));
-            this.log = (log ?? throw new ArgumentNullException(nameof(log))).ForContext<UnhandledErrorMiddleware>();
+            this.log = (log ?? throw new ArgumentNullException(nameof(log))).ForContext<UnhandledExceptionMiddleware>();
         }
 
         public async Task InvokeAsync(HttpContext context)
