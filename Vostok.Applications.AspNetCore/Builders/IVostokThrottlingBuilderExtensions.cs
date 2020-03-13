@@ -21,7 +21,10 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// </summary>
         [NotNull]
         public static IVostokThrottlingBuilder DisableMetrics([NotNull] this IVostokThrottlingBuilder builder)
-            => builder.CustomizeMiddleware(s => s.Metrics = null);
+        {
+            builder.Metrics = null;
+            return builder;
+        }
 
         /// <summary>
         /// <para>Sets up a quota on the <see cref="WellKnownThrottlingProperties.Consumer"/> request property configured by given <paramref name="quotaOptionsProvider"/>.</para>

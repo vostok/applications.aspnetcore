@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Commons.Helpers;
@@ -6,17 +7,22 @@ using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Abstractions;
 using Vostok.Throttling;
 using Vostok.Throttling.Config;
+using Vostok.Throttling.Metrics;
 using Vostok.Throttling.Quotas;
 
 namespace Vostok.Applications.AspNetCore.Builders
 {
     internal class VostokThrottlingBuilder : IVostokThrottlingBuilder
     {
+        private readonly IVostokHostingEnvironment environment;
+        private readonly List<IDisposable> disposables;
         private readonly ThrottlingConfigurationBuilder configurationBuilder;
-        private readonly Customization<ThrottlingSettings> settingsCustomization;
 
-        public VostokThrottlingBuilder(IVostokHostingEnvironment environment)
+        public VostokThrottlingBuilder(IVostokHostingEnvironment environment, List<IDisposable> disposables)
         {
+            this.environment = environment;
+            this.disposables = disposables;
+
             configurationBuilder = new ThrottlingConfigurationBuilder();
             configurationBuilder
                 .SetNumberOfCores(
@@ -31,17 +37,26 @@ namespace Vostok.Applications.AspNetCore.Builders
                 .SetErrorCallback(
                     error => environment.Log.ForContext<ThrottlingMiddleware>().Error(error, "Internal failure in request throttling."));
 
-            settingsCustomization = new Customization<ThrottlingSettings>();
+            MiddlewareCustomization = new Customization<ThrottlingSettings>();
         }
+
+        public Customization<ThrottlingSettings> MiddlewareCustomization { get; }
 
         public bool UseThreadPoolOverloadQuota { get; set; } = true;
 
-        public (ThrottlingProvider provider, ThrottlingSettings settings) Build()
+        public ThrottlingMetricsOptions Metrics { get; set; } = new ThrottlingMetricsOptions();
+
+        public IThrottlingProvider BuildProvider()
         {
             if (UseThreadPoolOverloadQuota)
                 configurationBuilder.AddCustomQuota(new ThreadPoolOverloadQuota(new ThreadPoolOverloadQuotaOptions()));
 
-            return (new ThrottlingProvider(configurationBuilder.Build()), settingsCustomization.Customize(new ThrottlingSettings()));
+            var provider = new ThrottlingProvider(configurationBuilder.Build());
+
+            if (Metrics != null)
+                disposables.Add(environment.Metrics.Instance.CreateThrottlingMetrics(provider, Metrics));
+
+            return provider;
         }
 
         public IVostokThrottlingBuilder UseEssentials(Func<ThrottlingEssentials> essentialsProvider)
@@ -64,7 +79,7 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public IVostokThrottlingBuilder CustomizeMiddleware(Action<ThrottlingSettings> customization)
         {
-            settingsCustomization.AddCustomization(customization);
+            MiddlewareCustomization.AddCustomization(customization);
             return this;
         }
     }

@@ -1,4 +1,4 @@
-notests *default:
+notests:
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
@@ -6,7 +6,6 @@ notests *default:
       name: dotnet
 
   install:
-    - Vostok.Applications.AspNetCore/bin/Release/netcoreapp3.1/Vostok.Applications.AspNetCore.dll
     - module vostok.clusterclient.core
     - module vostok.configuration.microsoft
     - module vostok.context
@@ -41,6 +40,27 @@ notests *default:
     - vostok.throttling.metrics
     - vostok.tracing.abstractions
     - vostok.tracing.extensions
+
+v3_1 > notests *default:
+  build:
+    target: Vostok.Applications.AspNetCore.sln
+    configuration: NoTests
+    tool:
+      name: dotnet
+
+  install:
+    - Vostok.Applications.AspNetCore/bin/Release/netcoreapp3.1/Vostok.Applications.AspNetCore.dll
+
+v2_1 > notests:
+  build:
+    target: Vostok.Applications.AspNetCore.sln
+    configuration: NoTests
+    tool:
+      name: dotnet
+
+  install:
+    - Vostok.Applications.AspNetCore/bin/Release/netstandard2.0/Vostok.Applications.AspNetCore.dll
+    - nuget Microsoft.AspNetCore/2.1.7
 
 full-build > notests:
   deps:

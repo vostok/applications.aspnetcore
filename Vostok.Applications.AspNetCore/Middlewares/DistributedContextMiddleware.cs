@@ -1,5 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Clusterclient.Context;
@@ -8,25 +11,40 @@ using Vostok.Context;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class DistributedContextMiddleware : IMiddleware
+    /// <summary>
+    /// Restores distributed context from request headers and ensures request priority is in <see cref="FlowingContext"/>.
+    /// </summary>
+    [PublicAPI]
+    public class DistributedContextMiddleware
     {
-        private readonly DistributedContextSettings settings;
+        private readonly RequestDelegate next;
+        private readonly DistributedContextSettings options;
 
         static DistributedContextMiddleware()
             => FlowingContext.Configuration.RegisterDistributedGlobal(DistributedContextConstants.RequestPriorityGlobalName, new RequestPrioritySerializer());
 
-        public DistributedContextMiddleware(DistributedContextSettings settings)
-            => this.settings = settings;
+        public DistributedContextMiddleware(
+            [NotNull] RequestDelegate next,
+            [NotNull] IOptions<DistributedContextSettings> options)
+        {
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
+        }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
             FlowingContext.RestoreDistributedProperties(context.Request.Headers[HeaderNames.ContextProperties]);
             FlowingContext.RestoreDistributedGlobals(context.Request.Headers[HeaderNames.ContextGlobals]);
 
             if (FlowingContext.Globals.Get<RequestPriority?>() == null)
-                FlowingContext.Globals.Set<RequestPriority?>(FlowingContext.Globals.Get<IRequestInfo>()?.Priority ?? RequestPriority.Ordinary);
+            {
+                var priority = FlowingContext.Globals.Get<IRequestInfo>()?.Priority ?? RequestPriority.Ordinary;
 
-            foreach (var action in settings.AdditionalActions)
+                FlowingContext.Globals.Set<RequestPriority?>(priority);
+                FlowingContext.Globals.Set(priority);
+            }
+
+            foreach (var action in options.AdditionalActions)
                 action(context.Request);
 
             await next(context);

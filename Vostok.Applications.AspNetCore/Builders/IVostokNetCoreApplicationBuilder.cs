@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETCOREAPP3_1
+using System;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Hosting;
 using Vostok.Logging.Microsoft;
@@ -17,3 +18,4 @@ namespace Vostok.Applications.AspNetCore.Builders
         IVostokNetCoreApplicationBuilder SetupMicrosoftLog([NotNull] Action<VostokLoggerProviderSettings> setup);
     }
 }
+#endif

@@ -1,26 +1,32 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Commons.Environment;
-using Vostok.Commons.Threading;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class PingApiMiddleware : IMiddleware
+    /// <summary>
+    /// Handles diagnostic <c>/_status/ping</c> and <c>/_status/version</c> requests.
+    /// </summary>
+    [PublicAPI]
+    public class PingApiMiddleware
     {
-        private readonly PingApiSettings settings;
-        private readonly AtomicBoolean initialized;
+        private readonly RequestDelegate next;
+        private readonly PingApiSettings options;
+        private volatile string commitHash;
 
-        private volatile string defaultCommitHash;
-
-        public PingApiMiddleware([NotNull] PingApiSettings settings, AtomicBoolean initialized)
+        public PingApiMiddleware(
+            [NotNull] RequestDelegate next,
+            [NotNull] IOptions<PingApiSettings> options)
         {
-            this.settings = settings;
-            this.initialized = initialized;
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
         }
 
-        public Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public Task InvokeAsync(HttpContext context)
         {
             var request = context.Request;
 
@@ -55,9 +61,15 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         }
 
         private string GetHealthStatus()
-            => initialized.Value ? settings.HealthCheck?.Invoke() ?? true ? "Ok" : "Warn" : "Init";
+        {
+            var isInitialized = options.InitializationCheck?.Invoke() ?? true;
+            if (isInitialized)
+                return options.HealthCheck?.Invoke() ?? true ? "Ok" : "Warn";
+
+            return "Init";
+        }
 
         private string ObtainCommitHash()
-            => settings.CommitHashProvider?.Invoke() ?? (defaultCommitHash ?? (defaultCommitHash = AssemblyCommitHashExtractor.ExtractFromEntryAssembly()));
+            => commitHash ?? (commitHash = options.CommitHashProvider?.Invoke() ?? AssemblyCommitHashExtractor.ExtractFromEntryAssembly());
     }
 }
