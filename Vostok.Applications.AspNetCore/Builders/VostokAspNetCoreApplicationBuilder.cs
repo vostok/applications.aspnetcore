@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Configuration;
-using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Context;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
-
+using Vostok.Logging.Microsoft.Helpers;
 #if NETCOREAPP3_1
 using Host = Microsoft.Extensions.Hosting.IHost;
 using HostFactory = Vostok.Applications.AspNetCore.Helpers.GenericHostFactory;
@@ -37,11 +36,11 @@ namespace Vostok.Applications.AspNetCore.Builders
             hostFactory.SetupLogger(
                 s => s.IgnoredScopes = new HashSet<string>
                 {
-                    MicrosoftConstants.ActionLogScope,
-                    MicrosoftConstants.ActionLogScopeOld,
-                    MicrosoftConstants.HostingLogScope,
-                    MicrosoftConstants.HostingLogScopeOld,
-                    MicrosoftConstants.ConnectionLogScope
+                    MicrosoftLogScopes.ActionLogScope,
+                    MicrosoftLogScopes.ActionLogScopeOld,
+                    MicrosoftLogScopes.HostingLogScope,
+                    MicrosoftLogScopes.HostingLogScopeOld,
+                    MicrosoftLogScopes.ConnectionLogScope
                 });
 
             kestrelBuilder = new VostokKestrelBuilder();
