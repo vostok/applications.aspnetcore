@@ -1,3 +1,7 @@
+## 0.1.9 (19-03-2020):
+
+Use Microsoft constant from `vostok.logging.microsoft` module.
+
 ## 0.1.8 (13-03-2020):
 
 Major changes in this release:
