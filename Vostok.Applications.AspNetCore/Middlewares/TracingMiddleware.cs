@@ -1,5 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Context;
@@ -10,18 +13,27 @@ using Vostok.Tracing.Extensions.Http;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class TracingMiddleware : IMiddleware
+    /// <summary>
+    /// Populates <see cref="TraceContext"/> and creates spans of kind <see cref="WellKnownSpanKinds.HttpRequest.Server"/>.
+    /// </summary>
+    [PublicAPI]
+    public class TracingMiddleware
     {
-        private readonly TracingSettings settings;
+        private readonly RequestDelegate next;
+        private readonly TracingSettings options;
         private readonly ITracer tracer;
 
-        public TracingMiddleware(TracingSettings settings, ITracer tracer)
+        public TracingMiddleware(
+            [NotNull] RequestDelegate next,
+            [NotNull] IOptions<TracingSettings> options,
+            [NotNull] ITracer tracer)
         {
-            this.settings = settings;
-            this.tracer = tracer;
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
+            this.tracer = tracer ?? throw new ArgumentNullException(nameof(tracer));
         }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
             var requestInfo = FlowingContext.Globals.Get<IRequestInfo>();
 
@@ -30,13 +42,13 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 TracingLogPropertiesFormatter.FormatPrefix(
                     spanBuilder.CurrentSpan.ParentSpanId ?? spanBuilder.CurrentSpan.SpanId) ?? string.Empty))
             {
-                spanBuilder.SetClientDetails(requestInfo.ClientApplicationIdentity, requestInfo.ClientIpAddress);
+                spanBuilder.SetClientDetails(requestInfo?.ClientApplicationIdentity, requestInfo?.ClientIpAddress);
                 spanBuilder.SetRequestDetails(context.Request.Path, context.Request.Method, context.Request.ContentLength);
 
-                if (settings.ResponseTraceIdHeader != null)
-                    context.Response.Headers[settings.ResponseTraceIdHeader] = spanBuilder.CurrentSpan?.TraceId.ToString();
+                if (options.ResponseTraceIdHeader != null)
+                    context.Response.Headers[options.ResponseTraceIdHeader] = spanBuilder.CurrentSpan?.TraceId.ToString();
 
-                await next(context).ConfigureAwait(false);
+                await next(context);
 
                 spanBuilder.SetResponseDetails(context.Response.StatusCode, context.Response.ContentLength);
             }

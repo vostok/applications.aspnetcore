@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Clusterclient.Core.Model;
@@ -13,14 +14,24 @@ using Vostok.Context;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class FillRequestInfoMiddleware : IMiddleware
+    /// <summary>
+    /// Populates an <see cref="IRequestInfo"/> object from request properties and stores as a <see cref="FlowingContext"/> global for the lifetime of the request.
+    /// </summary>
+    [PublicAPI]
+    public class FillRequestInfoMiddleware
     {
-        private readonly FillRequestInfoSettings settings;
+        private readonly RequestDelegate next;
+        private readonly FillRequestInfoSettings options;
 
-        public FillRequestInfoMiddleware([NotNull] FillRequestInfoSettings settings)
-            => this.settings = settings;
+        public FillRequestInfoMiddleware(
+            [NotNull] RequestDelegate next,
+            [NotNull] IOptions<FillRequestInfoSettings> options)
+        {
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
+        }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
             IRequestInfo requestInfo = new RequestInfo(
                 GetTimeout(context.Request),
@@ -30,7 +41,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
             FlowingContext.Globals.Set(requestInfo);
 
-            await next(context).ConfigureAwait(false);
+            await next(context);
         }
 
         private static TResult ObtainFromProviders<TResult>(HttpRequest request, IEnumerable<Func<HttpRequest, TResult>> providers)
@@ -41,7 +52,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (NumericTypeParser<double>.TryParse(request.Headers[HeaderNames.RequestTimeout], out var seconds))
                 return seconds.Seconds();
 
-            return ObtainFromProviders(request, settings.AdditionalTimeoutProviders) ?? settings.DefaultTimeoutProvider(request);
+            return ObtainFromProviders(request, options.AdditionalTimeoutProviders) ?? options.DefaultTimeoutProvider(request);
         }
 
         private RequestPriority GetPriority(HttpRequest request)
@@ -49,7 +60,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (Enum.TryParse(request.Headers[HeaderNames.RequestPriority], true, out RequestPriority priority))
                 return priority;
 
-            return ObtainFromProviders(request, settings.AdditionalPriorityProviders) ?? settings.DefaultPriorityProvider(request);
+            return ObtainFromProviders(request, options.AdditionalPriorityProviders) ?? options.DefaultPriorityProvider(request);
         }
 
         private string GetClientApplicationIdentity(HttpRequest request)
@@ -58,7 +69,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (!string.IsNullOrEmpty(clientApplicationIdentity))
                 return clientApplicationIdentity;
 
-            return ObtainFromProviders(request, settings.AdditionalClientIdentityProviders);
+            return ObtainFromProviders(request, options.AdditionalClientIdentityProviders);
         }
     }
 }

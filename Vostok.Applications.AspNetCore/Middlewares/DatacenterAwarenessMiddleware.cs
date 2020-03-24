@@ -1,36 +1,49 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Datacenters;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class DatacenterAwarenessMiddleware : IMiddleware
+    /// <summary>
+    /// Rejects incoming requests when local datacenter is not active.
+    /// </summary>
+    [PublicAPI]
+    public class DatacenterAwarenessMiddleware
     {
-        private readonly DatacenterAwarenessSettings settings;
+        private readonly RequestDelegate next;
+        private readonly DatacenterAwarenessSettings options;
         private readonly IDatacenters datacenters;
         private readonly ILog log;
 
-        public DatacenterAwarenessMiddleware(DatacenterAwarenessSettings settings, IDatacenters datacenters, ILog log)
+        public DatacenterAwarenessMiddleware(
+            [NotNull] RequestDelegate next,
+            [NotNull] IOptions<DatacenterAwarenessSettings> options,
+            [NotNull] IDatacenters datacenters,
+            [NotNull] ILog log)
         {
-            this.settings = settings;
-            this.datacenters = datacenters;
-            this.log = log;
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
+            this.datacenters = datacenters ?? throw new ArgumentNullException(nameof(datacenters));
+            this.log = (log ?? throw new ArgumentNullException(nameof(log))).ForContext<DatacenterAwarenessMiddleware>();
         }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
-            if (settings.RejectRequestsWhenDatacenterIsInactive && !datacenters.LocalDatacenterIsActive())
+            if (options.RejectRequestsWhenDatacenterIsInactive && !datacenters.LocalDatacenterIsActive())
             {
-                context.Response.StatusCode = settings.RejectionResponseCode;
+                context.Response.StatusCode = options.RejectionResponseCode;
 
                 log.Warn("Rejecting request as local datacenter '{Datacenter}' is not active.", datacenters.GetLocalDatacenter());
 
                 return;
             }
 
-            await next(context).ConfigureAwait(false);
+            await next(context);
         }
     }
 }

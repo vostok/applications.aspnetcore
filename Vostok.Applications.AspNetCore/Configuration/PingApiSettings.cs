@@ -1,12 +1,23 @@
 ﻿using System;
 using System.Reflection;
 using JetBrains.Annotations;
+using Vostok.Applications.AspNetCore.Middlewares;
 
 namespace Vostok.Applications.AspNetCore.Configuration
 {
+    /// <summary>
+    /// Represents configuration of <see cref="PingApiMiddleware"/>.
+    /// </summary>
     [PublicAPI]
     public class PingApiSettings
     {
+        /// <summary>
+        /// <para>An optional delegate that returns <c>true</c> if the application is already initialized or <c>false</c> if warmup is still in progress.</para>
+        /// <para>By default, application is always considered initialized.</para>
+        /// </summary>
+        [CanBeNull]
+        public Func<bool> InitializationCheck { get; set; }
+
         /// <summary>
         /// <para>An optional delegate that returns <c>true</c> if the application is currently healthy or <c>false</c> if there are some warnings.</para>
         /// <para>By default, application is always considered healthy.</para>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 
@@ -6,12 +7,10 @@ namespace Vostok.Applications.AspNetCore.StartupFilters
 {
     internal class AddMiddlewaresStartupFilter : IStartupFilter
     {
-        private readonly Type[] middlewaresTypes;
+        private readonly IReadOnlyList<Type> middlewaresTypes;
 
-        public AddMiddlewaresStartupFilter(Type[] middlewaresTypes)
-        {
-            this.middlewaresTypes = middlewaresTypes;
-        }
+        public AddMiddlewaresStartupFilter(IReadOnlyList<Type> middlewaresTypes)
+            => this.middlewaresTypes = middlewaresTypes;
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {

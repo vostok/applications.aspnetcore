@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETCOREAPP3_1
+using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Hosting;
@@ -16,19 +17,21 @@ namespace Vostok.Applications.AspNetCore
     [PublicAPI]
     public abstract class VostokNetCoreApplication : IVostokApplication, IDisposable
     {
-        private volatile HostManager manager;
+        private volatile GenericHostManager manager;
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
             var log = environment.Log.ForContext<VostokNetCoreApplication>();
 
-            var builder = new VostokNetCoreApplicationBuilder(environment);
+            var hostBuilder = new GenericHostFactory(environment);
 
-            Setup(builder, environment);
+            var applicationBuilder = new VostokNetCoreApplicationBuilder(hostBuilder);
 
-            manager = new HostManager(builder.Build(), log);
+            Setup(applicationBuilder, environment);
 
-            await manager.StartHostAsync(environment.ShutdownToken).ConfigureAwait(false);
+            manager = new GenericHostManager(hostBuilder.CreateHost(), log);
+
+            await manager.StartHostAsync(environment.ShutdownToken);
         }
 
         public Task RunAsync(IVostokHostingEnvironment environment) =>
@@ -43,3 +46,4 @@ namespace Vostok.Applications.AspNetCore
             => manager?.Dispose();
     }
 }
+#endif

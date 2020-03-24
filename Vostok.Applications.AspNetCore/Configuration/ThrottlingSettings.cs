@@ -3,21 +3,17 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Throttling;
-using Vostok.Throttling.Metrics;
 
 namespace Vostok.Applications.AspNetCore.Configuration
 {
+    /// <summary>
+    /// Represents configuration of <see cref="ThrottlingMiddleware"/>.
+    /// </summary>
     [PublicAPI]
     public class ThrottlingSettings
     {
-        /// <summary>
-        /// <para>Configuration of application's throttling metrics, enabled by default.</para>
-        /// <para>Set this property to <c>null</c> to disable throttling metrics.</para>
-        /// </summary>
-        [CanBeNull]
-        public ThrottlingMetricsOptions Metrics = new ThrottlingMetricsOptions();
-
         /// <summary>
         /// <para>HTTP code to respond with when a request fails to pass throttling.</para>
         /// <para>Note that in some circumstances (expired timeout, large request body) client connection may be aborted instead.</para>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETCOREAPP3_1
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,11 +7,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {
-    internal class HostBuilderWrapper : IHostBuilder
+    internal class GenericHostBuilderWrapper : IHostBuilder
     {
         private readonly IHostBuilder builder;
 
-        public HostBuilderWrapper(IHostBuilder builder)
+        public GenericHostBuilderWrapper(IHostBuilder builder)
             => this.builder = builder;
 
         public IDictionary<object, object> Properties
@@ -38,3 +39,4 @@ namespace Vostok.Applications.AspNetCore.Helpers
             builder.UseServiceProviderFactory(factory);
     }
 }
+#endif

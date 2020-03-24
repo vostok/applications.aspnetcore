@@ -5,13 +5,17 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
-using Vostok.Applications.AspNetCore.Helpers;
-using Vostok.Applications.AspNetCore.Models;
 using Vostok.Commons.Environment;
 using Vostok.Commons.Threading;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Logging.Abstractions;
+
+#if NETCOREAPP3_1
+using HostManager = Vostok.Applications.AspNetCore.Helpers.GenericHostManager;
+#else
+using HostManager = Vostok.Applications.AspNetCore.Helpers.WebHostManager;
+#endif
 
 namespace Vostok.Applications.AspNetCore
 {
@@ -34,22 +38,24 @@ namespace Vostok.Applications.AspNetCore
 
         public async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
-            var log = typeof(TStartup) == typeof(EmptyStartup)
-                ? environment.Log.ForContext<VostokAspNetCoreApplication>()
-                : environment.Log.ForContext<VostokAspNetCoreApplication<TStartup>>();
+            var log = environment.Log.ForContext<VostokAspNetCoreApplication>();
 
-            var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, disposables, initialized);
+            var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, disposables);
 
-            // Note(kungurtsev): for code, packed into other dll.
-            builder.SetupPingApi(settings => settings.CommitHashProvider = GetCommitHash);
+            builder.SetupPingApi(
+                settings =>
+                {
+                    settings.InitializationCheck = () => initialized;
+                    settings.CommitHashProvider = GetCommitHash;
+                });
 
             Setup(builder, environment);
 
-            disposables.Add(manager = new HostManager(builder.Build(), log));
+            disposables.Add(manager = new HostManager(builder.BuildHost(), log));
 
-            await manager.StartHostAsync(environment.ShutdownToken).ConfigureAwait(false);
+            await manager.StartHostAsync(environment.ShutdownToken);
 
-            await WarmupAsync(environment, manager.Services).ConfigureAwait(false);
+            await WarmupAsync(environment, manager.Services);
 
             initialized.TrySetTrue();
         }

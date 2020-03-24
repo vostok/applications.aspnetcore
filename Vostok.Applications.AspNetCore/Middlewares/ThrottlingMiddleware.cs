@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Clusterclient.Core.Model;
@@ -14,41 +15,51 @@ using Vostok.Throttling;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
 {
-    internal class ThrottlingMiddleware : IMiddleware
+    /// <summary>
+    /// Limits request parallelism. See <see cref="IThrottlingProvider"/> for more info.
+    /// </summary>
+    [PublicAPI]
+    public class ThrottlingMiddleware
     {
         private const long LargeRequestBodySize = 4 * 1024;
         private static readonly TimeSpan LongThrottlingWaitTime = 500.Milliseconds();
 
-        private readonly ThrottlingSettings settings;
+        private readonly RequestDelegate next;
+        private readonly ThrottlingSettings options;
         private readonly IThrottlingProvider provider;
         private readonly ILog log;
 
-        public ThrottlingMiddleware(ThrottlingSettings settings, IThrottlingProvider provider, ILog log)
+        public ThrottlingMiddleware(
+            [NotNull] RequestDelegate next,
+            [NotNull] IOptions<ThrottlingSettings> options,
+            [NotNull] IThrottlingProvider provider,
+            [NotNull] ILog log)
         {
-            this.settings = settings;
-            this.provider = provider;
-            this.log = log;
+            this.next = next ?? throw new ArgumentNullException(nameof(next));
+            this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
+            this.provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            this.log = (log ?? throw new ArgumentNullException(nameof(log))).ForContext<ThrottlingMiddleware>();
         }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
             if (IsDisabled(context))
             {
-                await next(context).ConfigureAwait(false);
+                await next(context);
                 return;
             }
 
             var info = FlowingContext.Globals.Get<IRequestInfo>();
             var properties = BuildThrottlingProperties(context, info);
 
-            using (var result = await provider.ThrottleAsync(properties, info.RemainingTimeout).ConfigureAwait(false))
+            using (var result = await provider.ThrottleAsync(properties, info?.RemainingTimeout))
             {
                 if (result.Status == ThrottlingStatus.Passed)
                 {
                     if (result.WaitTime >= LongThrottlingWaitTime)
                         LogWaitTime(context, info, result);
 
-                    await next(context).ConfigureAwait(false);
+                    await next(context);
 
                     return;
                 }
@@ -62,7 +73,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 }
                 else
                 {
-                    context.Response.StatusCode = settings.RejectionResponseCode;
+                    context.Response.StatusCode = options.RejectionResponseCode;
                     context.Response.Headers.ContentLength = 0L;
                 }
             }
@@ -73,16 +84,15 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                context.Request.ContentLength > LargeRequestBodySize ||
                context.Request.Headers[HeaderNames.TransferEncoding] == "chunked";
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string GetClientConnectionInfo(HttpContext context)
             => $"{context.Connection.RemoteIpAddress}:{context.Connection.RemotePort}";
 
         private bool IsDisabled(HttpContext context)
         {
-            if (settings.DisableForWebSockets && context.WebSockets.IsWebSocketRequest)
+            if (options.DisableForWebSockets && context.WebSockets.IsWebSocketRequest)
                 return true;
 
-            if (settings.Enabled != null && !settings.Enabled(context))
+            if (options.Enabled != null && !options.Enabled(context))
                 return true;
 
             return false;
@@ -92,19 +102,19 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         {
             var builder = new ThrottlingPropertiesBuilder();
 
-            if (settings.AddConsumerProperty)
-                builder.AddConsumer(info.ClientApplicationIdentity);
+            if (options.AddConsumerProperty)
+                builder.AddConsumer(info?.ClientApplicationIdentity);
 
-            if (settings.AddPriorityProperty)
-                builder.AddPriority(info.Priority.ToString());
+            if (options.AddPriorityProperty)
+                builder.AddPriority(info?.Priority.ToString());
 
-            if (settings.AddMethodProperty)
+            if (options.AddMethodProperty)
                 builder.AddPriority(context.Request.Method);
 
-            if (settings.AddUrlProperty)
+            if (options.AddUrlProperty)
                 builder.AddUrl(UrlNormalizer.NormalizePath(context.Request.Path));
 
-            foreach (var additionalProperty in settings.AdditionalProperties)
+            foreach (var additionalProperty in options.AdditionalProperties)
             {
                 var (propertyName, propertyValue) = additionalProperty(context);
                 builder.AddProperty(propertyName, propertyValue);
@@ -118,7 +128,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 "Request from '{ClientIdentity}' at {RequestConnection} spent {ThrottlingWaitTime} on throttling.",
                 new
                 {
-                    ClientIdentity = info.ClientApplicationIdentity,
+                    ClientIdentity = info?.ClientApplicationIdentity ?? "unknown",
                     RequestConnection = GetClientConnectionInfo(context),
                     ThrottlingWaitTime = result.WaitTime.ToPrettyString(),
                     ThrottlingWaitTimeMs = result.WaitTime.TotalMilliseconds
@@ -127,7 +137,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         private void LogFailure(HttpContext context, IRequestInfo info, IThrottlingResult result)
             => log.Error(
                 "Dropping request from '{ClientIdentity}' at {RequestConnection} due to throttling status {ThrottlingStatus}. Rejection reason = '{RejectionReason}'.",
-                info.ClientApplicationIdentity,
+                info?.ClientApplicationIdentity ?? "unknown",
                 GetClientConnectionInfo(context),
                 result.Status,
                 result.RejectionReason);
