@@ -1,3 +1,7 @@
+## 0.1.10 (24-03-2020):
+
+Do not explicitly disallow synchronous I/O in Kestrel, rely on Asp.NET Core defaults.
+
 ## 0.1.9 (19-03-2020):
 
 Use Microsoft constant from `vostok.logging.microsoft` module.

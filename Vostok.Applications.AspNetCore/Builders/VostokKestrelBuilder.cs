@@ -17,7 +17,6 @@ namespace Vostok.Applications.AspNetCore.Builders
             var settings = kestrelCustomization.Customize(new KestrelSettings());
 
             options.AddServerHeader = false;
-            options.AllowSynchronousIO = false;
 
             options.Limits.MaxRequestBufferSize = 256 * 1024;
             options.Limits.MaxResponseBufferSize = 256 * 1024;
