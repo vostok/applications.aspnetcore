@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using JetBrains.Annotations;
+using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Clusterclient.Core.Model;
 
 namespace Vostok.Applications.AspNetCore.Models
@@ -37,5 +39,11 @@ namespace Vostok.Applications.AspNetCore.Models
         /// </summary>
         [NotNull]
         IPAddress ClientIpAddress { get; }
+
+        /// <summary>
+        /// Custom request properties, that can be filled with <see cref="FillRequestInfoSettings.PropertiesProviders"/>.
+        /// </summary>
+        [NotNull]
+        IReadOnlyDictionary<string, object> Properties { get; }
     }
 }

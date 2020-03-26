@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Middlewares;
+using Vostok.Applications.AspNetCore.Models;
 using Vostok.Applications.AspNetCore.StartupFilters;
 using Vostok.Commons.Helpers;
 using Vostok.Commons.Threading;
+using Vostok.Context;
 
 namespace Vostok.Applications.AspNetCore.Builders
 {
@@ -63,6 +65,8 @@ namespace Vostok.Applications.AspNetCore.Builders
                 services.AddSingleton(throttlingBuilder.BuildProvider());
 
             Register<FillRequestInfoSettings, FillRequestInfoMiddleware>(services, fillRequestInfoCustomization, middlewares);
+            services.AddTransient(_ => FlowingContext.Globals.Get<IRequestInfo>());
+
             Register<DistributedContextSettings, DistributedContextMiddleware>(services, distributedContextCustomization, middlewares);
             Register<TracingSettings, TracingMiddleware>(services, tracingCustomization, middlewares);
             Register<ThrottlingSettings, ThrottlingMiddleware>(services, throttlingBuilder.MiddlewareCustomization, middlewares);

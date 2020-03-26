@@ -54,5 +54,12 @@ namespace Vostok.Applications.AspNetCore.Configuration
         /// </summary>
         [NotNull]
         public List<Func<HttpRequest, string>> AdditionalClientIdentityProviders { get; set; } = new List<Func<HttpRequest, string>>();
+
+        /// <summary>
+        /// <para>A list of <see cref="IRequestInfo.Properties"/> providers.</para>
+        /// <para>Provided delegates are not expected to throw exceptions; <c>null</c> should be returned instead.</para>
+        /// </summary>
+        [NotNull]
+        public List<(string key, Func<HttpRequest, object> provider)> PropertiesProviders { get; set; } = new List<(string, Func<HttpRequest, object>)>();
     }
 }

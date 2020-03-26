@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Commons.Time;
@@ -7,13 +8,14 @@ namespace Vostok.Applications.AspNetCore.Models
 {
     internal class RequestInfo : IRequestInfo
     {
-        public RequestInfo(TimeSpan requestTimeout, RequestPriority requestPriority, string clientApplicationIdentity, IPAddress clientIpAddress)
+        public RequestInfo(TimeSpan requestTimeout, RequestPriority requestPriority, string clientApplicationIdentity, IPAddress clientIpAddress, IReadOnlyDictionary<string, object> properties)
         {
             Timeout = requestTimeout;
             Budget = TimeBudget.StartNew(Timeout.Cut(100.Milliseconds(), 0.05));
             Priority = requestPriority;
             ClientApplicationIdentity = clientApplicationIdentity;
             ClientIpAddress = clientIpAddress;
+            Properties = properties;
         }
 
         public TimeSpan Timeout { get; }
@@ -27,5 +29,7 @@ namespace Vostok.Applications.AspNetCore.Models
         public string ClientApplicationIdentity { get; }
 
         public IPAddress ClientIpAddress { get; }
+
+        public IReadOnlyDictionary<string, object> Properties { get; }
     }
 }

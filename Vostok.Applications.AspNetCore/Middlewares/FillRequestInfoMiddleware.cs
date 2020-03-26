@@ -22,6 +22,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     {
         private readonly RequestDelegate next;
         private readonly FillRequestInfoSettings options;
+        private readonly IReadOnlyDictionary<string, object> emptyProperties = new Dictionary<string, object>();
 
         public FillRequestInfoMiddleware(
             [NotNull] RequestDelegate next,
@@ -37,7 +38,8 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 GetTimeout(context.Request),
                 GetPriority(context.Request),
                 GetClientApplicationIdentity(context.Request),
-                context.Request.HttpContext.Connection.RemoteIpAddress);
+                context.Request.HttpContext.Connection.RemoteIpAddress,
+                GetProperties(context.Request));
 
             FlowingContext.Globals.Set(requestInfo);
 
@@ -70,6 +72,18 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 return clientApplicationIdentity;
 
             return ObtainFromProviders(request, options.AdditionalClientIdentityProviders);
+        }
+
+        private IReadOnlyDictionary<string, object> GetProperties(HttpRequest request)
+        {
+            if (!options.PropertiesProviders.Any())
+                return emptyProperties;
+
+            var result = new Dictionary<string, object>(options.PropertiesProviders.Count);
+            foreach (var provider in options.PropertiesProviders)
+                result[provider.key] = provider.provider(request);
+
+            return result;
         }
     }
 }
