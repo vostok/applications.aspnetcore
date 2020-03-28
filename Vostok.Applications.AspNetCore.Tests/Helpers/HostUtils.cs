@@ -22,7 +22,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Helpers
 
         public static async Task WaitUntilInitialized(IClusterClient clusterClient, TimeSpan? timeout = null)
         {
-            var deadline = DateTime.UtcNow.Add(timeout ?? TimeSpan.FromSeconds(10));
+            var deadline = DateTime.UtcNow.Add(timeout ?? TimeSpan.FromSeconds(1));
 
             while (DateTime.UtcNow < deadline)
             {

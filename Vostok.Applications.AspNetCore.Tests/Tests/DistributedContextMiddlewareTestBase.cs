@@ -11,6 +11,7 @@ using Vostok.Context;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
+    [TestFixture]
     public class DistributedContextMiddlewareTestBase : ControllerTestBase
     {
         [Theory]

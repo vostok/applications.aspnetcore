@@ -8,6 +8,12 @@ namespace Vostok.Applications.AspNetCore.Tests.Extensions
 {
     internal static class ClusterClientExtensions
     {
+        public static async Task<ClusterResult> GetAsync(this IClusterClient client, string url)
+        {
+            var request = Request.Get(url);
+            return await client.SendAsync(request);
+        }
+
         public static async Task<T> GetAsync<T>(this IClusterClient client, string url)
         {
             var request = Request.Get(url);
