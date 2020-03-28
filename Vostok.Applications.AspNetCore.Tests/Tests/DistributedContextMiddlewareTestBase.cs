@@ -1,12 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
+using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Clusterclient.Core.Model;
+using Vostok.Context;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    public class DistributedContextMiddlewareTests : ControllerTests
+    public class DistributedContextMiddlewareTestBase : ControllerTestBase
     {
         [Theory]
         public async Task Invoke_ShouldRestoreRequestPriority(RequestPriority requestPriority)
@@ -32,6 +37,20 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             var customContextual = await Client.GetAsync<string>("/context?name=custom-contextual&custom-contextual=some-value");
 
             customContextual.Should().Be("some-value");
+        }
+
+        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder)
+        {
+            builder.SetupDistributedContext(s => s.AdditionalActions.AddRange(CreateDistributedContextActions()));
+        }
+
+        private static IEnumerable<Action<HttpRequest>> CreateDistributedContextActions()
+        {
+            yield return r =>
+            {
+                if (r.Query.TryGetValue("custom-contextual", out var value))
+                    FlowingContext.Properties.Set("custom-contextual", value.ToString());
+            };
         }
     }
 }

@@ -1,14 +1,27 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Applications.AspNetCore.Tests.Models;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
     [TestFixture]
-    public class PingApiMiddlewareTests : ControllerTests
+    public class PingApiMiddlewareTestBase : ControllerTestBase
     {
+        private bool isHealthy = true;
+        private string commitHash;
+
+        [SetUp]
+        public void Setup()
+        {
+            isHealthy = true;
+            commitHash = Guid.NewGuid().ToString();
+        }
+
         [Test]
         public async Task GetPing_ShouldReturnOk_WhenReplicaInitialized()
         {
@@ -20,12 +33,12 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
         [Test]
         public async Task GetPing_ShouldReturnWarn_WhenReplicaIsNotHealthy()
         {
-            TestEnvironment.IsHealthy = false;
+            isHealthy = false;
 
             var response = await Client.GetAsync<PingApiResponse>("/_status/ping");
 
             response.Status.Should().Be("Warn");
-            TestEnvironment.IsHealthy = true;
+            isHealthy = true;
         }
 
         [Test]
@@ -33,7 +46,18 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
         {
             var response = await Client.GetAsync<PingApiResponse>("/_status/version");
 
-            response.CommitHash.Should().Be(TestEnvironment.CommitHash);
+            response.CommitHash.Should().Be(commitHash);
+        }
+
+        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder)
+        {
+            void ConfigurePingApi(PingApiSettings obj)
+            {
+                obj.HealthCheck = () => isHealthy;
+                obj.CommitHashProvider = () => commitHash;
+            }
+
+            builder.SetupPingApi(ConfigurePingApi);
         }
     }
 }
