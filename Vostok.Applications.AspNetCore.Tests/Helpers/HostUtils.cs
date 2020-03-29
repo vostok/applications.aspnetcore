@@ -20,9 +20,9 @@ namespace Vostok.Applications.AspNetCore.Tests.Helpers
             return port;
         }
 
-        public static async Task WaitUntilInitialized(IClusterClient clusterClient, TimeSpan? timeout = null)
+        public static async Task<bool> WaitUntilInitialized(IClusterClient clusterClient, TimeSpan? timeout = null)
         {
-            var deadline = DateTime.UtcNow.Add(timeout ?? TimeSpan.FromSeconds(1));
+            var deadline = DateTime.UtcNow.Add(timeout ?? TimeSpan.FromSeconds(10));
 
             while (DateTime.UtcNow < deadline)
             {
@@ -30,7 +30,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Helpers
                 {
                     var result = await clusterClient.GetAsync<PingApiResponse>("/_status/ping");
                     if (result.Status == "Ok")
-                        return;
+                        return true;
                 }
                 catch
                 {
@@ -38,7 +38,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Helpers
                 }
             }
 
-            throw new TimeoutException("Host didn't start");
+            return false;
         }
     }
 }

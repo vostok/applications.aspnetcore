@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Helpers;
@@ -45,10 +46,19 @@ namespace Vostok.Applications.AspNetCore.Tests
             var app = new TestVostokAspNetCoreApplication(SetupGlobal);
             var hostSettings = new VostokHostSettings(app, b => SetupEnvironment(b, port));
             var host = new VostokHost(hostSettings);
-            _ = Task.Run(host.RunAsync);
 
-            await HostUtils.WaitUntilInitialized(Client);
-            return host;
+            var runTask = Task.Run(host.RunAsync);
+            var initializationTask = HostUtils.WaitUntilInitialized(Client);
+
+            var completedTask = await Task.WhenAny(runTask, initializationTask);
+            if (completedTask == runTask)
+                runTask.Result.EnsureSuccess();
+
+            if (completedTask == initializationTask)
+                return initializationTask.Result ? host : throw new TimeoutException("Host didn't start");
+
+            runTask.Result.EnsureSuccess();
+            throw new InvalidOperationException("Host exit before test execution");
         }
 
         private void SetupEnvironment(IVostokHostingEnvironmentBuilder builder, int port)
