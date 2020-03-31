@@ -78,6 +78,12 @@ namespace Vostok.Applications.AspNetCore.Builders
         public IVostokAspNetCoreApplicationBuilder DisableVostokMiddleware<TMiddleware>()
             => Setup(middlewaresBuilder.Disable<TMiddleware>);
 
+        public IVostokAspNetCoreApplicationBuilder InjectPreVostokMiddleware<TMiddleware, TBefore>()
+            => Setup(middlewaresBuilder.InjectPreVostok<TMiddleware, TBefore>);
+
+        public IVostokAspNetCoreApplicationBuilder InjectPreVostokMiddleware<TMiddleware>()
+            => Setup(middlewaresBuilder.InjectPreVostok<TMiddleware>);
+
         public IVostokAspNetCoreApplicationBuilder SetupDatacenterAwareness(Action<DatacenterAwarenessSettings> setup)
             => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 

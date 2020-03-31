@@ -24,6 +24,7 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         private readonly AtomicBoolean disabled = false;
         private readonly HashSet<Type> disabledMiddlewares = new HashSet<Type>();
+        private readonly Dictionary<Type, List<Type>> preVostokMiddlewares = new Dictionary<Type, List<Type>>();
 
         public VostokMiddlewaresBuilder(VostokThrottlingBuilder throttlingBuilder)
             => this.throttlingBuilder = throttlingBuilder;
@@ -33,6 +34,17 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public void Disable<TMiddleware>()
             => disabledMiddlewares.Add(typeof(TMiddleware));
+
+        public void InjectPreVostok<TMiddleware>()
+            => InjectPreVostok<TMiddleware, FillRequestInfoMiddleware>();
+
+        public void InjectPreVostok<TMiddleware, TBefore>()
+        {
+            if (!preVostokMiddlewares.TryGetValue(typeof(TBefore), out var injected))
+                preVostokMiddlewares[typeof(TBefore)] = injected = new List<Type>();
+
+            injected.Add(typeof(TMiddleware));
+        }
 
         public void Customize(Action<TracingSettings> customization)
             => tracingCustomization.AddCustomization(customization);
@@ -80,6 +92,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         private void Register<TSettings, TMiddleware>(IServiceCollection services, Customization<TSettings> customization, List<Type> middlewares)
             where TSettings : class
         {
+            if (preVostokMiddlewares.TryGetValue(typeof(TMiddleware), out var injected))
+                middlewares.AddRange(injected);
+
             if (IsEnabled<TMiddleware>())
             {
                 services.Configure<TSettings>(settings => customization.Customize(settings));
