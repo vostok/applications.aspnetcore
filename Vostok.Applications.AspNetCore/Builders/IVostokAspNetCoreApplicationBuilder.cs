@@ -37,7 +37,17 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// </list>
         /// </summary>
         IVostokAspNetCoreApplicationBuilder DisableVostokMiddleware<TMiddleware>();
-        
+
+        /// <summary>
+        /// Injects a singleton middleware of type <typeparamref name="TMiddleware"/> before Vostok middleware of type <typeparamref name="TBefore"/>.
+        /// </summary>
+        IVostokAspNetCoreApplicationBuilder InjectPreVostokMiddleware<TMiddleware, TBefore>();
+
+        /// <summary>
+        /// Injects a singleton middleware of type <typeparamref name="TMiddleware"/> before the earliest Vostok middleware.
+        /// </summary>
+        IVostokAspNetCoreApplicationBuilder InjectPreVostokMiddleware<TMiddleware>();
+
         /// <summary>
         /// Applies an arbitrary customization to web host.
         /// </summary>
