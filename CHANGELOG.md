@@ -1,3 +1,7 @@
+## 0.1.11 (01-04-2020):
+
+https://github.com/vostok/applications.aspnetcore/issues/19
+
 ## 0.1.10 (24-03-2020):
 
 Do not explicitly disallow synchronous I/O in Kestrel, rely on Asp.NET Core defaults.
