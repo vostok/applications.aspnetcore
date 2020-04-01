@@ -77,7 +77,9 @@ namespace Vostok.Applications.AspNetCore.Tests
 
         private IClusterClient CreateClusterClient(int port)
         {
-            return new ClusterClient(
+            // ReSharper disable once RedundantNameQualifier
+            // full type name currently required due to https://github.com/vostok/clusterclient.datacenters/issues/1
+            return new Clusterclient.Core.ClusterClient(
                 Log,
                 s =>
                 {
