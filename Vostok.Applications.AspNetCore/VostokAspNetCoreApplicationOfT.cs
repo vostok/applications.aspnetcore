@@ -10,9 +10,9 @@ using Vostok.Commons.Threading;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Logging.Abstractions;
-
 #if NETCOREAPP3_1
 using HostManager = Vostok.Applications.AspNetCore.Helpers.GenericHostManager;
+
 #else
 using HostManager = Vostok.Applications.AspNetCore.Helpers.WebHostManager;
 #endif
@@ -73,8 +73,18 @@ namespace Vostok.Applications.AspNetCore
         public virtual Task WarmupAsync([NotNull] IVostokHostingEnvironment environment, [NotNull] IServiceProvider serviceProvider) =>
             Task.CompletedTask;
 
-        public void Dispose() =>
+        /// <summary>
+        /// Override this method to perform any dispose actions that needs to happen after host has been stopped.
+        /// </summary>
+        public virtual void DoDispose()
+        {
+        }
+
+        public void Dispose()
+        {
             disposables.ForEach(disposable => disposable?.Dispose());
+            DoDispose();
+        }
 
         private string GetCommitHash()
         {
