@@ -61,7 +61,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             context.Response.ContentType = "application/json";
 
             var body = Encoding.UTF8.GetBytes(text);
-            context.Response.ContentLength = body.LongLength;
+            context.Response.ContentLength = body.Length;
             return context.Response.Body.WriteAsync(body, 0, body.Length);
         }
 
