@@ -1,3 +1,7 @@
+## 0.1.12 (30-04-2020):
+
+Fill headers in ping api middleware.
+
 ## 0.1.11 (01-04-2020):
 
 https://github.com/vostok/applications.aspnetcore/issues/19

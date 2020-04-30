@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
@@ -48,16 +49,20 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             return next.Invoke(context);
         }
 
-        private Task HandlePingRequest(HttpContext context)
-        {
-            context.Response.StatusCode = 200;
-            return context.Response.WriteAsync("{" + $"\"Status\":\"{GetHealthStatus()}\"" + "}");
-        }
+        private Task HandlePingRequest(HttpContext context) =>
+            HandleRequest(context, "{" + $"\"Status\":\"{GetHealthStatus()}\"" + "}");
 
-        private Task HandleVersionRequest(HttpContext context)
+        private Task HandleVersionRequest(HttpContext context) =>
+            HandleRequest(context, "{" + $"\"CommitHash\":\"{ObtainCommitHash()}\"" + "}");
+
+        private Task HandleRequest(HttpContext context, string text)
         {
             context.Response.StatusCode = 200;
-            return context.Response.WriteAsync("{" + $"\"CommitHash\":\"{ObtainCommitHash()}\"" + "}");
+            context.Response.ContentType = "application/json";
+
+            var body = Encoding.UTF8.GetBytes(text);
+            context.Response.ContentLength = body.Length;
+            return context.Response.Body.WriteAsync(body, 0, body.Length);
         }
 
         private string GetHealthStatus()
@@ -70,6 +75,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         }
 
         private string ObtainCommitHash()
-            => commitHash ?? (commitHash = options.CommitHashProvider?.Invoke() ?? AssemblyCommitHashExtractor.ExtractFromEntryAssembly());
+            => commitHash ?? (commitHash = options.CommitHashProvider?.Invoke() ??
+                                           AssemblyCommitHashExtractor.ExtractFromEntryAssembly());
     }
 }
