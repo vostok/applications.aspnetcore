@@ -1,3 +1,8 @@
+## 0.1.13 (01-05-2020):
+
+- User application classes can now override `DoDispose` method to perform cleanup.
+- Added a couple of functional tests for middlewares.
+
 ## 0.1.12 (30-04-2020):
 
 Fill headers in ping api middleware.
