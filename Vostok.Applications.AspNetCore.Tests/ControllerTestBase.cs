@@ -1,11 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
-using Vostok.Applications.AspNetCore.Tests.Helpers;
 using Vostok.Clusterclient.Core;
 using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Transport;
+using Vostok.Commons.Helpers.Network;
 using Vostok.Hosting;
 using Vostok.Hosting.Setup;
 using Vostok.Logging.Abstractions;
@@ -21,7 +20,9 @@ namespace Vostok.Applications.AspNetCore.Tests
         public async Task OneTimeSetup()
         {
             Log = new SynchronousConsoleLog();
-            var serverPort = HostUtils.GetFreePort();
+
+            var serverPort = FreeTcpPortFinder.GetFreePort();
+            
             Client = CreateClusterClient(serverPort);
 
             testHost = await StartHost(serverPort);
@@ -47,18 +48,9 @@ namespace Vostok.Applications.AspNetCore.Tests
             var hostSettings = new VostokHostSettings(app, b => SetupEnvironment(b, port));
             var host = new VostokHost(hostSettings);
 
-            var runTask = Task.Run(host.RunAsync);
-            var initializationTask = HostUtils.WaitUntilInitialized(Client);
+            await host.StartAsync();
 
-            var completedTask = await Task.WhenAny(runTask, initializationTask);
-            if (completedTask == runTask)
-                runTask.Result.EnsureSuccess();
-
-            if (completedTask == initializationTask)
-                return initializationTask.Result ? host : throw new TimeoutException("Host didn't start");
-
-            runTask.Result.EnsureSuccess();
-            throw new InvalidOperationException("Host exit before test execution");
+            return host;
         }
 
         private void SetupEnvironment(IVostokHostingEnvironmentBuilder builder, int port)

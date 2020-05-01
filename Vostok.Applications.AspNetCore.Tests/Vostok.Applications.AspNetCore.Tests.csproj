@@ -40,6 +40,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Network\FreeTcpPortFinder.cs" Link="Commons\FreeTcpPortFinder.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Reference Include="Vostok.ClusterClient.Core">
             <SpecificVersion>False</SpecificVersion>
             <HintPath>..\..\vostok.clusterclient.core\Vostok.ClusterClient.Core\bin\Release\netstandard2.0\Vostok.ClusterClient.Core.dll</HintPath>
