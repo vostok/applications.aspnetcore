@@ -42,8 +42,18 @@ namespace Vostok.Applications.AspNetCore
         /// </summary>
         public abstract void Setup([NotNull] IVostokNetCoreApplicationBuilder builder, [NotNull] IVostokHostingEnvironment environment);
 
+        /// <summary>
+        /// Override this method to perform any dispose actions that needs to happen after host has been stopped.
+        /// </summary>
+        public virtual void DoDispose()
+        {
+        }
+
         public void Dispose()
-            => manager?.Dispose();
+        {
+            manager?.Dispose();
+            DoDispose();
+        }
     }
 }
 #endif
