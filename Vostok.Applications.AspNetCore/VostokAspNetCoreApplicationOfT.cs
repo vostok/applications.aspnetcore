@@ -20,9 +20,12 @@ using HostManager = Vostok.Applications.AspNetCore.Helpers.WebHostManager;
 namespace Vostok.Applications.AspNetCore
 {
     /// <summary>
-    /// <para><see cref="VostokAspNetCoreApplication{TStartup}"/> is the abstract class developers inherit from in order to create Vostok-compatible AspNetCore services.</para>
-    /// <para>Implement <see cref="Setup"/> method to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middlewares (see <see cref="IVostokAspNetCoreApplicationBuilder"/>).</para>
-    /// <para>Override <see cref="WarmupAsync"/> method to perform any additional initialization after the DI container gets built but before the app gets registered in service discovery.</para>
+    /// <para><see cref="VostokAspNetCoreApplication{TStartup}" /> is the abstract class developers inherit from in order to create Vostok-compatible AspNetCore services.</para>
+    /// <para>Implement <see cref="Setup" /> method to configure <see cref="IWebHostBuilder" /> and customize built-in Vostok middlewares (see
+    /// <see
+    ///     cref="IVostokAspNetCoreApplicationBuilder" />
+    /// ).</para>
+    /// <para>Override <see cref="WarmupAsync" /> method to perform any additional initialization after the DI container gets built but before the app gets registered in service discovery.</para>
     /// </summary>
     [PublicAPI]
     [RequiresPort]
@@ -61,7 +64,7 @@ namespace Vostok.Applications.AspNetCore
             manager.RunHostAsync();
 
         /// <summary>
-        /// Override this method to configure <see cref="IWebHostBuilder"/> and customize built-in Vostok middleware components.
+        /// Override this method to configure <see cref="IWebHostBuilder" /> and customize built-in Vostok middleware components.
         /// </summary>
         public virtual void Setup([NotNull] IVostokAspNetCoreApplicationBuilder builder, [NotNull] IVostokHostingEnvironment environment)
         {

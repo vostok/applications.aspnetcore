@@ -64,7 +64,23 @@ v2_1 > notests:
 
 full-build > notests:
   deps:
-    
+    - vostok.clusterclient.transport
+    - vostok.hosting
+    - vostok.zookeeper.client.abstractions
+    - vostok.zookeeper.client
+    - vostok.tracing.hercules
+    - vostok.tracing
+    - vostok.servicediscovery
+    - vostok.metrics.hercules
+    - vostok.logging.hercules
+    - vostok.logging.file
+    - vostok.logging.console
+    - vostok.logging.configuration
+    - vostok.hercules.client
+    - vostok.configuration.sources
+    - vostok.configuration
+    - vostok.clusterconfig.client
+
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: Release
