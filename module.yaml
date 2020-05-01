@@ -15,14 +15,14 @@ notests:
     - module vostok.throttling.metrics
 
   deps:
-    - vostok.clusterclient.core
     - vostok.clusterclient.context
+    - vostok.clusterclient.core
     - vostok.clusterconfig.client.abstractions
-    - vostok.commons.time/src
-    - vostok.commons.helpers/src
     - vostok.commons.environment/src
     - vostok.commons.formatting/src
+    - vostok.commons.helpers/src
     - vostok.commons.threading/src
+    - vostok.commons.time/src
     - vostok.configuration.abstractions
     - vostok.configuration.microsoft
     - vostok.context
@@ -31,8 +31,8 @@ notests:
     - vostok.hercules.client.abstractions
     - vostok.hosting.abstractions
     - vostok.logging.abstractions
-    - vostok.logging.microsoft
     - vostok.logging.context
+    - vostok.logging.microsoft
     - vostok.logging.tracing
     - vostok.metrics
     - vostok.servicediscovery.abstractions
@@ -65,21 +65,21 @@ v2_1 > notests:
 full-build > notests:
   deps:
     - vostok.clusterclient.transport
-    - vostok.hosting
-    - vostok.zookeeper.client.abstractions
-    - vostok.zookeeper.client
-    - vostok.tracing.hercules
-    - vostok.tracing
-    - vostok.servicediscovery
-    - vostok.metrics.hercules
-    - vostok.logging.hercules
-    - vostok.logging.file
-    - vostok.logging.console
-    - vostok.logging.configuration
-    - vostok.hercules.client
-    - vostok.configuration.sources
-    - vostok.configuration
     - vostok.clusterconfig.client
+    - vostok.configuration
+    - vostok.configuration.sources
+    - vostok.hercules.client
+    - vostok.hosting
+    - vostok.logging.configuration
+    - vostok.logging.console
+    - vostok.logging.file
+    - vostok.logging.hercules
+    - vostok.metrics.hercules
+    - vostok.servicediscovery
+    - vostok.tracing
+    - vostok.tracing.hercules
+    - vostok.zookeeper.client
+    - vostok.zookeeper.client.abstractions
 
   build:
     target: Vostok.Applications.AspNetCore.sln
