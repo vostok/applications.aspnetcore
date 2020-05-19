@@ -44,6 +44,8 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public void ConfigureWebHost(IWebHostBuilder webHostBuilder)
         {
+            webHostBuilder.ConfigureServices(RegisterBasePath);
+
             webHostBuilder.ConfigureServices(middlewaresBuilder.Register);
 
             ConfigureWebHostInternal(webHostBuilder);
@@ -73,9 +75,10 @@ namespace Vostok.Applications.AspNetCore.Builders
                 throw new Exception("Port or url should be configured in ServiceBeacon using VostokHostingEnvironmentSetup.");
 
             webHostBuilder.UseUrls($"{url.Scheme}://*:{url.Port}/");
-
-            webHostBuilder.ConfigureServices(services => services.AddTransient<IStartupFilter>(_ => new UrlPathStartupFilter(environment)));
         }
+
+        private void RegisterBasePath(IServiceCollection services)
+            => services.AddTransient<IStartupFilter>(_ => new UrlPathStartupFilter(environment));
 
         private static void EnsureUrlsNotChanged(string urlsBefore, string urlsAfter)
         {
