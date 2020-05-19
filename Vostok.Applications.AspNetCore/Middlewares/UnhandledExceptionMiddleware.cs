@@ -53,6 +53,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                     if (context.Response.HasStarted)
                         throw;
 
+                    context.Response.Clear();
                     context.Response.StatusCode = options.ErrorResponseCode;
                 }
             }
