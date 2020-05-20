@@ -1,3 +1,11 @@
+## 0.1.14 (20-05-2020):
+
+- UnhandledExceptionMiddleware no longer swallows exceptions that happen during response body streaming (that could prevent Kestrel from flushing its output buffers).
+- UnhandledExceptionMiddleware now clears any custom headers the app might have set when responding with HTTP 500.
+- TracingMiddleware now formats trace ids in response header without dashes ("N" format).
+- UsePathBase middleware is now registered before Vostok middlewares --> ping API works with base URL prefix.
+- Throttling provider is now registered in DI container even if ThrottlingMiddleware is disabled in case user adds it back manually in a different position.
+
 ## 0.1.13 (01-05-2020):
 
 - User application classes can now override `DoDispose` method to perform cleanup.
