@@ -63,7 +63,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (context.Response.HasStarted || context.Response.Headers.ContainsKey(options.ResponseTraceIdHeader))
                 return;
 
-            context.Response.Headers[options.ResponseTraceIdHeader] = spanBuilder.CurrentSpan?.TraceId.ToString();
+            context.Response.Headers[options.ResponseTraceIdHeader] = spanBuilder.CurrentSpan?.TraceId.ToString("N");
         }
     }
 }
