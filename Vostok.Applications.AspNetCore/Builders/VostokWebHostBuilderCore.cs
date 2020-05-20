@@ -12,6 +12,8 @@ namespace Vostok.Applications.AspNetCore.Builders
         {
             if (webHostEnabled)
             {
+                genericHostBuilder.ConfigureServices(RegisterBasePath);
+
                 genericHostBuilder.ConfigureServices(middlewaresBuilder.Register);
 
                 genericHostBuilder.ConfigureWebHostDefaults(ConfigureWebHostInternal);
