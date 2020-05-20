@@ -37,29 +37,29 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             }
             catch (Exception error)
             {
-                if (IsCancellationError(error))
+                if (IsCancellationError(error) && context.RequestAborted.IsCancellationRequested)
                 {
                     log.Warn("Request has been canceled. This is likely due to connection close from client side.");
                 }
                 else
                 {
-                    log.Error(error, "An unhandled exception occurred during request processing.");
+                    // (iloktionov): Log the exception here even if we're going to rethrow it later.
+                    // (iloktionov): In that case, Kestrel internals will produce a second log event,
+                    // (iloktionov): but the event logged here will have valuable tracing info attached.
+                    log.Error(error, "An unhandled exception occurred during request processing. Response started = {ResponeHasStarted}.", context.Response.HasStarted);
 
-                    RespondWithError(context);
+                    // (iloktionov): It's not safe to swallow errors that happen during response body streaming.
+                    // (iloktionov): This could lead to Kestrel not flushing its output buffers until the connection TTL expires.
+                    if (context.Response.HasStarted)
+                        throw;
+
+                    context.Response.Clear();
+                    context.Response.StatusCode = options.ErrorResponseCode;
                 }
             }
         }
 
         private static bool IsCancellationError(Exception error)
             => error is TaskCanceledException || error is OperationCanceledException || error is ConnectionResetException;
-
-        private void RespondWithError(HttpContext context)
-        {
-            var response = context.Response;
-            if (response.HasStarted)
-                return;
-
-            response.StatusCode = options.ErrorResponseCode;
-        }
     }
 }

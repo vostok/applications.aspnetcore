@@ -45,13 +45,25 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 spanBuilder.SetClientDetails(requestInfo?.ClientApplicationIdentity, requestInfo?.ClientIpAddress);
                 spanBuilder.SetRequestDetails(context.Request.Path, context.Request.Method, context.Request.ContentLength);
 
-                if (options.ResponseTraceIdHeader != null)
-                    context.Response.Headers[options.ResponseTraceIdHeader] = spanBuilder.CurrentSpan?.TraceId.ToString();
+                SetResponseHeaderIfRequired(context, spanBuilder);
 
                 await next(context);
 
+                SetResponseHeaderIfRequired(context, spanBuilder);
+
                 spanBuilder.SetResponseDetails(context.Response.StatusCode, context.Response.ContentLength);
             }
+        }
+
+        private void SetResponseHeaderIfRequired(HttpContext context, ISpanBuilder spanBuilder)
+        {
+            if (string.IsNullOrEmpty(options.ResponseTraceIdHeader))
+                return;
+
+            if (context.Response.HasStarted || context.Response.Headers.ContainsKey(options.ResponseTraceIdHeader))
+                return;
+
+            context.Response.Headers[options.ResponseTraceIdHeader] = spanBuilder.CurrentSpan?.TraceId.ToString("N");
         }
     }
 }
