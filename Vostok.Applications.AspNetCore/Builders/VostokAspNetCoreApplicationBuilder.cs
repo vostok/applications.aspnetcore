@@ -102,6 +102,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         public IVostokAspNetCoreApplicationBuilder SetupPingApi(Action<PingApiSettings> setup)
             => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
+        public IVostokAspNetCoreApplicationBuilder SetupDiagnosticApi(Action<DiagnosticApiSettings> setup) 
+            => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
+
         public IVostokAspNetCoreApplicationBuilder SetupUnhandledExceptions(Action<UnhandledExceptionSettings> setup)
             => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 

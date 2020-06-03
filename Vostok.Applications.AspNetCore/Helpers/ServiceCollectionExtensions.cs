@@ -25,6 +25,9 @@ namespace Vostok.Applications.AspNetCore.Helpers
                 .AddSingleton(environment.ContextProperties)
                 .AddSingleton(environment.ContextConfiguration)
                 .AddSingleton(environment.Datacenters)
+                .AddSingleton(environment.Diagnostics)
+                .AddSingleton(environment.Diagnostics.Info)
+                .AddSingleton(environment.Diagnostics.HealthTracker)
                 .AddSingleton(environment.HostExtensions);
 
             foreach (var (type, obj) in environment.HostExtensions.GetAll())

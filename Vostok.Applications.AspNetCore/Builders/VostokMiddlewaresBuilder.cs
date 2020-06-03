@@ -17,6 +17,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly Customization<TracingSettings> tracingCustomization = new Customization<TracingSettings>();
         private readonly Customization<LoggingSettings> loggingCustomization = new Customization<LoggingSettings>();
         private readonly Customization<PingApiSettings> pingApiCustomization = new Customization<PingApiSettings>();
+        private readonly Customization<DiagnosticApiSettings> diagnosticApiCustomization = new Customization<DiagnosticApiSettings>();
         private readonly Customization<UnhandledExceptionSettings> errorHandlingCustomization = new Customization<UnhandledExceptionSettings>();
         private readonly Customization<FillRequestInfoSettings> fillRequestInfoCustomization = new Customization<FillRequestInfoSettings>();
         private readonly Customization<DistributedContextSettings> distributedContextCustomization = new Customization<DistributedContextSettings>();
@@ -55,6 +56,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         public void Customize(Action<PingApiSettings> customization)
             => pingApiCustomization.AddCustomization(customization);
 
+        public void Customize(Action<DiagnosticApiSettings> customization)
+            => diagnosticApiCustomization.AddCustomization(customization);
+
         public void Customize(Action<UnhandledExceptionSettings> customization)
             => errorHandlingCustomization.AddCustomization(customization);
 
@@ -81,6 +85,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             Register<DatacenterAwarenessSettings, DatacenterAwarenessMiddleware > (services, datacenterAwarenessCustomization, middlewares);
             Register<UnhandledExceptionSettings, UnhandledExceptionMiddleware> (services, errorHandlingCustomization, middlewares);
             Register<PingApiSettings, PingApiMiddleware> (services, pingApiCustomization, middlewares);
+            Register<DiagnosticApiSettings, DiagnosticApiMiddleware> (services, diagnosticApiCustomization, middlewares);
 
             if (middlewares.Count == 0)
                 return;
