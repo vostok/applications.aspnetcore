@@ -122,5 +122,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.logging.context\Vostok.Logging.Context\bin\Release\netstandard2.0\Vostok.Logging.Context.dll</HintPath>
     </Reference>
+    <Reference Include="Vostok.Configuration">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.configuration\Vostok.Configuration\bin\Release\netstandard2.0\Vostok.Configuration.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

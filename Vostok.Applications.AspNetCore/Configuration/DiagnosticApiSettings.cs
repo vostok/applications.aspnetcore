@@ -9,6 +9,7 @@ namespace Vostok.Applications.AspNetCore.Configuration
     [PublicAPI]
     public class DiagnosticApiSettings
     {
-
+        [NotNull]
+        public string PathPrefix = "/_diagnostic";
     }
 }
