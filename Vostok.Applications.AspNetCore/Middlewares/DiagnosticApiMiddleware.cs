@@ -103,7 +103,9 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         {
             var builder = new StringBuilder();
 
-            foreach (var group in info.ListAll().GroupBy(entry => entry.Component, StringComparer.OrdinalIgnoreCase))
+            foreach (var group in info.ListAll()
+                .GroupBy(entry => entry.Component, StringComparer.OrdinalIgnoreCase)
+                .OrderBy(group => group.Key))
             {
                 builder.AppendLine($"<h2>{group.Key}</h2>");
                 builder.AppendLine("<ul>");
