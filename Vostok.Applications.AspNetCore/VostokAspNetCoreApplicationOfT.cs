@@ -8,6 +8,7 @@ using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Commons.Environment;
 using Vostok.Commons.Threading;
 using Vostok.Hosting.Abstractions;
+using Vostok.Hosting.Abstractions.Diagnostics;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Logging.Abstractions;
 #if NETCOREAPP3_1
@@ -45,8 +46,9 @@ namespace Vostok.Applications.AspNetCore
             builder.SetupPingApi(
                 settings =>
                 {
-                    settings.InitializationCheck = () => initialized;
                     settings.CommitHashProvider = GetCommitHash;
+                    settings.InitializationCheck = () => initialized;
+                    settings.HealthCheck = () => environment.Diagnostics.HealthTracker.CurrentStatus == HealthStatus.Healthy;
                 });
 
             Setup(builder, environment);
