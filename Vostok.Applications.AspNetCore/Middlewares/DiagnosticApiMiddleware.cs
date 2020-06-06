@@ -69,6 +69,8 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             context.Response.ContentLength = responseBody.Length;
             context.Response.ContentType = "application/json";
 
+            DisableResponseCaching(context);
+
             return context.Response.Body.WriteAsync(responseBody, 0, responseBody.Length);
         }
 
@@ -82,7 +84,8 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             context.Response.StatusCode = 200;
             context.Response.ContentLength = responseBody.Length;
             context.Response.ContentType = "text/html";
-            context.Response.Headers[HeaderNames.CacheControl] = "no-cache";
+            
+            DisableResponseCaching(context);
 
             return context.Response.Body.WriteAsync(responseBody, 0, responseBody.Length);
         }
@@ -128,6 +131,13 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 request.Host,
                 request.PathBase,
                 request.Path + new PathString('/' + entry.ToString()));
+
+        private static void DisableResponseCaching(HttpContext context)
+        {
+            context.Response.Headers[HeaderNames.CacheControl] = "no-store, no-cache";
+            context.Response.Headers[HeaderNames.Pragma] = "no-cache";
+            context.Response.Headers[HeaderNames.Expires] = "Thu, 01 Jan 1970 00:00:00 GMT";
+        }
 
         private bool TryAuthorize(HttpContext context)
         {
