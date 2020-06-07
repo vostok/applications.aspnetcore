@@ -30,10 +30,8 @@ namespace Vostok.Applications.AspNetCore.Tests
         }
 
         [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-            testHost.ShutdownTokenSource.Cancel();
-        }
+        public Task OneTimeTearDown()
+            => testHost?.StopAsync();
 
         protected IClusterClient Client { get; private set; }
         protected ILog Log { get; private set; }
