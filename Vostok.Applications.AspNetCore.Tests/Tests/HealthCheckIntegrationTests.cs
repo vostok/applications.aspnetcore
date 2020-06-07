@@ -56,15 +56,15 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             await CheckHealthEndpoint(ResponseCode.Ok, "Healthy");
         }
 
-        // [Test]
-        // public void Should_include_aspnetcore_health_checks_in_vostok_tracker()
-        // {
-        //     #if ASPNETCORE2_1
-        //     return;
-        //     #endif
-        //
-        //     environment.Diagnostics.HealthTracker.Should().ContainSingle(pair => pair.name == "ms");
-        // }
+        [Test]
+        public void Should_include_aspnetcore_health_checks_in_vostok_tracker()
+        {
+            #if ASPNETCORE2_1
+            return;
+            #endif
+
+            environment.Diagnostics.HealthTracker.Should().ContainSingle(pair => pair.name == "ms");
+        }
 
         private async Task CheckHealthEndpoint(ResponseCode expectedCode, string expectedStatus)
         {
