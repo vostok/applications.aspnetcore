@@ -5,6 +5,7 @@ using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Diagnostics;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Clusterclient.Core.Model;
+using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Abstractions;
 using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 
@@ -13,7 +14,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
     [TestFixture]
     public class DiagnosticApiMiddlewareTests : ControllerTestBase
     {
-        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder)
+        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             builder.SetupDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
         }

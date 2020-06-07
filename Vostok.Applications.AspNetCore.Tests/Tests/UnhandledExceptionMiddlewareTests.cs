@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
+using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
@@ -19,7 +20,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             result.Response.Code.Should().Be(ResponseCode);
         }
 
-        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder)
+        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             builder.SetupUnhandledExceptions(s => s.ErrorResponseCode = ResponseCode);
         }

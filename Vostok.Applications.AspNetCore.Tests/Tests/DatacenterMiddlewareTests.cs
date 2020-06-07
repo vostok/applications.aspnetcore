@@ -8,6 +8,7 @@ using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Applications.AspNetCore.Tests.Models;
 using Vostok.Datacenters;
+using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
@@ -50,7 +51,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             responseCode.Should().Be(rejectResponses ? RejectionCode : 200);
         }
 
-        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder)
+        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             void ConfigureDatacenter(DatacenterAwarenessSettings settings)
             {

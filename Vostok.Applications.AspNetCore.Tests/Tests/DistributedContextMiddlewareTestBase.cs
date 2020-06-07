@@ -8,6 +8,7 @@ using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Context;
+using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
@@ -40,7 +41,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             customContextual.Should().Be("some-value");
         }
 
-        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder)
+        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             builder.SetupDistributedContext(s => s.AdditionalActions.AddRange(CreateDistributedContextActions()));
         }

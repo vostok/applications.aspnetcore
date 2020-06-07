@@ -6,6 +6,7 @@ using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Transport;
 using Vostok.Commons.Helpers.Network;
 using Vostok.Hosting;
+using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Setup;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console;
@@ -37,7 +38,7 @@ namespace Vostok.Applications.AspNetCore.Tests
         protected IClusterClient Client { get; private set; }
         protected ILog Log { get; private set; }
 
-        protected virtual void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder)
+        protected virtual void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             // use this method to override host configuration in each test fixture
         }

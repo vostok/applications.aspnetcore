@@ -6,6 +6,7 @@ using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Applications.AspNetCore.Tests.Models;
+using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
@@ -49,7 +50,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             response.CommitHash.Should().Be(commitHash);
         }
 
-        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder)
+        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             void ConfigurePingApi(PingApiSettings obj)
             {

@@ -28,6 +28,7 @@ namespace Vostok.Applications.AspNetCore.Tests
 #if ASPNETCORE3_1
             app.UseRouting();
             app.UseEndpoints(s => s.MapControllers());
+            app.UseHealthChecks("/health");
 #elif ASPNETCORE2_1
             app.UseMvc();
 #endif
