@@ -13,7 +13,6 @@ using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Logging.Abstractions;
 #if NETCOREAPP3_1
 using HostManager = Vostok.Applications.AspNetCore.Helpers.GenericHostManager;
-
 #else
 using HostManager = Vostok.Applications.AspNetCore.Helpers.WebHostManager;
 #endif

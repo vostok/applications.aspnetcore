@@ -46,7 +46,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             kestrelBuilder = new VostokKestrelBuilder();
             throttlingBuilder = new VostokThrottlingBuilder(environment, disposables);
             middlewaresBuilder = new VostokMiddlewaresBuilder(throttlingBuilder);
-            webHostBuilder = new VostokWebHostBuilder<TStartup>(environment, kestrelBuilder, middlewaresBuilder);
+            webHostBuilder = new VostokWebHostBuilder<TStartup>(environment, kestrelBuilder, middlewaresBuilder, disposables);
         }
 
         public Host BuildHost()

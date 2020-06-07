@@ -14,11 +14,16 @@ namespace Vostok.Applications.AspNetCore.Builders
             {
                 genericHostBuilder.ConfigureServices(RegisterBasePath);
 
+                genericHostBuilder.ConfigureServices(CreateHealthCheckBuilder().Register);
+
                 genericHostBuilder.ConfigureServices(middlewaresBuilder.Register);
 
                 genericHostBuilder.ConfigureWebHostDefaults(ConfigureWebHostInternal);
             }
         }
+
+        private VostokHealthChecksBuilder CreateHealthCheckBuilder()
+            => new VostokHealthChecksBuilder(environment, disposables);
     }
 }
 #endif

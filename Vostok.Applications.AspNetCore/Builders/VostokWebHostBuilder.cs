@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Models;
@@ -19,6 +20,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly IVostokHostingEnvironment environment;
         private readonly VostokKestrelBuilder kestrelBuilder;
         private readonly VostokMiddlewaresBuilder middlewaresBuilder;
+        private readonly List<IDisposable> disposables;
 
         private readonly AtomicBoolean webHostEnabled;
         private readonly Customization<IWebHostBuilder> webHostCustomization;
@@ -26,11 +28,13 @@ namespace Vostok.Applications.AspNetCore.Builders
         public VostokWebHostBuilder(
             IVostokHostingEnvironment environment, 
             VostokKestrelBuilder kestrelBuilder, 
-            VostokMiddlewaresBuilder middlewaresBuilder)
+            VostokMiddlewaresBuilder middlewaresBuilder,
+            List<IDisposable> disposables)
         {
             this.environment = environment;
             this.kestrelBuilder = kestrelBuilder;
             this.middlewaresBuilder = middlewaresBuilder;
+            this.disposables = disposables;
 
             webHostEnabled = true;
             webHostCustomization = new Customization<IWebHostBuilder>();
