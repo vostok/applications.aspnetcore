@@ -45,12 +45,12 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
 
             using (environment.Diagnostics.HealthTracker.RegisterCheck("degraded", new DegradedHealthCheck()))
             {
-                await CheckHealthEndpoint(ResponseCode.ServiceUnavailable, "Degraded");
+                await CheckHealthEndpoint(ResponseCode.Ok, "Degraded");
 
                 using (environment.Diagnostics.HealthTracker.RegisterCheck("failing", new FailingHealthCheck()))
                     await CheckHealthEndpoint(ResponseCode.ServiceUnavailable, "Unhealthy");
 
-                await CheckHealthEndpoint(ResponseCode.ServiceUnavailable, "Degraded");
+                await CheckHealthEndpoint(ResponseCode.Ok, "Degraded");
             }
 
             await CheckHealthEndpoint(ResponseCode.Ok, "Healthy");
