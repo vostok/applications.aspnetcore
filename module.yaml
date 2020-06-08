@@ -18,6 +18,7 @@ notests:
     - vostok.clusterclient.context
     - vostok.clusterclient.core
     - vostok.clusterconfig.client.abstractions
+    - vostok.commons.collections/src
     - vostok.commons.environment/src
     - vostok.commons.formatting/src
     - vostok.commons.helpers/src

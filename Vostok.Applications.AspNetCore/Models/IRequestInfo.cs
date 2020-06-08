@@ -22,6 +22,11 @@ namespace Vostok.Applications.AspNetCore.Models
         TimeSpan RemainingTimeout { get; }
 
         /// <summary>
+        /// Time elapsed from the moment request was received.
+        /// </summary>
+        TimeSpan ElapsedTime { get; }
+
+        /// <summary>
         /// Request priority.
         /// </summary>
         RequestPriority Priority { get; }

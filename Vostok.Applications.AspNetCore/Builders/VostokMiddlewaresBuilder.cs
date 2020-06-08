@@ -3,16 +3,22 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Configuration;
+using Vostok.Applications.AspNetCore.Diagnostics;
 using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Applications.AspNetCore.StartupFilters;
 using Vostok.Commons.Helpers;
 using Vostok.Commons.Threading;
+using Vostok.Hosting.Abstractions;
+using Vostok.Hosting.Abstractions.Diagnostics;
+using Vostok.Throttling;
 
 namespace Vostok.Applications.AspNetCore.Builders
 {
     internal class VostokMiddlewaresBuilder
     {
+        private readonly IVostokHostingEnvironment environment;
         private readonly VostokThrottlingBuilder throttlingBuilder;
+        private readonly List<IDisposable> disposables;
 
         private readonly Customization<TracingSettings> tracingCustomization = new Customization<TracingSettings>();
         private readonly Customization<LoggingSettings> loggingCustomization = new Customization<LoggingSettings>();
@@ -27,8 +33,12 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly HashSet<Type> disabledMiddlewares = new HashSet<Type>();
         private readonly Dictionary<Type, List<Type>> preVostokMiddlewares = new Dictionary<Type, List<Type>>();
 
-        public VostokMiddlewaresBuilder(VostokThrottlingBuilder throttlingBuilder)
-            => this.throttlingBuilder = throttlingBuilder;
+        public VostokMiddlewaresBuilder(IVostokHostingEnvironment environment, List<IDisposable> disposables, VostokThrottlingBuilder throttlingBuilder)
+        {
+            this.environment = environment;
+            this.disposables = disposables;
+            this.throttlingBuilder = throttlingBuilder;
+        }
 
         public void Disable()
             => disabled.Value = true;
@@ -75,7 +85,8 @@ namespace Vostok.Applications.AspNetCore.Builders
         {
             var middlewares = new List<Type>();
 
-            services.AddSingleton(throttlingBuilder.BuildProvider());
+            RegisterThrottlingProvider(services);
+            RegisterRequestTracker(services);
 
             Register<FillRequestInfoSettings, FillRequestInfoMiddleware>(services, fillRequestInfoCustomization, middlewares);
             Register<DistributedContextSettings, DistributedContextMiddleware>(services, distributedContextCustomization, middlewares);
@@ -109,5 +120,31 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         private bool IsEnabled<TMiddleware>()
             => !disabled && !disabledMiddlewares.Contains(typeof(TMiddleware));
+
+        private void RegisterThrottlingProvider(IServiceCollection services)
+        {
+            var throttlingProvider = throttlingBuilder.BuildProvider();
+
+            services.AddSingleton<IThrottlingProvider>(throttlingProvider);
+
+            var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, "request-throttling");
+            var infoProvider = new ThrottlingInfoProvider(throttlingProvider);
+            var healthCheck = new ThrottlingHealthCheck(throttlingProvider);
+
+            disposables.Add(environment.Diagnostics.Info.RegisterProvider(infoEntry, infoProvider));
+            disposables.Add(environment.Diagnostics.HealthTracker.RegisterCheck("Request throttling", healthCheck));
+        }
+
+        private void RegisterRequestTracker(IServiceCollection services)
+        {
+            var requestTracker = new RequestTracker();
+
+            services.AddSingleton<IRequestTracker>(requestTracker);
+
+            var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, "requests-in-progress");
+            var infoProvider = new CurrentRequestsInfoProvider(requestTracker);
+
+            disposables.Add(environment.Diagnostics.Info.RegisterProvider(infoEntry, infoProvider));
+        }
     }
 }

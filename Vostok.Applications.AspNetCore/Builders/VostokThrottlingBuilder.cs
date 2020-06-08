@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Vostok.Applications.AspNetCore.Configuration;
-using Vostok.Applications.AspNetCore.Diagnostics;
 using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Commons.Helpers;
 using Vostok.Hosting.Abstractions;
-using Vostok.Hosting.Abstractions.Diagnostics;
 using Vostok.Logging.Abstractions;
 using Vostok.Throttling;
 using Vostok.Throttling.Config;
@@ -48,7 +46,7 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public ThrottlingMetricsOptions Metrics { get; set; } = new ThrottlingMetricsOptions();
 
-        public IThrottlingProvider BuildProvider()
+        public ThrottlingProvider BuildProvider()
         {
             if (UseThreadPoolOverloadQuota)
                 configurationBuilder.AddCustomQuota(new ThreadPoolOverloadQuota(new ThreadPoolOverloadQuotaOptions()));
@@ -57,12 +55,6 @@ namespace Vostok.Applications.AspNetCore.Builders
 
             if (Metrics != null)
                 disposables.Add(environment.Metrics.Instance.CreateThrottlingMetrics(provider, Metrics));
-
-            disposables.Add(environment.Diagnostics.Info.RegisterProvider(
-                new DiagnosticEntry(DiagnosticConstants.Component, "request-throttling"),
-                new ThrottlingInfoProvider(provider)));
-
-            disposables.Add(environment.Diagnostics.HealthTracker.RegisterCheck("Request throttling", new ThrottlingHealthCheck(provider)));
 
             return provider;
         }

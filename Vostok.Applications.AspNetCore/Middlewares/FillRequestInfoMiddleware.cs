@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
+using Vostok.Applications.AspNetCore.Diagnostics;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Commons.Helpers;
@@ -22,13 +23,16 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     {
         private readonly RequestDelegate next;
         private readonly FillRequestInfoSettings options;
+        private readonly IRequestTracker tracker;
 
         public FillRequestInfoMiddleware(
             [NotNull] RequestDelegate next,
-            [NotNull] IOptions<FillRequestInfoSettings> options)
+            [NotNull] IOptions<FillRequestInfoSettings> options,
+            [NotNull] IRequestTracker tracker)
         {
             this.next = next ?? throw new ArgumentNullException(nameof(next));
             this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
+            this.tracker = tracker ?? throw new ArgumentNullException(nameof(tracker));
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -40,6 +44,8 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 context.Request.HttpContext.Connection.RemoteIpAddress);
 
             FlowingContext.Globals.Set(requestInfo);
+
+            context.Response.RegisterForDispose(tracker.Track(context, requestInfo));
 
             await next(context);
         }
