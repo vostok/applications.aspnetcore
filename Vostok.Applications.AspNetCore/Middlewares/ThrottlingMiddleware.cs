@@ -109,7 +109,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 builder.AddPriority(info?.Priority.ToString());
 
             if (options.AddMethodProperty)
-                builder.AddPriority(context.Request.Method);
+                builder.AddMethod(context.Request.Method);
 
             if (options.AddUrlProperty)
                 builder.AddUrl(UrlNormalizer.NormalizePath(context.Request.Path));
