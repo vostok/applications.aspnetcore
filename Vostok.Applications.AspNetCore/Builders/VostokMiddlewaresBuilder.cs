@@ -24,6 +24,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly Customization<LoggingSettings> loggingCustomization = new Customization<LoggingSettings>();
         private readonly Customization<PingApiSettings> pingApiCustomization = new Customization<PingApiSettings>();
         private readonly Customization<DiagnosticApiSettings> diagnosticApiCustomization = new Customization<DiagnosticApiSettings>();
+        private readonly Customization<DiagnosticFeaturesSettings> diagnosticFeaturesCustomization = new Customization<DiagnosticFeaturesSettings>();
         private readonly Customization<UnhandledExceptionSettings> errorHandlingCustomization = new Customization<UnhandledExceptionSettings>();
         private readonly Customization<FillRequestInfoSettings> fillRequestInfoCustomization = new Customization<FillRequestInfoSettings>();
         private readonly Customization<DistributedContextSettings> distributedContextCustomization = new Customization<DistributedContextSettings>();
@@ -69,6 +70,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         public void Customize(Action<DiagnosticApiSettings> customization)
             => diagnosticApiCustomization.AddCustomization(customization);
 
+        public void Customize(Action<DiagnosticFeaturesSettings> customization)
+            => diagnosticFeaturesCustomization.AddCustomization(customization);
+
         public void Customize(Action<UnhandledExceptionSettings> customization)
             => errorHandlingCustomization.AddCustomization(customization);
 
@@ -84,9 +88,10 @@ namespace Vostok.Applications.AspNetCore.Builders
         public void Register(IServiceCollection services)
         {
             var middlewares = new List<Type>();
+            var diagnosticSettings = diagnosticFeaturesCustomization.Customize(new DiagnosticFeaturesSettings());
 
-            RegisterThrottlingProvider(services);
-            RegisterRequestTracker(services);
+            RegisterThrottlingProvider(services, diagnosticSettings);
+            RegisterRequestTracker(services, diagnosticSettings);
 
             Register<FillRequestInfoSettings, FillRequestInfoMiddleware>(services, fillRequestInfoCustomization, middlewares);
             Register<DistributedContextSettings, DistributedContextMiddleware>(services, distributedContextCustomization, middlewares);
@@ -121,30 +126,42 @@ namespace Vostok.Applications.AspNetCore.Builders
         private bool IsEnabled<TMiddleware>()
             => !disabled && !disabledMiddlewares.Contains(typeof(TMiddleware));
 
-        private void RegisterThrottlingProvider(IServiceCollection services)
+        private void RegisterThrottlingProvider(IServiceCollection services, DiagnosticFeaturesSettings settings)
         {
             var throttlingProvider = throttlingBuilder.BuildProvider();
 
             services.AddSingleton<IThrottlingProvider>(throttlingProvider);
 
-            var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, "request-throttling");
-            var infoProvider = new ThrottlingInfoProvider(throttlingProvider);
-            var healthCheck = new ThrottlingHealthCheck(throttlingProvider);
+            if (settings.AddThrottlingInfoProvider)
+            {
+                var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, "request-throttling");
+                var infoProvider = new ThrottlingInfoProvider(throttlingProvider);
 
-            disposables.Add(environment.Diagnostics.Info.RegisterProvider(infoEntry, infoProvider));
-            disposables.Add(environment.Diagnostics.HealthTracker.RegisterCheck("Request throttling", healthCheck));
+                disposables.Add(environment.Diagnostics.Info.RegisterProvider(infoEntry, infoProvider));
+            }
+
+            if (settings.AddThrottlingHealthCheck)
+            {
+                var healthCheck = new ThrottlingHealthCheck(throttlingProvider);
+
+                disposables.Add(environment.Diagnostics.HealthTracker.RegisterCheck("Request throttling", healthCheck));
+            }
         }
 
-        private void RegisterRequestTracker(IServiceCollection services)
+        private void RegisterRequestTracker(IServiceCollection services, DiagnosticFeaturesSettings settings)
         {
-            var requestTracker = new RequestTracker();
+            if (settings.AddCurrentRequestsInfoProvider)
+            {
+                var requestTracker = new RequestTracker();
 
-            services.AddSingleton<IRequestTracker>(requestTracker);
+                services.AddSingleton<IRequestTracker>(requestTracker);
 
-            var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, "requests-in-progress");
-            var infoProvider = new CurrentRequestsInfoProvider(requestTracker);
+                var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, "requests-in-progress");
+                var infoProvider = new CurrentRequestsInfoProvider(requestTracker);
 
-            disposables.Add(environment.Diagnostics.Info.RegisterProvider(infoEntry, infoProvider));
+                disposables.Add(environment.Diagnostics.Info.RegisterProvider(infoEntry, infoProvider));
+            }
+            else services.AddSingleton<IRequestTracker>(new DevNullRequestTracker());
         }
     }
 }

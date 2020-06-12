@@ -85,6 +85,11 @@ namespace Vostok.Applications.AspNetCore.Builders
         IVostokAspNetCoreApplicationBuilder SetupPingApi([NotNull] Action<PingApiSettings> setup);
 
         /// <summary>
+        /// Customizes built-in diagnostic features (info providers and health checks).
+        /// </summary>
+        IVostokAspNetCoreApplicationBuilder SetupDiagnosticFeatures([NotNull] Action<DiagnosticFeaturesSettings> setup);
+
+        /// <summary>
         /// Customizes built-in <see cref="DiagnosticApiMiddleware"/>.
         /// </summary>
         IVostokAspNetCoreApplicationBuilder SetupDiagnosticApi([NotNull] Action<DiagnosticApiSettings> setup);
