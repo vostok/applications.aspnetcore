@@ -10,10 +10,18 @@ namespace Vostok.Applications.AspNetCore.Diagnostics
         public CurrentRequestsInfoProvider(RequestTracker tracker)
             => this.tracker = tracker;
 
-        public object Query() 
-            => tracker.CurrentItems
+        public object Query()
+        {
+            var requests = tracker.CurrentItems
                 .Select(item => new {item.Path, item.Info.ElapsedTime})
                 .OrderByDescending(item => item.ElapsedTime)
                 .ToArray();
+
+            return new
+            {
+                Count = requests.Length,
+                Requests = requests
+            };
+        }
     }
 }
