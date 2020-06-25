@@ -26,6 +26,8 @@ namespace Vostok.Applications.AspNetCore.Helpers
         {
             var hostBuilder = Host.CreateDefaultBuilder();
 
+            hostBuilder.ConfigureHostConfiguration(config => config.AddDefaultLoggingFilters());
+
             hostBuilder.ConfigureLogging(log => log.AddVostokLogging(environment, GetLoggerSettings()));
 
             hostBuilder.ConfigureAppConfiguration(config => config.AddVostokSources(environment));

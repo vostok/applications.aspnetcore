@@ -25,6 +25,7 @@ notests:
     - vostok.commons.time/src
     - vostok.configuration.abstractions
     - vostok.configuration.microsoft
+    - vostok.configuration.sources
     - vostok.context
     - vostok.datacenters
     - vostok.devtools
