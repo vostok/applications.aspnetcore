@@ -27,6 +27,7 @@ notests:
     - vostok.configuration
     - vostok.configuration.abstractions
     - vostok.configuration.microsoft
+    - vostok.configuration.sources
     - vostok.context
     - vostok.datacenters
     - vostok.devtools
@@ -68,7 +69,6 @@ full-build > notests:
   deps:
     - vostok.clusterclient.transport
     - vostok.clusterconfig.client
-    - vostok.configuration.sources
     - vostok.hercules.client
     - vostok.hosting@multi_plus_diagnostics
     - vostok.logging.configuration
