@@ -1,3 +1,7 @@
+## 0.1.15 (26-06-2020):
+
+Enabled SourceLink.
+
 ## 0.1.14 (20-05-2020):
 
 - UnhandledExceptionMiddleware no longer swallows exceptions that happen during response body streaming (that could prevent Kestrel from flushing its output buffers).
