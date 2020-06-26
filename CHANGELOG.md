@@ -1,11 +1,11 @@
+## 0.1.17 (26-06-2020):
+
+Enabled SourceLink.
+
 ## 0.1.16 (26-06-2020):
 
 - Ignore all Microsoft log scopes by default.
 - Use Warning level for MS logs when user doesn't specify it explicitly.
-
-## 0.1.15 (26-06-2020):
-
-Enabled SourceLink.
 
 ## 0.1.14 (20-05-2020):
 
