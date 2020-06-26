@@ -132,25 +132,28 @@ namespace Vostok.Applications.AspNetCore.Builders
 
             services.AddSingleton<IThrottlingProvider>(throttlingProvider);
 
-            if (settings.AddThrottlingInfoProvider)
+            if (environment.HostExtensions.TryGet<IVostokApplicationDiagnostics>(out var diagnostics))
             {
-                var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, "request-throttling");
-                var infoProvider = new ThrottlingInfoProvider(throttlingProvider);
+                if (settings.AddThrottlingInfoProvider)
+                {
+                    var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, "request-throttling");
+                    var infoProvider = new ThrottlingInfoProvider(throttlingProvider);
 
-                disposables.Add(environment.Diagnostics.Info.RegisterProvider(infoEntry, infoProvider));
-            }
+                    disposables.Add(diagnostics.Info.RegisterProvider(infoEntry, infoProvider));
+                }
 
-            if (settings.AddThrottlingHealthCheck)
-            {
-                var healthCheck = new ThrottlingHealthCheck(throttlingProvider);
+                if (settings.AddThrottlingHealthCheck)
+                {
+                    var healthCheck = new ThrottlingHealthCheck(throttlingProvider);
 
-                disposables.Add(environment.Diagnostics.HealthTracker.RegisterCheck("Request throttling", healthCheck));
+                    disposables.Add(diagnostics.HealthTracker.RegisterCheck("Request throttling", healthCheck));
+                }
             }
         }
 
         private void RegisterRequestTracker(IServiceCollection services, DiagnosticFeaturesSettings settings)
         {
-            if (settings.AddCurrentRequestsInfoProvider)
+            if (environment.HostExtensions.TryGet<IVostokApplicationDiagnostics>(out var diagnostics) && settings.AddCurrentRequestsInfoProvider)
             {
                 var requestTracker = new RequestTracker();
 
@@ -159,7 +162,7 @@ namespace Vostok.Applications.AspNetCore.Builders
                 var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, "requests-in-progress");
                 var infoProvider = new CurrentRequestsInfoProvider(requestTracker);
 
-                disposables.Add(environment.Diagnostics.Info.RegisterProvider(infoEntry, infoProvider));
+                disposables.Add(diagnostics.Info.RegisterProvider(infoEntry, infoProvider));
             }
             else services.AddSingleton<IRequestTracker>(new DevNullRequestTracker());
         }

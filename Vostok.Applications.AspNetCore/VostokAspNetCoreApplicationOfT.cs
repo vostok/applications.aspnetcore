@@ -47,7 +47,9 @@ namespace Vostok.Applications.AspNetCore
                 {
                     settings.CommitHashProvider = GetCommitHash;
                     settings.InitializationCheck = () => initialized;
-                    settings.HealthCheck = () => environment.Diagnostics.HealthTracker.CurrentStatus == HealthStatus.Healthy;
+
+                    if (environment.HostExtensions.TryGet<IVostokApplicationDiagnostics>(out var diagnostics))
+                        settings.HealthCheck = () => diagnostics.HealthTracker.CurrentStatus == HealthStatus.Healthy;
                 });
 
             Setup(builder, environment);

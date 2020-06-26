@@ -7,6 +7,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Diagnostics;
 using Vostok.Hosting.Abstractions;
+using Vostok.Hosting.Abstractions.Diagnostics;
 
 namespace Vostok.Applications.AspNetCore.Builders
 {
@@ -25,10 +26,11 @@ namespace Vostok.Applications.AspNetCore.Builders
         {
             services.AddHealthChecks();
 
-            ReplaceHealthCheckService(services);
+            if (environment.HostExtensions.TryGet<IVostokApplicationDiagnostics>(out var diagnostics))
+                ReplaceHealthCheckService(services, diagnostics.HealthTracker);
         }
 
-        private void ReplaceHealthCheckService(IServiceCollection services)
+        private void ReplaceHealthCheckService(IServiceCollection services, IHealthTracker healthTracker)
         {
             var descriptors = services.Where(service => service.ServiceType == typeof(HealthCheckService)).ToArray();
             var defaultRegistration = descriptors.First();
@@ -38,7 +40,7 @@ namespace Vostok.Applications.AspNetCore.Builders
                 provider => new VostokHealthCheckService(
                     provider.GetRequiredService<IOptions<HealthCheckServiceOptions>>(),
                     provider,
-                    environment.Diagnostics.HealthTracker,
+                    healthTracker,
                     defaultRegistration.ImplementationType,
                     disposables),
                 ServiceLifetime.Singleton);

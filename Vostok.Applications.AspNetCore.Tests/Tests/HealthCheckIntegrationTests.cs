@@ -19,10 +19,12 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
     public class HealthCheckIntegrationTests : ControllerTestBase
     {
         private volatile IVostokHostingEnvironment environment;
+        private  IVostokApplicationDiagnostics diagnostics;
 
         protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment env)
         {
             environment = env;
+            environment.HostExtensions.TryGet(out diagnostics).Should().BeTrue();
 
             #if ASPNETCORE3_1
             builder.SetupGenericHost(
@@ -43,11 +45,11 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
 
             await CheckHealthEndpoint(ResponseCode.Ok, "Healthy");
 
-            using (environment.Diagnostics.HealthTracker.RegisterCheck("degraded", new DegradedHealthCheck()))
+            using (diagnostics.HealthTracker.RegisterCheck("degraded", new DegradedHealthCheck()))
             {
                 await CheckHealthEndpoint(ResponseCode.Ok, "Degraded");
 
-                using (environment.Diagnostics.HealthTracker.RegisterCheck("failing", new FailingHealthCheck()))
+                using (diagnostics.HealthTracker.RegisterCheck("failing", new FailingHealthCheck()))
                     await CheckHealthEndpoint(ResponseCode.ServiceUnavailable, "Unhealthy");
 
                 await CheckHealthEndpoint(ResponseCode.Ok, "Degraded");
@@ -63,7 +65,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             return;
             #endif
 
-            environment.Diagnostics.HealthTracker.Should().ContainSingle(pair => pair.name == "ms");
+            diagnostics.HealthTracker.Should().ContainSingle(pair => pair.name == "ms");
         }
 
         private async Task CheckHealthEndpoint(ResponseCode expectedCode, string expectedStatus)
