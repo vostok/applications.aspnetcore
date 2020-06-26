@@ -14,7 +14,7 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
   <PropertyGroup>
-    <VersionPrefix>0.1.17</VersionPrefix>
+    <VersionPrefix>0.1.18</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup>
     <Title>Vostok.Applications.AspNetCore</Title>
