@@ -11,6 +11,7 @@ using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Configuration;
 using Vostok.Configuration.Printing;
+using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Diagnostics;
 using Vostok.Logging.Abstractions;
 
@@ -24,18 +25,18 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     {
         private readonly RequestDelegate next;
         private readonly DiagnosticApiSettings options;
-        private readonly IDiagnosticInfo info;
+        private readonly IVostokHostExtensions extensions;
         private readonly ILog log;
         private readonly string pathPrefix;
 
         public DiagnosticApiMiddleware(
             [NotNull] RequestDelegate next,
-            [NotNull] IDiagnosticInfo info,
+            [NotNull] IVostokHostExtensions extensions,
             [NotNull] IOptions<DiagnosticApiSettings> options,
             [NotNull] ILog log)
         {
             this.next = next ?? throw new ArgumentNullException(nameof(next));
-            this.info = info ?? throw new ArgumentNullException(nameof(info));
+            this.extensions = extensions ?? throw new ArgumentNullException(nameof(extensions));
             this.options = (options ?? throw new ArgumentNullException(nameof(options))).Value;
             this.log = (log ?? throw new ArgumentNullException(nameof(log))).ForContext<DiagnosticApiMiddleware>();
 
@@ -44,14 +45,17 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
         public Task InvokeAsync(HttpContext context)
         {
+            if (!extensions.TryGet<IVostokApplicationDiagnostics>(out var diagnostics))
+                return next.Invoke(context);
+
             var diagnosticPath = GetDiagnosticPath(context);
             if (diagnosticPath == null)
                 return next.Invoke(context);
 
             if (diagnosticPath == string.Empty)
-                return HandleListRequest(context);
+                return HandleListRequest(context, diagnostics.Info);
 
-            if (DiagnosticEntry.TryParse(diagnosticPath, out var entry) && info.TryQuery(entry, out var payload))
+            if (DiagnosticEntry.TryParse(diagnosticPath, out var entry) && diagnostics.Info.TryQuery(entry, out var payload))
                 return HandleInfoRequest(context, payload);
 
             return next.Invoke(context);
@@ -74,12 +78,12 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             return context.Response.Body.WriteAsync(responseBody, 0, responseBody.Length);
         }
 
-        private Task HandleListRequest(HttpContext context)
+        private Task HandleListRequest(HttpContext context, IDiagnosticInfo info)
         {
             if (!TryAuthorize(context))
                 return Task.CompletedTask;
 
-            var responseBody = Encoding.UTF8.GetBytes(ComposeListPage(context));
+            var responseBody = Encoding.UTF8.GetBytes(ComposeListPage(context, info));
 
             context.Response.StatusCode = 200;
             context.Response.ContentLength = responseBody.Length;
@@ -102,7 +106,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         }
 
         [NotNull]
-        private string ComposeListPage(HttpContext context)
+        private string ComposeListPage(HttpContext context, IDiagnosticInfo info)
         {
             var builder = new StringBuilder();
 
