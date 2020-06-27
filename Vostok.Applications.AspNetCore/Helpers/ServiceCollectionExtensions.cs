@@ -29,6 +29,13 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
             foreach (var (type, obj) in environment.HostExtensions.GetAll())
                 services.AddSingleton(type, obj);
+
+            if (environment.HostExtensions.TryGet<IVostokApplicationDiagnostics>(out var diagnostics))
+            {
+                services
+                    .AddSingleton(diagnostics.Info)
+                    .AddSingleton(diagnostics.HealthTracker);
+            }
         }
     }
 }

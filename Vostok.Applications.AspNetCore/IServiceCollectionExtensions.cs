@@ -54,6 +54,12 @@ namespace Vostok.Applications.AspNetCore
             => services.Configure(setup);
 
         /// <summary>
+        /// Adds <see cref="DiagnosticApiSettings"/> to the specified service collection.
+        /// </summary>
+        public static IServiceCollection AddVostokDiagnosticApi(this IServiceCollection services, Action<DiagnosticApiSettings> setup)
+            => services.Configure(setup);
+
+        /// <summary>
         /// Adds <see cref="LoggingSettings"/> to the specified service collection.
         /// </summary>
         public static IServiceCollection AddVostokRequestLogging(this IServiceCollection services, Action<LoggingSettings> setup)

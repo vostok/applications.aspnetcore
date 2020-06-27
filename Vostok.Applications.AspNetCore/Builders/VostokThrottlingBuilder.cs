@@ -46,7 +46,7 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public ThrottlingMetricsOptions Metrics { get; set; } = new ThrottlingMetricsOptions();
 
-        public IThrottlingProvider BuildProvider()
+        public ThrottlingProvider BuildProvider()
         {
             if (UseThreadPoolOverloadQuota)
                 configurationBuilder.AddCustomQuota(new ThreadPoolOverloadQuota(new ThreadPoolOverloadQuotaOptions()));

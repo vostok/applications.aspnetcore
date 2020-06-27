@@ -18,11 +18,13 @@ notests:
     - vostok.clusterclient.context
     - vostok.clusterclient.core
     - vostok.clusterconfig.client.abstractions
+    - vostok.commons.collections/src
     - vostok.commons.environment/src
     - vostok.commons.formatting/src
     - vostok.commons.helpers/src
     - vostok.commons.threading/src
     - vostok.commons.time/src
+    - vostok.configuration
     - vostok.configuration.abstractions
     - vostok.configuration.microsoft
     - vostok.configuration.sources
@@ -67,8 +69,6 @@ full-build > notests:
   deps:
     - vostok.clusterclient.transport
     - vostok.clusterconfig.client
-    - vostok.configuration
-    - vostok.configuration.sources
     - vostok.hercules.client
     - vostok.hosting
     - vostok.logging.configuration

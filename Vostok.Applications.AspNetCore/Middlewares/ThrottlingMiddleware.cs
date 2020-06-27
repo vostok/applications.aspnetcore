@@ -21,7 +21,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     [PublicAPI]
     public class ThrottlingMiddleware
     {
-        private const long LargeRequestBodySize = 4 * 1024;
+        private const long LargeRequestBodySize = 256 * 1024;
         private static readonly TimeSpan LongThrottlingWaitTime = 500.Milliseconds();
 
         private readonly RequestDelegate next;
@@ -109,7 +109,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 builder.AddPriority(info?.Priority.ToString());
 
             if (options.AddMethodProperty)
-                builder.AddPriority(context.Request.Method);
+                builder.AddMethod(context.Request.Method);
 
             if (options.AddUrlProperty)
                 builder.AddUrl(UrlNormalizer.NormalizePath(context.Request.Path));

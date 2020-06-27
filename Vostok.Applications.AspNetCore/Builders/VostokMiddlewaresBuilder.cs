@@ -3,20 +3,28 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Configuration;
+using Vostok.Applications.AspNetCore.Diagnostics;
 using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Applications.AspNetCore.StartupFilters;
 using Vostok.Commons.Helpers;
 using Vostok.Commons.Threading;
+using Vostok.Hosting.Abstractions;
+using Vostok.Hosting.Abstractions.Diagnostics;
+using Vostok.Throttling;
 
 namespace Vostok.Applications.AspNetCore.Builders
 {
     internal class VostokMiddlewaresBuilder
     {
+        private readonly IVostokHostingEnvironment environment;
         private readonly VostokThrottlingBuilder throttlingBuilder;
+        private readonly List<IDisposable> disposables;
 
         private readonly Customization<TracingSettings> tracingCustomization = new Customization<TracingSettings>();
         private readonly Customization<LoggingSettings> loggingCustomization = new Customization<LoggingSettings>();
         private readonly Customization<PingApiSettings> pingApiCustomization = new Customization<PingApiSettings>();
+        private readonly Customization<DiagnosticApiSettings> diagnosticApiCustomization = new Customization<DiagnosticApiSettings>();
+        private readonly Customization<DiagnosticFeaturesSettings> diagnosticFeaturesCustomization = new Customization<DiagnosticFeaturesSettings>();
         private readonly Customization<UnhandledExceptionSettings> errorHandlingCustomization = new Customization<UnhandledExceptionSettings>();
         private readonly Customization<FillRequestInfoSettings> fillRequestInfoCustomization = new Customization<FillRequestInfoSettings>();
         private readonly Customization<DistributedContextSettings> distributedContextCustomization = new Customization<DistributedContextSettings>();
@@ -26,8 +34,12 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly HashSet<Type> disabledMiddlewares = new HashSet<Type>();
         private readonly Dictionary<Type, List<Type>> preVostokMiddlewares = new Dictionary<Type, List<Type>>();
 
-        public VostokMiddlewaresBuilder(VostokThrottlingBuilder throttlingBuilder)
-            => this.throttlingBuilder = throttlingBuilder;
+        public VostokMiddlewaresBuilder(IVostokHostingEnvironment environment, List<IDisposable> disposables, VostokThrottlingBuilder throttlingBuilder)
+        {
+            this.environment = environment;
+            this.disposables = disposables;
+            this.throttlingBuilder = throttlingBuilder;
+        }
 
         public void Disable()
             => disabled.Value = true;
@@ -55,6 +67,12 @@ namespace Vostok.Applications.AspNetCore.Builders
         public void Customize(Action<PingApiSettings> customization)
             => pingApiCustomization.AddCustomization(customization);
 
+        public void Customize(Action<DiagnosticApiSettings> customization)
+            => diagnosticApiCustomization.AddCustomization(customization);
+
+        public void Customize(Action<DiagnosticFeaturesSettings> customization)
+            => diagnosticFeaturesCustomization.AddCustomization(customization);
+
         public void Customize(Action<UnhandledExceptionSettings> customization)
             => errorHandlingCustomization.AddCustomization(customization);
 
@@ -70,8 +88,10 @@ namespace Vostok.Applications.AspNetCore.Builders
         public void Register(IServiceCollection services)
         {
             var middlewares = new List<Type>();
+            var diagnosticSettings = diagnosticFeaturesCustomization.Customize(new DiagnosticFeaturesSettings());
 
-            services.AddSingleton(throttlingBuilder.BuildProvider());
+            RegisterThrottlingProvider(services, diagnosticSettings);
+            RegisterRequestTracker(services, diagnosticSettings);
 
             Register<FillRequestInfoSettings, FillRequestInfoMiddleware>(services, fillRequestInfoCustomization, middlewares);
             Register<DistributedContextSettings, DistributedContextMiddleware>(services, distributedContextCustomization, middlewares);
@@ -81,6 +101,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             Register<DatacenterAwarenessSettings, DatacenterAwarenessMiddleware > (services, datacenterAwarenessCustomization, middlewares);
             Register<UnhandledExceptionSettings, UnhandledExceptionMiddleware> (services, errorHandlingCustomization, middlewares);
             Register<PingApiSettings, PingApiMiddleware> (services, pingApiCustomization, middlewares);
+            Register<DiagnosticApiSettings, DiagnosticApiMiddleware> (services, diagnosticApiCustomization, middlewares);
 
             if (middlewares.Count == 0)
                 return;
@@ -104,5 +125,46 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         private bool IsEnabled<TMiddleware>()
             => !disabled && !disabledMiddlewares.Contains(typeof(TMiddleware));
+
+        private void RegisterThrottlingProvider(IServiceCollection services, DiagnosticFeaturesSettings settings)
+        {
+            var throttlingProvider = throttlingBuilder.BuildProvider();
+
+            services.AddSingleton<IThrottlingProvider>(throttlingProvider);
+
+            if (environment.HostExtensions.TryGet<IVostokApplicationDiagnostics>(out var diagnostics))
+            {
+                if (settings.AddThrottlingInfoProvider)
+                {
+                    var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, "request-throttling");
+                    var infoProvider = new ThrottlingInfoProvider(throttlingProvider);
+
+                    disposables.Add(diagnostics.Info.RegisterProvider(infoEntry, infoProvider));
+                }
+
+                if (settings.AddThrottlingHealthCheck)
+                {
+                    var healthCheck = new ThrottlingHealthCheck(throttlingProvider);
+
+                    disposables.Add(diagnostics.HealthTracker.RegisterCheck("Request throttling", healthCheck));
+                }
+            }
+        }
+
+        private void RegisterRequestTracker(IServiceCollection services, DiagnosticFeaturesSettings settings)
+        {
+            if (environment.HostExtensions.TryGet<IVostokApplicationDiagnostics>(out var diagnostics) && settings.AddCurrentRequestsInfoProvider)
+            {
+                var requestTracker = new RequestTracker();
+
+                services.AddSingleton<IRequestTracker>(requestTracker);
+
+                var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, "requests-in-progress");
+                var infoProvider = new CurrentRequestsInfoProvider(requestTracker);
+
+                disposables.Add(diagnostics.Info.RegisterProvider(infoEntry, infoProvider));
+            }
+            else services.AddSingleton<IRequestTracker>(new DevNullRequestTracker());
+        }
     }
 }

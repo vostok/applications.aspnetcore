@@ -36,8 +36,8 @@ namespace Vostok.Applications.AspNetCore.Builders
 
             kestrelBuilder = new VostokKestrelBuilder();
             throttlingBuilder = new VostokThrottlingBuilder(environment, disposables);
-            middlewaresBuilder = new VostokMiddlewaresBuilder(throttlingBuilder);
-            webHostBuilder = new VostokWebHostBuilder<TStartup>(environment, kestrelBuilder, middlewaresBuilder);
+            middlewaresBuilder = new VostokMiddlewaresBuilder(environment, disposables, throttlingBuilder);
+            webHostBuilder = new VostokWebHostBuilder<TStartup>(environment, kestrelBuilder, middlewaresBuilder, disposables);
         }
 
         public Host BuildHost()
@@ -91,6 +91,12 @@ namespace Vostok.Applications.AspNetCore.Builders
             => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupPingApi(Action<PingApiSettings> setup)
+            => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
+
+        public IVostokAspNetCoreApplicationBuilder SetupDiagnosticApi(Action<DiagnosticApiSettings> setup) 
+            => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
+
+        public IVostokAspNetCoreApplicationBuilder SetupDiagnosticFeatures(Action<DiagnosticFeaturesSettings> setup) 
             => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupUnhandledExceptions(Action<UnhandledExceptionSettings> setup)

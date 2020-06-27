@@ -56,6 +56,13 @@ namespace Vostok.Applications.AspNetCore
             => builder.UseMiddleware<PingApiMiddleware>();
 
         /// <summary>
+        /// <para>Adds the <see cref="DiagnosticApiMiddleware"/> to the specified application builder.</para>
+        /// <para>Use <see cref="IServiceCollectionExtensions.AddVostokDiagnosticApi(IServiceCollection,Action{DiagnosticApiSettings})"/> to register its options.</para>
+        /// </summary>
+        public static IApplicationBuilder UseVostokDiagnosticApi(this IApplicationBuilder builder)
+            => builder.UseMiddleware<DiagnosticApiMiddleware>();
+
+        /// <summary>
         /// <para>Adds the <see cref="LoggingMiddleware"/> to the specified application builder.</para>
         /// <para>Use <see cref="IServiceCollectionExtensions.AddVostokRequestLogging(IServiceCollection,Action{LoggingSettings})"/> to register its options.</para>
         /// <para>Note that this middleware has a hard dependency on <see cref="FillRequestInfoMiddleware"/>.</para>

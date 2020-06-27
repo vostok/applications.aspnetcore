@@ -20,6 +20,8 @@ namespace Vostok.Applications.AspNetCore.Models
 
         public TimeSpan RemainingTimeout => Budget.Remaining;
 
+        public TimeSpan ElapsedTime => Budget.Elapsed;
+
         public TimeBudget Budget { get; }
 
         public RequestPriority Priority { get; }
