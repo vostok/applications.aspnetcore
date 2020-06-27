@@ -27,7 +27,7 @@ namespace Vostok.Applications.AspNetCore.Configuration
         /// <summary>
         /// Determines whether to log full response completion time.
         /// </summary>
-        public bool LogResponseCompletion { get; set; } = true;
+        public bool LogResponseCompletion { get; set; }
 
         /// <summary>
         /// <para>Request query parameters logging options.</para>
