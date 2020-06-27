@@ -1,3 +1,17 @@
+## 0.2.0 (27-06-2020):
+
+New features:
+- Diagnostic API middleware
+- Diagnostic info providers (throttling, current requests)
+- Throttling-based health check
+- 2-way integration with Asp.NET Core health checks (only on .NET Core)
+- Integration of new health checks with ping API
+- Conversion between IVostokApplication and IHostedService
+- AddAspNetCore and AddNetCore extensions for ICompositeApplicationBuilder
+
+Minor tweaks:
+- LoggingSettings: do not log response completion events by default.
+
 ## 0.1.18 (26-06-2020):
 
 Enabled SourceLink.
