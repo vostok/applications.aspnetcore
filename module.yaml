@@ -9,7 +9,7 @@ notests:
     - module vostok.clusterclient.core
     - module vostok.configuration.microsoft
     - module vostok.context
-    - module vostok.hosting.abstractions@multi_plus_diagnostics
+    - module vostok.hosting.abstractions
     - module vostok.logging.microsoft
     - module vostok.throttling
     - module vostok.throttling.metrics
@@ -32,7 +32,7 @@ notests:
     - vostok.datacenters
     - vostok.devtools
     - vostok.hercules.client.abstractions
-    - vostok.hosting.abstractions@multi_plus_diagnostics
+    - vostok.hosting.abstractions
     - vostok.logging.abstractions
     - vostok.logging.context
     - vostok.logging.microsoft
@@ -70,7 +70,7 @@ full-build > notests:
     - vostok.clusterclient.transport
     - vostok.clusterconfig.client
     - vostok.hercules.client
-    - vostok.hosting@multi_plus_diagnostics
+    - vostok.hosting
     - vostok.logging.configuration
     - vostok.logging.console
     - vostok.logging.file
