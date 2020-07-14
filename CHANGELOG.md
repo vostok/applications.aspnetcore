@@ -1,3 +1,7 @@
+## 0.2.1 (14-07-2020):
+
+ThrottlingMiddleware no longer passes requests aborted during throttlings (this may occur if client does not reveal its true timeout or closes connection unexpectedly).
+
 ## 0.2.0 (27-06-2020):
 
 New features:

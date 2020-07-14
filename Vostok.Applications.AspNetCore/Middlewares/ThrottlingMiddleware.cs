@@ -54,6 +54,12 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
             using (var result = await provider.ThrottleAsync(properties, info?.RemainingTimeout))
             {
+                if (context.RequestAborted.IsCancellationRequested)
+                {
+                    LogConnectionAlreadyAborted(context, info);
+                    return;
+                }
+
                 if (result.Status == ThrottlingStatus.Passed)
                 {
                     if (result.WaitTime >= LongThrottlingWaitTime)
@@ -85,7 +91,16 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                context.Request.Headers[HeaderNames.TransferEncoding] == "chunked";
 
         private static string GetClientConnectionInfo(HttpContext context)
-            => $"{context.Connection.RemoteIpAddress}:{context.Connection.RemotePort}";
+        {
+            try
+            {
+                return $"{context.Connection.RemoteIpAddress}:{context.Connection.RemotePort}";
+            }
+            catch
+            {
+                return "unknown endpoint";
+            }
+        }
 
         private bool IsDisabled(HttpContext context)
         {
@@ -141,6 +156,13 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 GetClientConnectionInfo(context),
                 result.Status,
                 result.RejectionReason);
+
+        private void LogConnectionAlreadyAborted(HttpContext context, IRequestInfo info)
+            => log.Warn("Request from '{ClientIdentity}' at {RequestConnection} was aborted by client before passing through throttling.", new
+            {
+                ClientIdentity = info?.ClientApplicationIdentity ?? "unknown",
+                RequestConnection = GetClientConnectionInfo(context),
+            });
 
         private void LogAbortingConnection()
             => log.Info("Aborting client connection..");
