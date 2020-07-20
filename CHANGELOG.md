@@ -1,3 +1,7 @@
+## 0.2.2 (20-07-2020):
+
+Implemented a limit on the size of single WriteAsync call to response body to prevent excessive response buffering and inefficiency of throttling middleware.
+
 ## 0.2.1 (14-07-2020):
 
 ThrottlingMiddleware no longer passes requests aborted during throttlings (this may occur if client does not reveal its true timeout or closes connection unexpectedly).
