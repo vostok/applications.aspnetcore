@@ -29,6 +29,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly Customization<FillRequestInfoSettings> fillRequestInfoCustomization = new Customization<FillRequestInfoSettings>();
         private readonly Customization<DistributedContextSettings> distributedContextCustomization = new Customization<DistributedContextSettings>();
         private readonly Customization<DatacenterAwarenessSettings> datacenterAwarenessCustomization = new Customization<DatacenterAwarenessSettings>();
+        private readonly Customization<HttpContextTweakSettings> httpContextTweaksCustomization = new Customization<HttpContextTweakSettings>();
 
         private readonly AtomicBoolean disabled = false;
         private readonly HashSet<Type> disabledMiddlewares = new HashSet<Type>();
@@ -85,6 +86,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         public void Customize(Action<DatacenterAwarenessSettings> customization)
             => datacenterAwarenessCustomization.AddCustomization(customization);
 
+        public void Customize(Action<HttpContextTweakSettings> customization)
+            => httpContextTweaksCustomization.AddCustomization(customization);
+
         public void Register(IServiceCollection services)
         {
             var middlewares = new List<Type>();
@@ -93,6 +97,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             RegisterThrottlingProvider(services, diagnosticSettings);
             RegisterRequestTracker(services, diagnosticSettings);
 
+            Register<HttpContextTweakSettings, HttpContextTweakMiddleware>(services, httpContextTweaksCustomization, middlewares);
             Register<FillRequestInfoSettings, FillRequestInfoMiddleware>(services, fillRequestInfoCustomization, middlewares);
             Register<DistributedContextSettings, DistributedContextMiddleware>(services, distributedContextCustomization, middlewares);
             Register<TracingSettings, TracingMiddleware>(services, tracingCustomization, middlewares);

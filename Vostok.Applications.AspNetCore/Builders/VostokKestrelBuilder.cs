@@ -7,6 +7,10 @@ namespace Vostok.Applications.AspNetCore.Builders
 {
     internal class VostokKestrelBuilder
     {
+        public const int MaxResponseBufferSize = 64 * 1024;
+        
+        private const int MaxRequestBufferSize = 128 * 1024;
+
         private readonly Customization<KestrelSettings> kestrelCustomization = new Customization<KestrelSettings>();
 
         public void Customize(Action<KestrelSettings> customization)
@@ -18,8 +22,8 @@ namespace Vostok.Applications.AspNetCore.Builders
 
             options.AddServerHeader = false;
 
-            options.Limits.MaxRequestBufferSize = 256 * 1024;
-            options.Limits.MaxResponseBufferSize = 256 * 1024;
+            options.Limits.MaxRequestBufferSize = MaxRequestBufferSize;
+            options.Limits.MaxResponseBufferSize = MaxResponseBufferSize;
 
             options.Limits.MaxRequestBodySize = settings.MaxRequestBodySize;
             options.Limits.MaxRequestLineSize = settings.MaxRequestLineSize;

@@ -69,5 +69,12 @@ namespace Vostok.Applications.AspNetCore
         /// </summary>
         public static IApplicationBuilder UseVostokRequestLogging(this IApplicationBuilder builder)
             => builder.UseMiddleware<LoggingMiddleware>();
+
+        /// <summary>
+        /// <para>Adds the <see cref="HttpContextTweakMiddleware"/> to the specified application builder.</para>
+        /// <para>Use <see cref="IServiceCollectionExtensions.AddVostokHttpContextTweaks(IServiceCollection,Action{HttpContextTweakSettings})"/> to register its options.</para>
+        /// </summary>
+        public static IApplicationBuilder UseVostokHttpContextTweaks(this IApplicationBuilder builder)
+            => builder.UseMiddleware<HttpContextTweakMiddleware>();
     }
 }

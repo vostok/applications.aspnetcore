@@ -102,6 +102,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         public IVostokAspNetCoreApplicationBuilder SetupUnhandledExceptions(Action<UnhandledExceptionSettings> setup)
             => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
+        public IVostokAspNetCoreApplicationBuilder SetupHttpContextTweaks(Action<HttpContextTweakSettings> setup) 
+            => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
+
         public IVostokAspNetCoreApplicationBuilder SetupThrottling(Action<IVostokThrottlingBuilder> setup)
             => Setup(() => setup(throttlingBuilder));
 

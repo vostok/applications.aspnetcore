@@ -64,5 +64,11 @@ namespace Vostok.Applications.AspNetCore
         /// </summary>
         public static IServiceCollection AddVostokRequestLogging(this IServiceCollection services, Action<LoggingSettings> setup)
             => services.Configure(setup);
+
+        /// <summary>
+        /// Adds <see cref="HttpContextTweakSettings"/> to the specified service collection.
+        /// </summary>
+        public static IServiceCollection AddVostokHttpContextTweaks(this IServiceCollection services, Action<HttpContextTweakSettings> setup)
+            => services.Configure(setup);
     }
 }

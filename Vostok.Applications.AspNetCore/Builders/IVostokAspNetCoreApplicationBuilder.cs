@@ -26,6 +26,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// <para>Disables the built-in Vostok middleware of given type <typeparamref name="TMiddleware"></typeparamref>.</para>
         /// <para>Current list of Vostok middlewares:</para>
         /// <list type="bullet">
+        ///     <item><description><see cref="HttpContextTweakMiddleware"/></description></item>
         ///     <item><description><see cref="FillRequestInfoMiddleware"/></description></item>
         ///     <item><description><see cref="DistributedContextMiddleware"/></description></item>
         ///     <item><description><see cref="TracingMiddleware"/></description></item>
@@ -108,6 +109,11 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// Customizes built-in <see cref="UnhandledExceptionMiddleware"/>.
         /// </summary>
         IVostokAspNetCoreApplicationBuilder SetupUnhandledExceptions([NotNull] Action<UnhandledExceptionSettings> setup);
+
+        /// <summary>
+        /// Customizes built-in <see cref="HttpContextTweakMiddleware"/>.
+        /// </summary>
+        IVostokAspNetCoreApplicationBuilder SetupHttpContextTweaks([NotNull] Action<HttpContextTweakSettings> setup);
 
         /// <summary>
         /// Customizes the adapter between Vostok <see cref="Vostok.Logging.Abstractions.ILog"/> and Microsoft <see cref="Microsoft.Extensions.Logging.ILogger"/>.
