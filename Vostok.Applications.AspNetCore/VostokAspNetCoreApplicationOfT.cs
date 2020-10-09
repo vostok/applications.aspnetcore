@@ -36,7 +36,7 @@ namespace Vostok.Applications.AspNetCore
         private readonly AtomicBoolean initialized = new AtomicBoolean(false);
         private volatile HostManager manager;
 
-        public async Task InitializeAsync(IVostokHostingEnvironment environment)
+        public virtual async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
             var log = environment.Log.ForContext<VostokAspNetCoreApplication>();
 

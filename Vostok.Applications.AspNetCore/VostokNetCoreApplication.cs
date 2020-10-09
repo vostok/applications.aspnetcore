@@ -19,7 +19,7 @@ namespace Vostok.Applications.AspNetCore
     {
         private volatile GenericHostManager manager;
 
-        public async Task InitializeAsync(IVostokHostingEnvironment environment)
+        public virtual async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
             var log = environment.Log.ForContext<VostokNetCoreApplication>();
 
