@@ -1,3 +1,7 @@
+## 0.2.3 (23-10-2020):
+
+VostokAspNetCoreApplication, VostokNetCoreApplication: made InitializeAsync method virtual.
+
 ## 0.2.2 (20-07-2020):
 
 Implemented a limit on the size of single WriteAsync call to response body to prevent excessive response buffering and inefficiency of throttling middleware.
