@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -60,6 +61,8 @@ namespace Vostok.Applications.AspNetCore
 
             await WarmupAsync(environment, manager.Services);
 
+            await WarmupMiddlewares(environment);
+
             initialized.TrySetTrue();
         }
 
@@ -102,6 +105,11 @@ namespace Vostok.Applications.AspNetCore
             {
                 return null;
             }
+        }
+
+        private async Task WarmupMiddlewares(IVostokHostingEnvironment environment)
+        {
+            await WebRequest.Create($"http://localhost:{environment.Port}/_status/ping").GetResponseAsync();
         }
     }
 }
