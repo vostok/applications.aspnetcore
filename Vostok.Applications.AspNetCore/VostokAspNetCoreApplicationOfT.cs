@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Transport;
+using Vostok.Clusterclient.Core.Topology;
 using Vostok.Commons.Environment;
 using Vostok.Commons.Threading;
 using Vostok.Hosting.Abstractions;
@@ -17,6 +19,7 @@ using HostManager = Vostok.Applications.AspNetCore.Helpers.GenericHostManager;
 #else
 using HostManager = Vostok.Applications.AspNetCore.Helpers.WebHostManager;
 #endif
+
 
 namespace Vostok.Applications.AspNetCore
 {
@@ -109,7 +112,15 @@ namespace Vostok.Applications.AspNetCore
 
         private async Task WarmupMiddlewares(IVostokHostingEnvironment environment)
         {
-            await WebRequest.Create($"http://localhost:{environment.Port}/_status/ping").GetResponseAsync();
+            var client = new Clusterclient.Core.ClusterClient(
+                new SilentLog(), 
+                s =>
+                {
+                    s.ClusterProvider = new FixedClusterProvider($"http://localhost:{environment.Port}");
+                    s.SetupUniversalTransport();
+                });
+
+            await client.SendAsync(Request.Get("_status/ping"));
         }
     }
 }
