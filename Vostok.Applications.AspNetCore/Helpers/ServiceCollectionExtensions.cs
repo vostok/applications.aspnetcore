@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Vostok.Configuration.Abstractions;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Requirements;
-using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {
