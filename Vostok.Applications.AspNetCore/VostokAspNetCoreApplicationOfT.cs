@@ -40,7 +40,7 @@ namespace Vostok.Applications.AspNetCore
         {
             var log = environment.Log.ForContext<VostokAspNetCoreApplication>();
 
-            var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, disposables);
+            var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, this, disposables);
 
             builder.SetupPingApi(
                 settings =>

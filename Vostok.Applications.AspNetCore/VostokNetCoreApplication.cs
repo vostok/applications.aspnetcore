@@ -23,7 +23,7 @@ namespace Vostok.Applications.AspNetCore
         {
             var log = environment.Log.ForContext<VostokNetCoreApplication>();
 
-            var hostBuilder = new GenericHostFactory(environment);
+            var hostBuilder = new GenericHostFactory(environment, this);
 
             var applicationBuilder = new VostokNetCoreApplicationBuilder(hostBuilder);
 
