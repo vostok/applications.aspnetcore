@@ -1,3 +1,7 @@
+## 0.2.4 (30-10-2020):
+
+Register required configuration types as `Func<TSettings>`.
+
 ## 0.2.3 (23-10-2020):
 
 VostokAspNetCoreApplication, VostokNetCoreApplication: made InitializeAsync method virtual.

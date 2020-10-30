@@ -12,12 +12,16 @@ namespace Vostok.Applications.AspNetCore.Helpers
     internal class GenericHostFactory
     {
         private readonly IVostokHostingEnvironment environment;
+        private readonly IVostokApplication application;
 
         private readonly Customization<IHostBuilder> hostCustomization = new Customization<IHostBuilder>();
         private readonly Customization<VostokLoggerProviderSettings> loggerCustomization = new Customization<VostokLoggerProviderSettings>();
 
-        public GenericHostFactory(IVostokHostingEnvironment environment)
-            => this.environment = environment;
+        public GenericHostFactory(IVostokHostingEnvironment environment, IVostokApplication application)
+        {
+            this.environment = environment;
+            this.application = application;
+        }
 
         public IHost CreateHost()
             => CreateHostBuilder().Build();
@@ -37,7 +41,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
                 {
                     services.AddSingleton<IHostLifetime, GenericHostEmptyLifetime>();
                     
-                    services.AddVostokEnvironment(environment);
+                    services.AddVostokEnvironment(environment, application);
 
                     services.Configure<HostOptions>(options => options.ShutdownTimeout = environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
                 });

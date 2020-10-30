@@ -10,11 +10,15 @@ namespace Vostok.Applications.AspNetCore.Helpers
     internal class WebHostFactory
     {
         private readonly IVostokHostingEnvironment environment;
+        private readonly IVostokApplication application;
 
         private readonly Customization<VostokLoggerProviderSettings> loggerCustomization = new Customization<VostokLoggerProviderSettings>();
 
-        public WebHostFactory(IVostokHostingEnvironment environment)
-            => this.environment = environment;
+        public WebHostFactory(IVostokHostingEnvironment environment, IVostokApplication application)
+        {
+            this.environment = environment;
+            this.application = application;
+        }
 
         public IWebHostBuilder CreateHostBuilder()
         {
@@ -24,7 +28,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
             hostBuilder.ConfigureAppConfiguration(config => config.AddVostokSources(environment));
 
-            hostBuilder.ConfigureServices(services => services.AddVostokEnvironment(environment));
+            hostBuilder.ConfigureServices(services => services.AddVostokEnvironment(environment, application));
 
             return hostBuilder;
         }
