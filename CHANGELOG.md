@@ -1,3 +1,7 @@
+## 0.2.3 (30-10-2020):
+
+Register required configuration types as `Func<TSettings>`.
+
 ## 0.2.2 (20-07-2020):
 
 Implemented a limit on the size of single WriteAsync call to response body to prevent excessive response buffering and inefficiency of throttling middleware.
