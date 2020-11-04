@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Clusterclient.Core;
 using Vostok.Clusterclient.Core.Model;
-using Vostok.Clusterclient.Transport;
 using Vostok.Clusterclient.Core.Topology;
+using Vostok.Clusterclient.Transport;
 using Vostok.Commons.Environment;
 using Vostok.Commons.Threading;
 using Vostok.Hosting.Abstractions;
@@ -19,7 +20,6 @@ using HostManager = Vostok.Applications.AspNetCore.Helpers.GenericHostManager;
 #else
 using HostManager = Vostok.Applications.AspNetCore.Helpers.WebHostManager;
 #endif
-
 
 namespace Vostok.Applications.AspNetCore
 {
@@ -112,8 +112,8 @@ namespace Vostok.Applications.AspNetCore
 
         private async Task WarmupMiddlewares(IVostokHostingEnvironment environment)
         {
-            var client = new Clusterclient.Core.ClusterClient(
-                new SilentLog(), 
+            var client = new ClusterClient(
+                new SilentLog(),
                 s =>
                 {
                     s.ClusterProvider = new FixedClusterProvider($"http://localhost:{environment.Port}");
