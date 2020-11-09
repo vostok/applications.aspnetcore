@@ -119,7 +119,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
                 foreach (var entry in group.OrderBy(entry => entry.Name, StringComparer.OrdinalIgnoreCase))
                 {
-                    builder.AppendLine($"<li><a href=\"{CreateInfoUrl(context.Request, entry)}\">{entry.Name}</a></li>");
+                    builder.AppendLine($"<li><a href=\"{CreateInfoUrl(entry)}\">{entry.Name}</a></li>");
                 }
 
                 builder.AppendLine("</ul>");
@@ -129,12 +129,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             return builder.ToString();
         }
 
-        private string CreateInfoUrl(HttpRequest request, DiagnosticEntry entry)
-            => UriHelper.BuildAbsolute(
-                request.Scheme,
-                request.Host,
-                request.PathBase,
-                request.Path + new PathString('/' + entry.ToString()));
+        private string CreateInfoUrl(DiagnosticEntry entry) => pathPrefix.TrimStart('/') + '/' + entry;
 
         private static void DisableResponseCaching(HttpContext context)
         {
