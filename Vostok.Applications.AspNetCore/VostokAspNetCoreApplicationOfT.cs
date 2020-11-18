@@ -5,12 +5,18 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Clusterclient.Core;
+using Vostok.Clusterclient.Core.Model;
+using Vostok.Clusterclient.Core.Topology;
+using Vostok.Clusterclient.Transport;
 using Vostok.Commons.Environment;
 using Vostok.Commons.Threading;
+using Vostok.Commons.Time;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Diagnostics;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Logging.Abstractions;
+using Vostok.ServiceDiscovery.Abstractions;
 #if NETCOREAPP3_1
 using HostManager = Vostok.Applications.AspNetCore.Helpers.GenericHostManager;
 #else
@@ -60,6 +66,8 @@ namespace Vostok.Applications.AspNetCore
 
             await WarmupAsync(environment, manager.Services);
 
+            await WarmupMiddlewares(environment);
+
             initialized.TrySetTrue();
         }
 
@@ -102,6 +110,24 @@ namespace Vostok.Applications.AspNetCore
             {
                 return null;
             }
+        }
+
+        private async Task WarmupMiddlewares(IVostokHostingEnvironment environment)
+        {
+            if (environment.ServiceBeacon.ReplicaInfo.TryGetUrl(out var url))
+            {
+                var client = new ClusterClient(
+                    environment.Log,
+                    s =>
+                    {
+                        s.ClusterProvider = new FixedClusterProvider(url);
+                        s.SetupUniversalTransport();
+                    });
+
+                await client.SendAsync(Request.Get("_status/ping"), 20.Seconds());
+            }
+            else
+                environment.Log.Warn("Unable to warmup middlewares. Couldn't obtain replica url.");
         }
     }
 }
