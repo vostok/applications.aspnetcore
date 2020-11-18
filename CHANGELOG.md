@@ -1,3 +1,8 @@
+## 0.2.5 (18-11-2020):
+
+- Fixed `_diagnostic` relative path bug.
+- Added middlewares warmup during initialization to reduce first request time.
+
 ## 0.2.4 (30-10-2020):
 
 Register required configuration types as `Func<TSettings>`.
