@@ -105,6 +105,7 @@ namespace Vostok.Applications.AspNetCore
         public void Dispose()
         {
             disposables.ForEach(disposable => disposable?.Dispose());
+            DoDisposeAsync().GetAwaiter().GetResult();
             DoDispose();
         }
 
