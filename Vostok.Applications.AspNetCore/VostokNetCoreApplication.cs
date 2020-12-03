@@ -49,9 +49,18 @@ namespace Vostok.Applications.AspNetCore
         {
         }
 
+        /// <summary>
+        /// Override this method to perform any Async dispose actions that needs to happen after host has been stopped.
+        /// </summary>
+        public virtual Task DoDisposeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
         public void Dispose()
         {
             manager?.Dispose();
+            DoDisposeAsync().GetAwaiter().GetResult();
             DoDispose();
         }
     }

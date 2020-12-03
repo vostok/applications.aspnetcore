@@ -1,3 +1,7 @@
+## 0.2.6 (03-12-2020):
+
+- Added `DoDisposeAsync` virtual method.
+
 ## 0.2.5 (18-11-2020):
 
 - Fixed `_diagnostic` relative path bug.
