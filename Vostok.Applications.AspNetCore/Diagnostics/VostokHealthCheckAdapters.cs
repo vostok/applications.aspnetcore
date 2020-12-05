@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP3_1
+﻿#if NETCOREAPP
 using System.Threading;
 using System.Threading.Tasks;
 using Vostok.Hosting.Abstractions.Diagnostics;

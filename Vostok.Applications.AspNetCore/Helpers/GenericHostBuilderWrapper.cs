@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP3_1
+﻿#if NETCOREAPP
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
