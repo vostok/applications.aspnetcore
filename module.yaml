@@ -45,6 +45,16 @@ notests:
     - vostok.tracing.abstractions
     - vostok.tracing.extensions
 
+v5_0 > notests:
+  build:
+    target: Vostok.Applications.AspNetCore.sln
+    configuration: NoTests
+    tool:
+      name: dotnet
+
+  install:
+    - Vostok.Applications.AspNetCore/bin/Release/net5.0/Vostok.Applications.AspNetCore.dll
+
 v3_1 > notests *default:
   build:
     target: Vostok.Applications.AspNetCore.sln
