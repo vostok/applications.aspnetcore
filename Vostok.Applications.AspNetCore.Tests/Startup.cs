@@ -15,21 +15,21 @@ namespace Vostok.Applications.AspNetCore.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
-#if ASPNETCORE3_1
+#if NETCOREAPP
             services.AddControllers()
                 .AddNewtonsoftJson();
-#elif ASPNETCORE2_1
+#else
             services.AddMvc();
 #endif
         }
 
         public void Configure(IApplicationBuilder app)
         {
-#if ASPNETCORE3_1
+#if NETCOREAPP
             app.UseRouting();
             app.UseEndpoints(s => s.MapControllers());
             app.UseHealthChecks("/health");
-#elif ASPNETCORE2_1
+#else
             app.UseMvc();
 #endif
         }

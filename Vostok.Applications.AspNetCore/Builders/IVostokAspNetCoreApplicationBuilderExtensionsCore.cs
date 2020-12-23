@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP3_1
+﻿#if NETCOREAPP
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

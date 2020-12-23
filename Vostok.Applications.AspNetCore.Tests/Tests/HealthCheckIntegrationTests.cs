@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-#if ASPNETCORE3_1
 using Microsoft.Extensions.DependencyInjection;
+#if NETCOREAPP
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 #endif
 using NUnit.Framework;
@@ -26,7 +26,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             environment = env;
             environment.HostExtensions.TryGet(out diagnostics).Should().BeTrue();
 
-            #if ASPNETCORE3_1
+            #if NETCOREAPP
             builder.SetupGenericHost(
                 host => host.ConfigureServices(
                     (ctx, services) =>
@@ -39,7 +39,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
         [Test]
         public async Task Should_include_vostok_health_checks_in_aspnetcore_middleware()
         {
-            #if ASPNETCORE2_1
+            #if NETFRAMEWORK
             return;
             #endif
 
@@ -61,7 +61,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
         [Test]
         public void Should_include_aspnetcore_health_checks_in_vostok_tracker()
         {
-            #if ASPNETCORE2_1
+            #if NETFRAMEWORK
             return;
             #endif
 
@@ -88,7 +88,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
                 Task.FromResult(HealthCheckResult.Failing("Because I have failed."));
         }
 
-        #if ASPNETCORE3_1
+        #if NETCOREAPP
         private class MicrosoftHealthCheck : Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheck
         {
             public Task<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken()) =>

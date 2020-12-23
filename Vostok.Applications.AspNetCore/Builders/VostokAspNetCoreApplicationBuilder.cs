@@ -5,7 +5,7 @@ using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Context;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
-#if NETCOREAPP3_1
+#if NETCOREAPP
 using Host = Microsoft.Extensions.Hosting.IHost;
 using HostFactory = Vostok.Applications.AspNetCore.Helpers.GenericHostFactory;
 #else

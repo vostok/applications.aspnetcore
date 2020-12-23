@@ -58,7 +58,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
             }
         }
 
-        #if NETCOREAPP3_1
+        #if NETCOREAPP
         public override ValueTask WriteAsync(ReadOnlyMemory<byte> source, CancellationToken cancellationToken = default)
         {
             if (source.Length <= maxWriteSize)
@@ -122,7 +122,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
         public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
             => stream.ReadAsync(buffer, offset, count, cancellationToken);
 
-        #if NETCOREAPP3_1
+        #if NETCOREAPP
         public override ValueTask<int> ReadAsync(Memory<byte> destination, CancellationToken cancellationToken = default)
             => stream.ReadAsync(destination, cancellationToken);
         #endif
