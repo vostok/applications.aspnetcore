@@ -1,3 +1,7 @@
+## 0.2.7 (23-12-2020):
+
+Added a net5.0 target.
+
 ## 0.2.6 (03-12-2020):
 
 - Added `DoDisposeAsync` virtual method.
