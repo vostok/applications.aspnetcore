@@ -1,3 +1,7 @@
+## 0.2.8 (13-01-2020):
+
+Added a scoped registration of IRequestInfo to the DI container.
+
 ## 0.2.7 (23-12-2020):
 
 Added a net5.0 target.

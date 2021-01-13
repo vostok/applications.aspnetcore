@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Vostok.Applications.AspNetCore.Models;
 using Vostok.Configuration.Abstractions;
+using Vostok.Context;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Requirements;
 
@@ -45,6 +47,8 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
             AddSettingsProviders(services, RequirementDetector.GetRequiredConfigurations(application).Select(r => r.Type), environment.ConfigurationProvider);
             AddSettingsProviders(services, RequirementDetector.GetRequiredSecretConfigurations(application).Select(r => r.Type), environment.SecretConfigurationProvider);
+
+            services.AddScoped(_ => FlowingContext.Globals.Get<IRequestInfo>());
         }
 
         private static void AddSettingsProviders(IServiceCollection services, IEnumerable<Type> types, IConfigurationProvider provider)
