@@ -119,6 +119,8 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 builder.Append(" Response headers: {ResponseHeaders}");
 
             var logEvent = new LogEvent(LogLevel.Info, PreciseDateTime.Now, builder.ToString())
+                .WithProperty("Url", request.Path)
+                .WithProperty("Method", request.Method)
                 .WithProperty("ResponseCode", (ResponseCode)response.StatusCode)
                 .WithProperty("ElapsedTime", elapsed.ToPrettyString())
                 .WithProperty("ElapsedTimeMs", elapsed.TotalMilliseconds);
