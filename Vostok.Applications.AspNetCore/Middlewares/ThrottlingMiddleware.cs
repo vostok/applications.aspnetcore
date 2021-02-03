@@ -162,7 +162,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 result.RejectionReason
             };
 
-            if (result.Status == ThrottlingStatus.RejectedDueToQuota)
+            if (result.Status == ThrottlingStatus.RejectedDueToQuota || result.Status == ThrottlingStatus.RejectedDueToDeadline)
                 log.Warn(messageTemplate, args);
             else
                 log.Error(messageTemplate, args);
