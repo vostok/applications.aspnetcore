@@ -150,12 +150,23 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 });
 
         private void LogFailure(HttpContext context, IRequestInfo info, IThrottlingResult result)
-            => log.Error(
-                "Dropping request from '{ClientIdentity}' at {RequestConnection} due to throttling status {ThrottlingStatus}. Rejection reason = '{RejectionReason}'.",
+        {
+            const string messageTemplate = 
+                "Dropping request from '{ClientIdentity}' at {RequestConnection} due to throttling status {ThrottlingStatus}. Rejection reason = '{RejectionReason}'.";
+            
+            var args = new object[] 
+            {
                 info?.ClientApplicationIdentity ?? "unknown",
                 GetClientConnectionInfo(context),
                 result.Status,
-                result.RejectionReason);
+                result.RejectionReason
+            };
+
+            if (result.Status == ThrottlingStatus.RejectedDueToQuota || result.Status == ThrottlingStatus.RejectedDueToDeadline)
+                log.Warn(messageTemplate, args);
+            else
+                log.Error(messageTemplate, args);
+        }
 
         private void LogConnectionAlreadyAborted(HttpContext context, IRequestInfo info)
             => log.Warn("Request from '{ClientIdentity}' at {RequestConnection} was aborted by client before passing through throttling.", new
