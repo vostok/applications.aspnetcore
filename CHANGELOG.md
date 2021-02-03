@@ -1,4 +1,8 @@
-## 0.2.8 (13-01-2020):
+## 0.2.9 (03-02-2021):
+
+Logging improvements.
+
+## 0.2.8 (13-01-2021):
 
 Added a scoped registration of IRequestInfo to the DI container.
 
