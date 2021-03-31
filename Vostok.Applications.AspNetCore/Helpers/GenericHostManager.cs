@@ -30,10 +30,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
             lifetime = (IHostApplicationLifetime)host.Services.GetService(typeof(IHostApplicationLifetime));
             var environment = (IHostEnvironment)host.Services.GetService(typeof(IHostEnvironment));
 
-            shutdownRegistration = shutdownToken.Register(
-                () => host
-                    .StopAsync()
-                    .ContinueWith(t => log.Error(t.Exception, "Failed to stop generic host."), TaskContinuationOptions.OnlyOnFaulted));
+            shutdownRegistration = shutdownToken.Register(() => lifetime.StopApplication());
 
             log.Info("Generic host is starting..");
 
@@ -52,7 +49,17 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
             log.Info("Generic host is stopping..");
 
-            await lifetime.ApplicationStopped.WaitAsync();
+            try
+            {
+                await host.StopAsync();
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (Exception exception)
+            {
+                log.Error(exception, "Failed to stop generic host.");
+            }
 
             log.Info("Generic host has been stopped.");
 
