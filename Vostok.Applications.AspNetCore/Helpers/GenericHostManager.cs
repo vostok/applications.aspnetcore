@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Vostok.Commons.Helpers.Extensions;
+using Vostok.Hosting.Abstractions.Helpers;
 using Vostok.Logging.Abstractions;
 
 // ReSharper disable MethodSupportsCancellation
@@ -25,7 +26,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
         public IServiceProvider Services => host.Services;
 
-        public async Task StartHostAsync(CancellationToken shutdownToken)
+        public async Task StartHostAsync(CancellationToken shutdownToken, IVostokHostShutdown vostokHostShutdown)
         {
             lifetime = (IHostApplicationLifetime)host.Services.GetService(typeof(IHostApplicationLifetime));
             var environment = (IHostEnvironment)host.Services.GetService(typeof(IHostEnvironment));
@@ -34,6 +35,8 @@ namespace Vostok.Applications.AspNetCore.Helpers
                 () => host
                     .StopAsync()
                     .ContinueWith(t => log.Error(t.Exception, "Failed to stop generic host."), TaskContinuationOptions.OnlyOnFaulted));
+            
+            lifetime.ApplicationStopping.Register(vostokHostShutdown.Initiate);
 
             log.Info("Generic host is starting..");
 
@@ -61,7 +64,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
         public void Dispose()
         {
-            host?.Dispose();
+                host?.Dispose();
             shutdownRegistration?.Dispose();
         }
     }

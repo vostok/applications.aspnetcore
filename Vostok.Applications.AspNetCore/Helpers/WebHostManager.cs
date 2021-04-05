@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Commons.Helpers.Extensions;
+using Vostok.Hosting.Abstractions.Helpers;
 using Vostok.Logging.Abstractions;
 using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
@@ -28,7 +29,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
         public IServiceProvider Services => host.Services;
 
-        public async Task StartHostAsync(CancellationToken shutdownToken)
+        public async Task StartHostAsync(CancellationToken shutdownToken, IVostokHostShutdown vostokHostShutdown)
         {
             lifetime = (IApplicationLifetime)Services.GetService(typeof(IApplicationLifetime));
 
@@ -38,6 +39,8 @@ namespace Vostok.Applications.AspNetCore.Helpers
                 () => host
                     .StopAsync()
                     .ContinueWith(t => log.Error(t.Exception, "Failed to stop web host."), TaskContinuationOptions.OnlyOnFaulted));
+
+            lifetime.ApplicationStopping.Register(vostokHostShutdown.Initiate);
 
             log.Info("Web host is starting..");
 

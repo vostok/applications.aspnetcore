@@ -14,6 +14,7 @@ using Vostok.Commons.Threading;
 using Vostok.Commons.Time;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Diagnostics;
+using Vostok.Hosting.Abstractions.Helpers;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Logging.Abstractions;
 using Vostok.ServiceDiscovery.Abstractions;
@@ -62,7 +63,7 @@ namespace Vostok.Applications.AspNetCore
 
             disposables.Add(manager = new HostManager(builder.BuildHost(), log));
 
-            await manager.StartHostAsync(environment.ShutdownToken);
+            await manager.StartHostAsync(environment.ShutdownToken, environment.HostExtensions.Get<IVostokHostShutdown>());
 
             await WarmupAsync(environment, manager.Services);
 
