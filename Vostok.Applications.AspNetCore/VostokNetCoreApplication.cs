@@ -32,7 +32,7 @@ namespace Vostok.Applications.AspNetCore
 
             manager = new GenericHostManager(hostBuilder.CreateHost(), log);
 
-            await manager.StartHostAsync(environment.ShutdownToken, environment.HostExtensions.Get<IVostokHostShutdown>());
+            await manager.StartHostAsync(environment.ShutdownToken, environment.HostExtensions.TryGet<IVostokHostShutdown>(out var shutdown) ? shutdown : null);
         }
 
         public Task RunAsync(IVostokHostingEnvironment environment) =>

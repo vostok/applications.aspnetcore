@@ -40,7 +40,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
                     .StopAsync()
                     .ContinueWith(t => log.Error(t.Exception, "Failed to stop web host."), TaskContinuationOptions.OnlyOnFaulted));
 
-            lifetime.ApplicationStopping.Register(vostokHostShutdown.Initiate);
+            lifetime.ApplicationStopping.Register(() => vostokHostShutdown?.Initiate());
 
             log.Info("Web host is starting..");
 

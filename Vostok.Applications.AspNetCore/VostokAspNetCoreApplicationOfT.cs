@@ -63,7 +63,7 @@ namespace Vostok.Applications.AspNetCore
 
             disposables.Add(manager = new HostManager(builder.BuildHost(), log));
 
-            await manager.StartHostAsync(environment.ShutdownToken, environment.HostExtensions.Get<IVostokHostShutdown>());
+            await manager.StartHostAsync(environment.ShutdownToken, environment.HostExtensions.TryGet<IVostokHostShutdown>(out var shutdown) ? shutdown : null);
 
             await WarmupAsync(environment, manager.Services);
 

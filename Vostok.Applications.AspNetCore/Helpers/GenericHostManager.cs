@@ -36,7 +36,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
                     .StopAsync()
                     .ContinueWith(t => log.Error(t.Exception, "Failed to stop generic host."), TaskContinuationOptions.OnlyOnFaulted));
             
-            lifetime.ApplicationStopping.Register(vostokHostShutdown.Initiate);
+            lifetime.ApplicationStopping.Register(() => vostokHostShutdown?.Initiate());
 
             log.Info("Generic host is starting..");
 
