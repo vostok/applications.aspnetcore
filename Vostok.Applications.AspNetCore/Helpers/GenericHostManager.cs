@@ -64,7 +64,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
         public void Dispose()
         {
-                host?.Dispose();
+            host?.Dispose();
             shutdownRegistration?.Dispose();
         }
     }
