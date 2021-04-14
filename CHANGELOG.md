@@ -1,3 +1,7 @@
+## 0.2.10 (14-04-2021):
+
+Added graceful shutdown of VostokHost when Microsoft AspNetCore host has stopped.
+
 ## 0.2.9 (03-02-2021):
 
 Logging improvements.
