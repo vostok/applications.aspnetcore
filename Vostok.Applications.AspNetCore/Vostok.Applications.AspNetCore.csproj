@@ -139,5 +139,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.clusterclient.transport\Vostok.ClusterClient.Transport\bin\Release\netstandard2.0\Vostok.ClusterClient.Transport.dll</HintPath>
     </Reference>
+    <Reference Include="Vostok.ClusterClient.Tracing">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\vostok.clusterclient.tracing\Vostok.ClusterClient.Tracing\bin\Release\netstandard2.0\Vostok.ClusterClient.Tracing.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

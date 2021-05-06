@@ -15,6 +15,7 @@ notests:
     - module vostok.throttling.metrics
 
   deps:
+    - vostok.clusterclient.tracing
     - vostok.clusterclient.transport
     - vostok.clusterclient.context
     - vostok.clusterclient.core

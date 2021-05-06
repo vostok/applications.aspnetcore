@@ -52,6 +52,9 @@ namespace Vostok.Applications.AspNetCore.Builders
             }
         }
 
+        public bool IsMiddlewareEnabled<TMiddleware>() =>
+            middlewaresBuilder.IsEnabled<TMiddleware>();
+
         #region SetupComponents
 
         public IVostokAspNetCoreApplicationBuilder SetupMicrosoftLog(Action<VostokLoggerProviderSettings> setup)

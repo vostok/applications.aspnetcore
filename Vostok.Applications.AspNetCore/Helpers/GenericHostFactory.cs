@@ -40,7 +40,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
                 services =>
                 {
                     services.AddSingleton<IHostLifetime, GenericHostEmptyLifetime>();
-                    
+
                     services.AddVostokEnvironment(environment, application);
 
                     services.Configure<HostOptions>(options => options.ShutdownTimeout = environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));

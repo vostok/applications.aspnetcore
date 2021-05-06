@@ -103,16 +103,19 @@ namespace Vostok.Applications.AspNetCore.Builders
             Register<TracingSettings, TracingMiddleware>(services, tracingCustomization, middlewares);
             Register<ThrottlingSettings, ThrottlingMiddleware>(services, throttlingBuilder.MiddlewareCustomization, middlewares);
             Register<LoggingSettings, LoggingMiddleware>(services, loggingCustomization, middlewares);
-            Register<DatacenterAwarenessSettings, DatacenterAwarenessMiddleware > (services, datacenterAwarenessCustomization, middlewares);
-            Register<UnhandledExceptionSettings, UnhandledExceptionMiddleware> (services, errorHandlingCustomization, middlewares);
-            Register<PingApiSettings, PingApiMiddleware> (services, pingApiCustomization, middlewares);
-            Register<DiagnosticApiSettings, DiagnosticApiMiddleware> (services, diagnosticApiCustomization, middlewares);
+            Register<DatacenterAwarenessSettings, DatacenterAwarenessMiddleware>(services, datacenterAwarenessCustomization, middlewares);
+            Register<UnhandledExceptionSettings, UnhandledExceptionMiddleware>(services, errorHandlingCustomization, middlewares);
+            Register<PingApiSettings, PingApiMiddleware>(services, pingApiCustomization, middlewares);
+            Register<DiagnosticApiSettings, DiagnosticApiMiddleware>(services, diagnosticApiCustomization, middlewares);
 
             if (middlewares.Count == 0)
                 return;
 
             services.AddTransient<IStartupFilter>(_ => new AddMiddlewaresStartupFilter(middlewares));
         }
+
+        public bool IsEnabled<TMiddleware>()
+            => !disabled && !disabledMiddlewares.Contains(typeof(TMiddleware));
 
         private void Register<TSettings, TMiddleware>(IServiceCollection services, Customization<TSettings> customization, List<Type> middlewares)
             where TSettings : class
@@ -127,9 +130,6 @@ namespace Vostok.Applications.AspNetCore.Builders
                 middlewares.Add(typeof(TMiddleware));
             }
         }
-
-        private bool IsEnabled<TMiddleware>()
-            => !disabled && !disabledMiddlewares.Contains(typeof(TMiddleware));
 
         private void RegisterThrottlingProvider(IServiceCollection services, DiagnosticFeaturesSettings settings)
         {

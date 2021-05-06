@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Clusterclient.Core;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Topology;
+using Vostok.Clusterclient.Tracing;
 using Vostok.Clusterclient.Transport;
 using Vostok.Commons.Environment;
 using Vostok.Commons.Threading;
@@ -20,6 +22,7 @@ using Vostok.Logging.Abstractions;
 using Vostok.ServiceDiscovery.Abstractions;
 #if NETCOREAPP
 using HostManager = Vostok.Applications.AspNetCore.Helpers.GenericHostManager;
+
 #else
 using HostManager = Vostok.Applications.AspNetCore.Helpers.WebHostManager;
 #endif
@@ -67,7 +70,7 @@ namespace Vostok.Applications.AspNetCore
 
             await WarmupAsync(environment, manager.Services);
 
-            await WarmupMiddlewares(environment);
+            await WarmupMiddlewares(environment, builder);
 
             initialized.TrySetTrue();
         }
@@ -122,19 +125,21 @@ namespace Vostok.Applications.AspNetCore
             }
         }
 
-        private async Task WarmupMiddlewares(IVostokHostingEnvironment environment)
+        private async Task WarmupMiddlewares(IVostokHostingEnvironment environment, VostokAspNetCoreApplicationBuilder<TStartup> builder)
         {
             if (environment.ServiceBeacon.ReplicaInfo.TryGetUrl(out var url))
             {
                 var client = new ClusterClient(
                     environment.Log,
-                    s =>
+                    configuration =>
                     {
-                        s.ClusterProvider = new FixedClusterProvider(url);
-                        s.SetupUniversalTransport();
+                        configuration.ClusterProvider = new FixedClusterProvider(url);
+                        configuration.SetupUniversalTransport();
+                        configuration.SetupDistributedTracing(environment.Tracer);
                     });
 
-                await client.SendAsync(Request.Get("_status/ping"), 20.Seconds());
+                if (builder.IsMiddlewareEnabled<PingApiMiddleware>())
+                    await client.SendAsync(Request.Get("_status/ping"), 20.Seconds());
             }
             else
                 environment.Log.Warn("Unable to warmup middlewares. Couldn't obtain replica url.");

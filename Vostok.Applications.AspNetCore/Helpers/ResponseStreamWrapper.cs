@@ -2,6 +2,8 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+#pragma warning disable 618
+#pragma warning disable 672
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {

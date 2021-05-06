@@ -1,3 +1,7 @@
+## 0.2.11 (06-05-2021):
+
+Do not send ping request if PingApiMiddleware disabled.
+
 ## 0.2.10 (14-04-2021):
 
 Added graceful shutdown of VostokHost when Microsoft AspNetCore host has stopped.
