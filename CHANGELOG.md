@@ -1,3 +1,7 @@
+## 0.2.12 (26-06-2021):
+
+Mitigated https://github.com/vostok/applications.aspnetcore/issues/47
+
 ## 0.2.11 (06-05-2021):
 
 Do not send ping request if PingApiMiddleware disabled.
