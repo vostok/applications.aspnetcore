@@ -15,6 +15,9 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     [PublicAPI]
     public class HttpContextTweakMiddleware
     {
+        private const string HTTP_1_1 = "HTTP/1.1";
+        private const string HTTP_1_0 = "HTTP/1.0";
+
         private readonly RequestDelegate next;
         private readonly HttpContextTweakSettings options;
         private readonly ILog log;
@@ -33,7 +36,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         {
             try
             {
-                if (options.EnableResponseWriteCallSizeLimit)
+                if (options.EnableResponseWriteCallSizeLimit && IsOlderThanHttp2(context))
                     context.Response.Body = new ResponseStreamWrapper(context.Response.Body, options.MaxResponseWriteCallSize);
             }
             catch (Exception error)
@@ -42,6 +45,13 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             }
 
             return next(context);
+        }
+
+        private static bool IsOlderThanHttp2(HttpContext context)
+        {
+            var protocol = context.Request.Protocol;
+
+            return protocol.Equals(HTTP_1_1, StringComparison.OrdinalIgnoreCase) || protocol.Equals(HTTP_1_0, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
