@@ -11,7 +11,7 @@ using Vostok.Hosting.Abstractions.Requirements;
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {
-    internal static class ServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
         public static void AddVostokEnvironment(this IServiceCollection services, IVostokHostingEnvironment environment, IVostokApplication application)
         {
