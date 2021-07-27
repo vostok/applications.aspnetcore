@@ -1,3 +1,7 @@
+## 0.2.13 (27-07-2021):
+
+Public ServiceCollectionExtensions.
+
 ## 0.2.12 (26-06-2021):
 
 Mitigated https://github.com/vostok/applications.aspnetcore/issues/47
