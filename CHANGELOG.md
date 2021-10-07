@@ -1,3 +1,7 @@
+## 0.2.14 (07-10-2021):
+
+Added `WarmupServicesAsync` method.
+
 ## 0.2.13 (27-07-2021):
 
 Public ServiceCollectionExtensions.
