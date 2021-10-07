@@ -88,7 +88,7 @@ namespace Vostok.Applications.AspNetCore
         }
 
         /// <summary>
-        /// Override this method to perform any initialization that needs to happen after DI container is built but but before host is started.
+        /// Override this method to perform any initialization that needs to happen after DI container is built but before host is started.
         /// </summary>
         public virtual Task WarmupServicesAsync([NotNull] IVostokHostingEnvironment environment, [NotNull] IServiceProvider serviceProvider) =>
             Task.CompletedTask;
