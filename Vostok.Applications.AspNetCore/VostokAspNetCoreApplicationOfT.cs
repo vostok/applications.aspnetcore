@@ -66,6 +66,8 @@ namespace Vostok.Applications.AspNetCore
 
             disposables.Add(manager = new HostManager(builder.BuildHost(), log));
 
+            await WarmupServicesAsync(environment, manager.Services);
+
             await manager.StartHostAsync(environment.ShutdownToken, environment.HostExtensions.TryGet<IVostokHostShutdown>(out var shutdown) ? shutdown : null);
 
             await WarmupAsync(environment, manager.Services);
@@ -85,6 +87,12 @@ namespace Vostok.Applications.AspNetCore
         {
         }
 
+        /// <summary>
+        /// Override this method to perform any initialization that needs to happen after DI container is built but but before host is started.
+        /// </summary>
+        public virtual Task WarmupServicesAsync([NotNull] IVostokHostingEnvironment environment, [NotNull] IServiceProvider serviceProvider) =>
+            Task.CompletedTask;
+        
         /// <summary>
         /// Override this method to perform any initialization that needs to happen after DI container is built and host is started, but before registering in service discovery.
         /// </summary>
