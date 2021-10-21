@@ -1,3 +1,7 @@
+## 0.2.15 (21-10-2021):
+
+Added `EnableVostokMiddleware` extension.
+
 ## 0.2.14 (07-10-2021):
 
 Added `WarmupServicesAsync` method.
