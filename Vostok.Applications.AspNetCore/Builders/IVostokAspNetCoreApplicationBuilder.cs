@@ -39,6 +39,25 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// </list>
         /// </summary>
         IVostokAspNetCoreApplicationBuilder DisableVostokMiddleware<TMiddleware>();
+        
+        /// <summary>
+        /// <para>Enables the built-in Vostok middleware of given type <typeparamref name="TMiddleware"></typeparamref>.</para>
+        /// <para>Use this method to partially enable vostok middlewares after calling <see cref="DisableVostokMiddlewares"/>.</para>
+        /// <para>Current list of Vostok middlewares:</para>
+        /// <list type="bullet">
+        ///     <item><description><see cref="HttpContextTweakMiddleware"/></description></item>
+        ///     <item><description><see cref="FillRequestInfoMiddleware"/></description></item>
+        ///     <item><description><see cref="DistributedContextMiddleware"/></description></item>
+        ///     <item><description><see cref="TracingMiddleware"/></description></item>
+        ///     <item><description><see cref="ThrottlingMiddleware"/></description></item>
+        ///     <item><description><see cref="LoggingMiddleware"/></description></item>
+        ///     <item><description><see cref="DatacenterAwarenessMiddleware"/></description></item>
+        ///     <item><description><see cref="UnhandledExceptionMiddleware"/></description></item>
+        ///     <item><description><see cref="PingApiMiddleware"/></description></item>
+        ///     <item><description><see cref="DiagnosticApiMiddleware"/></description></item>
+        /// </list>
+        /// </summary>
+        IVostokAspNetCoreApplicationBuilder EnableVostokMiddleware<TMiddleware>();
 
         /// <summary>
         /// Injects a singleton middleware of type <typeparamref name="TMiddleware"/> before Vostok middleware of type <typeparamref name="TBefore"/>.
