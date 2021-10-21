@@ -32,7 +32,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly Customization<HttpContextTweakSettings> httpContextTweaksCustomization = new Customization<HttpContextTweakSettings>();
 
         private readonly AtomicBoolean disabled = false;
-        private readonly HashSet<Type> disabledMiddlewares = new HashSet<Type>();
+        private readonly Dictionary<Type, bool> middlewareDisabled = new Dictionary<Type, bool>();
         private readonly Dictionary<Type, List<Type>> preVostokMiddlewares = new Dictionary<Type, List<Type>>();
 
         public VostokMiddlewaresBuilder(IVostokHostingEnvironment environment, List<IDisposable> disposables, VostokThrottlingBuilder throttlingBuilder)
@@ -46,7 +46,10 @@ namespace Vostok.Applications.AspNetCore.Builders
             => disabled.Value = true;
 
         public void Disable<TMiddleware>()
-            => disabledMiddlewares.Add(typeof(TMiddleware));
+            => middlewareDisabled[typeof(TMiddleware)] = true;
+
+        public void Enable<TMiddleware>()
+            => middlewareDisabled[typeof(TMiddleware)] = false;
 
         public void InjectPreVostok<TMiddleware>()
             => InjectPreVostok<TMiddleware, FillRequestInfoMiddleware>();
@@ -115,7 +118,12 @@ namespace Vostok.Applications.AspNetCore.Builders
         }
 
         public bool IsEnabled<TMiddleware>()
-            => !disabled && !disabledMiddlewares.Contains(typeof(TMiddleware));
+        {
+            if (middlewareDisabled.TryGetValue(typeof(TMiddleware), out var d))
+                return !d;
+
+            return !disabled;
+        }
 
         private void Register<TSettings, TMiddleware>(IServiceCollection services, Customization<TSettings> customization, List<Type> middlewares)
             where TSettings : class

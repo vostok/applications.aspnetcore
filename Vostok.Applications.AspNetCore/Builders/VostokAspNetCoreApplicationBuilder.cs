@@ -72,6 +72,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         public IVostokAspNetCoreApplicationBuilder DisableVostokMiddleware<TMiddleware>()
             => Setup(middlewaresBuilder.Disable<TMiddleware>);
 
+        public IVostokAspNetCoreApplicationBuilder EnableVostokMiddleware<TMiddleware>()
+            => Setup(middlewaresBuilder.Enable<TMiddleware>);
+
         public IVostokAspNetCoreApplicationBuilder InjectPreVostokMiddleware<TMiddleware, TBefore>()
             => Setup(middlewaresBuilder.InjectPreVostok<TMiddleware, TBefore>);
 
