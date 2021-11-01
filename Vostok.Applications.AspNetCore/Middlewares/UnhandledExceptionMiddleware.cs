@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Helpers;
+using Vostok.Clusterclient.Core.Model;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
@@ -41,7 +42,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 if (IsCancellationError(error) && context.RequestAborted.IsCancellationRequested)
                 {
                     log.Warn("Request has been canceled. This is likely due to connection close from client side.");
-                    context.Response.StatusCode = (int) AdditionalHttpStatusCodes.ClientClosedConnection;
+                    context.Response.StatusCode = (int) ResponseCode.Canceled;
                 }
                 else
                 {
