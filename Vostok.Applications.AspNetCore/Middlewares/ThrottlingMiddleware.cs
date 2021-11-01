@@ -5,7 +5,6 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
-using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Commons.Helpers.Url;

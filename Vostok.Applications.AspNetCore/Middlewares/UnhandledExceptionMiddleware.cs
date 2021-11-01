@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
-using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Logging.Abstractions;
 
