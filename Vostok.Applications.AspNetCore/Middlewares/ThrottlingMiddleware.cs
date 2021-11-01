@@ -58,7 +58,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 if (context.RequestAborted.IsCancellationRequested)
                 {
                     LogConnectionAlreadyAborted(context, info);
-                    context.Response.StatusCode = (int) AdditionalHttpCodes.ClientClosedConnection;
+                    context.Response.StatusCode = (int) AdditionalHttpStatusCodes.ClientClosedConnection;
                     return;
                 }
 

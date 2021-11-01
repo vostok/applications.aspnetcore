@@ -1,6 +1,6 @@
 ﻿namespace Vostok.Applications.AspNetCore.Helpers
 {
-    internal enum AdditionalHttpCodes
+    internal enum AdditionalHttpStatusCodes
     {
         ClientClosedConnection = 499
     }
