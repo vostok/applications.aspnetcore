@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
+using Vostok.Clusterclient.Core.Model;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Middlewares
@@ -40,13 +41,14 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 if (IsCancellationError(error) && context.RequestAborted.IsCancellationRequested)
                 {
                     log.Warn("Request has been canceled. This is likely due to connection close from client side.");
+                    context.Response.StatusCode = (int) ResponseCode.Canceled;
                 }
                 else
                 {
                     // (iloktionov): Log the exception here even if we're going to rethrow it later.
                     // (iloktionov): In that case, Kestrel internals will produce a second log event,
                     // (iloktionov): but the event logged here will have valuable tracing info attached.
-                    log.Error(error, "An unhandled exception occurred during request processing. Response started = {ResponeHasStarted}.", context.Response.HasStarted);
+                    log.Error(error, "An unhandled exception occurred during request processing. Response started = {ResponseHasStarted}.", context.Response.HasStarted);
 
                     // (iloktionov): It's not safe to swallow errors that happen during response body streaming.
                     // (iloktionov): This could lead to Kestrel not flushing its output buffers until the connection TTL expires.
