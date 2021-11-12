@@ -1,6 +1,6 @@
 # Vostok.Applications.AspNetCore
 
-[![Build status](https://ci.appveyor.com/api/projects/status/github/vostok/applications.aspnetcore?svg=true&branch=master)](https://ci.appveyor.com/project/vostok/applications.aspnetcore/branch/master)
+[![Build & Test & Publish](https://github.com/vostok/applications.aspnetcore/actions/workflows/ci.yml/badge.svg)](https://github.com/vostok/applications.aspnetcore/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/Vostok.Applications.AspNetCore.svg)](https://www.nuget.org/packages/Vostok.Applications.AspNetCore)
 
 AspNetCore vostok application template.
