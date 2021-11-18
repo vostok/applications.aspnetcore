@@ -17,12 +17,12 @@ jobs:
         with:
           path: vostok.module
           
-      - name: Install .net 2.1
+      - name: Install .NET Core 2.1
         uses: actions/setup-dotnet@main
         with:
           dotnet-version: '2.1.x'
 
-      - name: Install .net 6.0
+      - name: Install .NET 6.0
         uses: actions/setup-dotnet@main
         with:
           dotnet-version: '6.0.x'
