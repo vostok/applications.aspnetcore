@@ -50,7 +50,7 @@ v5_0 > notests:
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
-    parameters: build --framework net5.0
+    parameters: build -property:TargetFrameworks=net5.0
     tool:
       name: dotnet
 
@@ -61,7 +61,7 @@ v3_1 > notests *default:
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
-    parameters: build --framework netcoreapp3.1
+    parameters: build -property:TargetFrameworks=netcoreapp3.1
     tool:
       name: dotnet
 
@@ -72,7 +72,7 @@ v2_1 > notests:
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
-    parameters: build --framework netstandard2.0
+    parameters: build -property:TargetFrameworks=netstandard2.0
     tool:
       name: dotnet
 
