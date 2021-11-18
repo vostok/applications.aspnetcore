@@ -46,6 +46,11 @@ jobs:
     runs-on: ${{ matrix.os }}
    
     steps:
+      - name: Install .NET 5.0
+        uses: actions/setup-dotnet@main
+        with:
+          dotnet-version: '5.0.x'
+
       - name: Install .NET 6.0
         uses: actions/setup-dotnet@main
         with:
