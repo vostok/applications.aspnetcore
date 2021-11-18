@@ -46,6 +46,11 @@ jobs:
     runs-on: ${{ matrix.os }}
    
     steps:
+      - name: Install .NET Core 3.1
+        uses: actions/setup-dotnet@main
+        with:
+          dotnet-version: '3.1.x'
+          
       - name: Install .NET 5.0
         uses: actions/setup-dotnet@main
         with:
