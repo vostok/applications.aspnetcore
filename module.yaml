@@ -2,6 +2,7 @@ notests:
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
+    parameters: build -property:CmConfig=notests
     tool:
       name: dotnet
 
