@@ -12,6 +12,7 @@ using Vostok.Clusterclient.Core.Model;
 using Vostok.Hosting.Abstractions;
 using HealthCheckResult = Vostok.Hosting.Abstractions.Diagnostics.HealthCheckResult;
 using IHealthCheck = Vostok.Hosting.Abstractions.Diagnostics.IHealthCheck;
+#pragma warning disable 162
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
