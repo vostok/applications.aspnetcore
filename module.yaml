@@ -2,7 +2,6 @@ notests:
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
-    parameters: build -property:CmConfig=notests
     tool:
       name: dotnet
 
@@ -47,19 +46,10 @@ notests:
     - vostok.tracing.abstractions
     - vostok.tracing.extensions
 
-v6_0 > notests:
-  build:
-    target: Vostok.Applications.AspNetCore.sln
-    configuration: NoTests
-    parameters: build -property:TargetFrameworks=net6.0
-    tool:
-      name: dotnet
-
 v5_0 > notests:
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
-    parameters: build -property:TargetFrameworks=net5.0
     tool:
       name: dotnet
 
@@ -70,7 +60,6 @@ v3_1 > notests *default:
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
-    parameters: build -property:TargetFrameworks=netcoreapp3.1
     tool:
       name: dotnet
 
@@ -81,7 +70,6 @@ v2_1 > notests:
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
-    parameters: build -property:TargetFrameworks=netstandard2.0
     tool:
       name: dotnet
 

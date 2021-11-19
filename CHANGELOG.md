@@ -1,7 +1,3 @@
-## 0.2.17 (19-11-2021):
-
-Added net6.0 target.
-
 ## 0.2.16 (12-11-2021):
 
 Server spans are now sending `Cancelled` if request was aborted before passing through throttling queue.

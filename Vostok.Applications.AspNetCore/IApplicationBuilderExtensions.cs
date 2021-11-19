@@ -79,7 +79,7 @@ namespace Vostok.Applications.AspNetCore
         
         /// <summary>
         /// <para>Adds the <see cref="UnhandledExceptionMiddleware"/> to the specified application builder.</para>
-        /// <para>Use <see cref="IServiceCollectionExtensions.AddVostokUnhandledExceptions(IServiceCollection,Action{UnhandledExceptionSettings})"/> to register its options.</para>
+        /// <para>Use <see cref="IServiceCollectionExtensions.AddVostokExceptionHandling(IServiceCollection,Action{UnhandledExceptionSettings})"/> to register its options.</para>
         /// </summary>
         public static IApplicationBuilder UseVostokUnhandledExceptions(this IApplicationBuilder builder)
             => builder.UseMiddleware<UnhandledExceptionMiddleware>();
