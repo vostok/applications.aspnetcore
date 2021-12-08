@@ -8,7 +8,7 @@
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionPrefix>0.2.18</VersionPrefix>
+    <VersionPrefix>0.2.19</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup>
     <Title>Vostok.Applications.AspNetCore</Title>
