@@ -10,8 +10,8 @@ using Vostok.Logging.Microsoft;
 namespace Vostok.Applications.AspNetCore.Builders
 {
     /// <summary>
-    /// <para>Builds the configuration of <see cref="VostokAspNetCoreApplication{TStartup}"/>.</para>
-    /// <para>Can be customized in app's <see cref="VostokAspNetCoreApplication{TStartup}.Setup"/> method.</para>
+    /// <para>Builds the configuration of <see cref="VostokAspNetCoreApplication"/>.</para>
+    /// <para>Can be customized in app's <see cref="VostokAspNetCoreApplication.Setup"/> method.</para>
     /// <para>Allows to configure/disable <see cref="IWebHostBuilder"/> and customize built-in Vostok middlewares.</para>
     /// </summary>
     [PublicAPI]

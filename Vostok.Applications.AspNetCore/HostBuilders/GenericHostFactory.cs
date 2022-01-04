@@ -27,7 +27,7 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
         public IHost CreateHost()
             => CreateHostBuilder().Build();
 
-        public IHostBuilder CreateHostBuilder()
+        private IHostBuilder CreateHostBuilder()
         {
             var hostBuilder = Host.CreateDefaultBuilder();
 

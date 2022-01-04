@@ -4,7 +4,11 @@ using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests
 {
+#if NET6_0
+    public class TestVostokAspNetCoreApplication : VostokAspNetCoreApplication
+#else
     public class TestVostokAspNetCoreApplication : VostokAspNetCoreApplication<Startup>
+#endif
     {
         private readonly Action<IVostokAspNetCoreApplicationBuilder, IVostokHostingEnvironment> configure;
 

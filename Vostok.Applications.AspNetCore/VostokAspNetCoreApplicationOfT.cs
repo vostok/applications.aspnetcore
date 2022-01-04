@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Middlewares;
@@ -28,6 +29,16 @@ using HostManager = Vostok.Applications.AspNetCore.HostBuilders.WebHostManager;
 
 namespace Vostok.Applications.AspNetCore
 {
+#if NET6_0
+    /// <summary>
+    /// <para><see cref="VostokAspNetCoreApplication" /> is the abstract class developers inherit from in order to create Vostok-compatible AspNetCore services.</para>
+    /// <para>Implement <see cref="Setup" /> method to configure <see cref="WebApplicationBuilder" />, <see cref="WebApplication" /> and customize built-in Vostok middlewares (see
+    /// <see
+    ///     cref="IVostokAspNetCoreApplicationBuilder" />
+    /// ).</para>
+    /// <para>Override <see cref="WarmupAsync" /> method to perform any additional initialization after the DI container gets built but before the app gets registered in service discovery.</para>
+    /// </summary>
+#else
     /// <summary>
     /// <para><see cref="VostokAspNetCoreApplication{TStartup}" /> is the abstract class developers inherit from in order to create Vostok-compatible AspNetCore services.</para>
     /// <para>Implement <see cref="Setup" /> method to configure <see cref="IWebHostBuilder" /> and customize built-in Vostok middlewares (see
@@ -36,10 +47,15 @@ namespace Vostok.Applications.AspNetCore
     /// ).</para>
     /// <para>Override <see cref="WarmupAsync" /> method to perform any additional initialization after the DI container gets built but before the app gets registered in service discovery.</para>
     /// </summary>
+#endif
     [PublicAPI]
     [RequiresPort]
+#if NET6_0
+    public abstract class VostokAspNetCoreApplication : IVostokApplication, IDisposable
+#else
     public abstract class VostokAspNetCoreApplication<TStartup> : IVostokApplication, IDisposable
         where TStartup : class
+#endif
     {
         private readonly List<IDisposable> disposables = new List<IDisposable>();
         private readonly AtomicBoolean initialized = new AtomicBoolean(false);
@@ -49,7 +65,12 @@ namespace Vostok.Applications.AspNetCore
         {
             var log = environment.Log.ForContext<VostokAspNetCoreApplication>();
 
-            var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, this, disposables);
+#if NET6_0
+            var builder = new VostokAspNetCoreApplicationBuilder(null, environment, this, disposables);
+#else
+            var builder = new VostokAspNetCoreApplicationBuilder(typeof(TStartup), environment, this, disposables);
+#endif
+            
 
             builder.SetupPingApi(
                 settings =>
@@ -132,7 +153,7 @@ namespace Vostok.Applications.AspNetCore
             }
         }
 
-        private async Task WarmupMiddlewares(IVostokHostingEnvironment environment, VostokAspNetCoreApplicationBuilder<TStartup> builder)
+        private async Task WarmupMiddlewares(IVostokHostingEnvironment environment, VostokAspNetCoreApplicationBuilder builder)
         {
             if (environment.ServiceBeacon.ReplicaInfo.TryGetUrl(out var url))
             {

@@ -15,9 +15,9 @@ using Vostok.ServiceDiscovery.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.HostBuilders
 {
-    internal partial class VostokWebHostBuilder<TStartup>
-        where TStartup : class
+    internal partial class VostokWebHostBuilder
     {
+        private readonly Type startupType;
         private readonly IVostokHostingEnvironment environment;
         private readonly VostokKestrelBuilder kestrelBuilder;
         private readonly VostokMiddlewaresBuilder middlewaresBuilder;
@@ -27,11 +27,13 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
         private readonly Customization<IWebHostBuilder> webHostCustomization;
 
         public VostokWebHostBuilder(
+            Type startupType,
             IVostokHostingEnvironment environment, 
             VostokKestrelBuilder kestrelBuilder, 
             VostokMiddlewaresBuilder middlewaresBuilder,
             List<IDisposable> disposables)
         {
+            this.startupType = startupType;
             this.environment = environment;
             this.kestrelBuilder = kestrelBuilder;
             this.middlewaresBuilder = middlewaresBuilder;
@@ -66,8 +68,10 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
             webHostBuilder.UseSockets();
             webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
 
-            if (typeof(TStartup) != typeof(EmptyStartup))
-                webHostBuilder.UseStartup<TStartup>();
+#if !NET6_0
+            if (startupType != typeof(EmptyStartup))
+                webHostBuilder.UseStartup(startupType);
+#endif
 
             webHostCustomization.Customize(webHostBuilder);
 

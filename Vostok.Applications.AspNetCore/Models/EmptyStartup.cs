@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+﻿#if !NET6_0
+
+using JetBrains.Annotations;
 
 namespace Vostok.Applications.AspNetCore.Models
 {
@@ -7,3 +9,5 @@ namespace Vostok.Applications.AspNetCore.Models
     {
     }
 }
+
+#endif

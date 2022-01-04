@@ -17,7 +17,7 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
         private readonly IVostokApplication application;
 
         private readonly Customization<WebApplicationBuilder> builderCustomization = new Customization<WebApplicationBuilder>();
-        private readonly Customization<IHostBuilder> hostCustomization = new Customization<IHostBuilder>();
+        private readonly Customization<WebApplication> applicationCustomization = new Customization<WebApplication>();
         private readonly Customization<VostokLoggerProviderSettings> loggerCustomization = new Customization<VostokLoggerProviderSettings>();
 
         public WebApplicationHostFactory(IVostokHostingEnvironment environment, IVostokApplication application)
@@ -27,9 +27,15 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
         }
 
         public WebApplication CreateHost()
-            => CreateHostBuilder().Build();
+        {
+            var webApplication = CreateHostBuilder().Build();
 
-        public WebApplicationBuilder CreateHostBuilder()
+            applicationCustomization.Customize(webApplication);
+            
+            return webApplication;
+        }
+
+        private WebApplicationBuilder CreateHostBuilder()
         {
             var builder = WebApplication.CreateBuilder();
 
@@ -43,8 +49,6 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
             builder.Services.AddVostokEnvironment(environment, application);
             builder.Services.Configure<HostOptions>(options => options.ShutdownTimeout = environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
 
-            hostCustomization.Customize(new GenericHostBuilderWrapper(builder.Host));
-
             // note (kungurtsev, 04.01.2022): seems impossible to create wrapper and reject calling Build 
             builderCustomization.Customize(builder);
 
@@ -54,8 +58,13 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
         public void SetupBuilder(Action<WebApplicationBuilder> setup)
             => builderCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
         
+        public void SetupApplication(Action<WebApplication> setup)
+            => applicationCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+        
         public void SetupHost(Action<IHostBuilder> setup)
-            => hostCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+            => builderCustomization.AddCustomization(b => 
+                (setup ?? throw new ArgumentNullException(nameof(setup)))
+                    .Invoke(new GenericHostBuilderWrapper(b.Host)));
 
         public void SetupLogger(Action<VostokLoggerProviderSettings> setup)
             => loggerCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));

@@ -13,6 +13,7 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
         private readonly IVostokHostingEnvironment environment;
         private readonly IVostokApplication application;
 
+        private readonly Customization<IWebHostBuilder> hostCustomization = new Customization<IWebHostBuilder>();
         private readonly Customization<VostokLoggerProviderSettings> loggerCustomization = new Customization<VostokLoggerProviderSettings>();
 
         public WebHostFactory(IVostokHostingEnvironment environment, IVostokApplication application)
@@ -21,7 +22,10 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
             this.application = application;
         }
 
-        public IWebHostBuilder CreateHostBuilder()
+        public IWebHost CreateHost()
+            => CreateHostBuilder().Build();
+        
+        private IWebHostBuilder CreateHostBuilder()
         {
             var hostBuilder = WebHost.CreateDefaultBuilder();
 
@@ -31,9 +35,14 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
 
             hostBuilder.ConfigureServices(services => services.AddVostokEnvironment(environment, application));
 
+            hostCustomization.Customize(hostBuilder);
+            
             return hostBuilder;
         }
 
+        public void SetupHost(Action<IWebHostBuilder> setup)
+            => hostCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+        
         public void SetupLogger(Action<VostokLoggerProviderSettings> setup)
             => loggerCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
 

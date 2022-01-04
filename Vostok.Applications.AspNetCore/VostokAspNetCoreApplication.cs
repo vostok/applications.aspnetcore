@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+﻿#if !NET6_0
+
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Models;
@@ -15,3 +17,5 @@ namespace Vostok.Applications.AspNetCore
     {
     }
 }
+
+#endif

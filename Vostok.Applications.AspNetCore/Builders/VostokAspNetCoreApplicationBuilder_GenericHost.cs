@@ -6,8 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Vostok.Applications.AspNetCore.Builders
 {
-    internal partial class VostokAspNetCoreApplicationBuilder<TStartup>
-        where TStartup : class
+    internal partial class VostokAspNetCoreApplicationBuilder
     {
         public IVostokAspNetCoreApplicationBuilder SetupGenericHost(Action<IHostBuilder> setup)
             => Setup(() => hostFactory.SetupHost(setup));

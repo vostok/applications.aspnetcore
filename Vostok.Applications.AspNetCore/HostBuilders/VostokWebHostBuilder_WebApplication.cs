@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Builder;
 
 namespace Vostok.Applications.AspNetCore.HostBuilders
 {
-    internal partial class VostokWebHostBuilder<TStartup>
-        where TStartup : class
+    internal partial class VostokWebHostBuilder
     {
         public void ConfigureWebHost(WebApplicationBuilder builder)
         {

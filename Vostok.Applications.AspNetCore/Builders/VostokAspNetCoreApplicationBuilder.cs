@@ -22,17 +22,20 @@ using HostFactory = Vostok.Applications.AspNetCore.HostBuilders.WebHostFactory;
 
 namespace Vostok.Applications.AspNetCore.Builders
 {
-    internal partial class VostokAspNetCoreApplicationBuilder<TStartup> : IVostokAspNetCoreApplicationBuilder
-        where TStartup : class
+    internal partial class VostokAspNetCoreApplicationBuilder : IVostokAspNetCoreApplicationBuilder
     {
         private readonly IVostokHostingEnvironment environment;
         private readonly VostokKestrelBuilder kestrelBuilder;
         private readonly VostokThrottlingBuilder throttlingBuilder;
         private readonly VostokMiddlewaresBuilder middlewaresBuilder;
-        private readonly VostokWebHostBuilder<TStartup> webHostBuilder;
+        private readonly VostokWebHostBuilder webHostBuilder;
         private readonly HostFactory hostFactory;
 
-        public VostokAspNetCoreApplicationBuilder(IVostokHostingEnvironment environment, IVostokApplication application, List<IDisposable> disposables)
+        public VostokAspNetCoreApplicationBuilder(
+            Type startupType,
+            IVostokHostingEnvironment environment, 
+            IVostokApplication application, 
+            List<IDisposable> disposables)
         {
             this.environment = environment;
 
@@ -42,7 +45,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             kestrelBuilder = new VostokKestrelBuilder();
             throttlingBuilder = new VostokThrottlingBuilder(environment, disposables);
             middlewaresBuilder = new VostokMiddlewaresBuilder(environment, disposables, throttlingBuilder);
-            webHostBuilder = new VostokWebHostBuilder<TStartup>(environment, kestrelBuilder, middlewaresBuilder, disposables);
+            webHostBuilder = new VostokWebHostBuilder(startupType, environment, kestrelBuilder, middlewaresBuilder, disposables);
         }
 
         public Host BuildHost()
@@ -50,11 +53,9 @@ namespace Vostok.Applications.AspNetCore.Builders
             lock (FlowingContextSync.Object)
                 using (FlowingContext.Globals.Use(environment))
                 {
-                    var hostBuilder = hostFactory.CreateHostBuilder();
-
-                    webHostBuilder.ConfigureWebHost(hostBuilder);
-
-                    return hostBuilder.Build();
+                    hostFactory.SetupHost(host => webHostBuilder.ConfigureWebHost(host));
+                    
+                    return hostFactory.CreateHost();
                 }
         }
 

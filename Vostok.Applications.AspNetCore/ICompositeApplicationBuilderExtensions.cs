@@ -11,6 +11,7 @@ namespace Vostok.Applications.AspNetCore
     [PublicAPI]
     public static class ICompositeApplicationBuilderExtensions
     {
+#if !NET6_0
         [NotNull]
         public static ICompositeApplicationBuilder AddAspNetCore<TStartup>(
             [NotNull] this ICompositeApplicationBuilder builder,
@@ -23,6 +24,7 @@ namespace Vostok.Applications.AspNetCore
             [NotNull] Action<IVostokAspNetCoreApplicationBuilder, IVostokHostingEnvironment> setup,
             [NotNull] Func<IVostokHostingEnvironment, IServiceProvider, Task> warmup)
             where TStartup : class => builder.AddApplication(new AdHocAspnetcoreApplication<TStartup>(setup, warmup));
+#endif
 
         [NotNull]
         public static ICompositeApplicationBuilder AddAspNetCore(
@@ -37,8 +39,12 @@ namespace Vostok.Applications.AspNetCore
             [NotNull] Func<IVostokHostingEnvironment, IServiceProvider, Task> warmup)
             => builder.AddApplication(new AdHocAspnetcoreApplication(setup, warmup));
 
+#if NET6_0
+        private class AdHocAspnetcoreApplication : VostokAspNetCoreApplication
+#else
         private class AdHocAspnetcoreApplication<TStartup> : VostokAspNetCoreApplication<TStartup>
             where TStartup : class
+#endif
         {
             private readonly Action<IVostokAspNetCoreApplicationBuilder, IVostokHostingEnvironment> setup;
             private readonly Func<IVostokHostingEnvironment, IServiceProvider, Task> warmup;
@@ -58,6 +64,7 @@ namespace Vostok.Applications.AspNetCore
                 => warmup(environment, serviceProvider);
         }
 
+#if !NET6_0
         private class AdHocAspnetcoreApplication : AdHocAspnetcoreApplication<EmptyStartup>
         {
             public AdHocAspnetcoreApplication(
@@ -67,5 +74,6 @@ namespace Vostok.Applications.AspNetCore
             {
             }
         }
+#endif
     }
 }
