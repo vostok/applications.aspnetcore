@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Applications.AspNetCore.StartupFilters;
 using Vostok.Commons.Helpers;
@@ -12,7 +13,7 @@ using Vostok.ServiceDiscovery.Abstractions;
 
 // ReSharper disable PartialTypeWithSinglePart
 
-namespace Vostok.Applications.AspNetCore.Builders
+namespace Vostok.Applications.AspNetCore.HostBuilders
 {
     internal partial class VostokWebHostBuilder<TStartup>
         where TStartup : class

@@ -10,6 +10,14 @@ using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Helpers;
 using Vostok.Logging.Abstractions;
 
+#if NET6_0
+using VostokNetCoreApplicationBuilder = Vostok.Applications.AspNetCore.Builders.VostokNetCoreApplicationBuilder_WebApplication;
+using HostFactory = Vostok.Applications.AspNetCore.HostBuilders.WebApplicationHostFactory;
+#else
+using VostokNetCoreApplicationBuilder = Vostok.Applications.AspNetCore.Builders.VostokNetCoreApplicationBuilder_GenericHost;
+using HostFactory = Vostok.Applications.AspNetCore.HostBuilders.GenericHostFactory;
+#endif
+
 namespace Vostok.Applications.AspNetCore
 {
     /// <summary>
@@ -25,7 +33,7 @@ namespace Vostok.Applications.AspNetCore
         {
             var log = environment.Log.ForContext<VostokNetCoreApplication>();
 
-            var hostBuilder = new GenericHostFactory(environment, this);
+            var hostBuilder = new HostFactory(environment, this);
 
             var applicationBuilder = new VostokNetCoreApplicationBuilder(hostBuilder);
 

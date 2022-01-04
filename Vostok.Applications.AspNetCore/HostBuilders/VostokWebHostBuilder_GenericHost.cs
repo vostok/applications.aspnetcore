@@ -1,9 +1,10 @@
 ﻿#if NETCOREAPP
 using Microsoft.Extensions.Hosting;
+using Vostok.Applications.AspNetCore.Builders;
 
 // ReSharper disable UnusedTypeParameter
 
-namespace Vostok.Applications.AspNetCore.Builders
+namespace Vostok.Applications.AspNetCore.HostBuilders
 {
     internal partial class VostokWebHostBuilder<TStartup>
         where TStartup : class

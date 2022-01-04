@@ -22,7 +22,6 @@ using Vostok.Logging.Abstractions;
 using Vostok.ServiceDiscovery.Abstractions;
 #if NETCOREAPP
 using HostManager = Vostok.Applications.AspNetCore.HostBuilders.GenericHostManager;
-
 #else
 using HostManager = Vostok.Applications.AspNetCore.HostBuilders.WebHostManager;
 #endif
