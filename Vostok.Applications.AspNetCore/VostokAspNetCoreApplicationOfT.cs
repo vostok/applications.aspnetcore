@@ -21,10 +21,10 @@ using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Logging.Abstractions;
 using Vostok.ServiceDiscovery.Abstractions;
 #if NETCOREAPP
-using HostManager = Vostok.Applications.AspNetCore.Helpers.GenericHostManager;
+using HostManager = Vostok.Applications.AspNetCore.HostBuilders.GenericHostManager;
 
 #else
-using HostManager = Vostok.Applications.AspNetCore.Helpers.WebHostManager;
+using HostManager = Vostok.Applications.AspNetCore.HostBuilders.WebHostManager;
 #endif
 
 namespace Vostok.Applications.AspNetCore

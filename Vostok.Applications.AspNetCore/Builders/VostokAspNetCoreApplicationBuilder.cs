@@ -7,10 +7,10 @@ using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
 #if NETCOREAPP
 using Host = Microsoft.Extensions.Hosting.IHost;
-using HostFactory = Vostok.Applications.AspNetCore.Helpers.GenericHostFactory;
+using HostFactory = Vostok.Applications.AspNetCore.HostBuilders.GenericHostFactory;
 #else
 using Host = Microsoft.AspNetCore.Hosting.IWebHost;
-using HostFactory = Vostok.Applications.AspNetCore.Helpers.WebHostFactory;
+using HostFactory = Vostok.Applications.AspNetCore.HostBuilders.WebHostFactory;
 #endif
 
 // ReSharper disable PartialTypeWithSinglePart

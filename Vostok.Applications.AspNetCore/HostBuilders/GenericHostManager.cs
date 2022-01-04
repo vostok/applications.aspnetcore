@@ -1,27 +1,24 @@
-﻿#pragma warning disable 618
-
+﻿#if NETCOREAPP
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Vostok.Commons.Helpers.Extensions;
 using Vostok.Hosting.Abstractions.Helpers;
 using Vostok.Logging.Abstractions;
-using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 // ReSharper disable MethodSupportsCancellation
 
-namespace Vostok.Applications.AspNetCore.Helpers
+namespace Vostok.Applications.AspNetCore.HostBuilders
 {
-    internal class WebHostManager : IDisposable
+    internal class GenericHostManager : IDisposable
     {
-        private readonly IWebHost host;
+        private readonly IHost host;
         private readonly ILog log;
-        private volatile IApplicationLifetime lifetime;
+        private volatile IHostApplicationLifetime lifetime;
         private volatile IDisposable shutdownRegistration;
 
-        public WebHostManager(IWebHost host, ILog log)
+        public GenericHostManager(IHost host, ILog log)
         {
             this.host = host;
             this.log = log;
@@ -31,18 +28,17 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
         public async Task StartHostAsync(CancellationToken shutdownToken, IVostokHostShutdown vostokHostShutdown)
         {
-            lifetime = (IApplicationLifetime)Services.GetService(typeof(IApplicationLifetime));
-
-            var environment = (IHostingEnvironment)Services.GetService(typeof(IHostingEnvironment));
+            lifetime = (IHostApplicationLifetime)host.Services.GetService(typeof(IHostApplicationLifetime));
+            var environment = (IHostEnvironment)host.Services.GetService(typeof(IHostEnvironment));
 
             shutdownRegistration = shutdownToken.Register(
                 () => host
                     .StopAsync()
-                    .ContinueWith(t => log.Error(t.Exception, "Failed to stop web host."), TaskContinuationOptions.OnlyOnFaulted));
+                    .ContinueWith(t => log.Error(t.Exception, "Failed to stop generic host."), TaskContinuationOptions.OnlyOnFaulted));
 
             lifetime.ApplicationStopping.Register(() => vostokHostShutdown?.Initiate());
 
-            log.Info("Web host is starting..");
+            log.Info("Generic host is starting..");
 
             log.Info("Hosting environment: {HostingEnvironment}.", environment.EnvironmentName);
 
@@ -50,18 +46,18 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
             await lifetime.ApplicationStarted.WaitAsync();
 
-            log.Info("Web host has started.");
+            log.Info("Generic host has started.");
         }
 
         public async Task RunHostAsync()
         {
             await lifetime.ApplicationStopping.WaitAsync();
 
-            log.Info("Web host is stopping..");
+            log.Info("Generic host is stopping..");
 
             await lifetime.ApplicationStopped.WaitAsync();
 
-            log.Info("Web host has been stopped.");
+            log.Info("Generic host has been stopped.");
 
             host.Dispose();
         }
@@ -73,3 +69,4 @@ namespace Vostok.Applications.AspNetCore.Helpers
         }
     }
 }
+#endif

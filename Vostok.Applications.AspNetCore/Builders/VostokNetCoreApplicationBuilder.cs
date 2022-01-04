@@ -2,6 +2,7 @@
 using System;
 using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Helpers;
+using Vostok.Applications.AspNetCore.HostBuilders;
 using Vostok.Logging.Microsoft;
 
 namespace Vostok.Applications.AspNetCore.Builders
