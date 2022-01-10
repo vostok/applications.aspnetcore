@@ -27,6 +27,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Extensions
         {
             var result = await resultTask;
             result.Status.Should().Be(ClusterResultStatus.Success);
+            result.Response.Code.Should().Be(ResponseCode.Ok);
 
             return JsonConvert.DeserializeObject<T>(result.Response.Content.ToString());
         }

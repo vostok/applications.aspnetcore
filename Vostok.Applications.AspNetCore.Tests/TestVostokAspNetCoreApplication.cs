@@ -1,4 +1,6 @@
 ﻿using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Hosting.Abstractions;
 
@@ -20,6 +22,14 @@ namespace Vostok.Applications.AspNetCore.Tests
         public override void Setup(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             configure(builder, environment);
+
+#if NET6_0
+            var startup = new Startup();
+            
+            builder.SetupWebApplicationBuilder(b => startup.ConfigureServices(b.Services));
+            
+            builder.SetupWebApplication(a => startup.Configure(a));
+#endif
         }
     }
 }
