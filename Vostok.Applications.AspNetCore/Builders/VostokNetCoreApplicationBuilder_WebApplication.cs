@@ -16,13 +16,13 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public IVostokNetCoreApplicationBuilder SetupWebApplicationBuilder(Action<WebApplicationBuilder> setup)
         {
-            hostFactory.SetupBuilder(setup);
+            hostFactory.SetupHost(setup);
             return this;
         }
 
         public IVostokNetCoreApplicationBuilder SetupGenericHost(Action<IHostBuilder> setup)
         {
-            hostFactory.SetupHost(setup);
+            hostFactory.SetupHost(h => setup?.Invoke(h.Host));
             return this;
         }
 

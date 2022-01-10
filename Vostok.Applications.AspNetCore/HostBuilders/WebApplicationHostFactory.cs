@@ -55,16 +55,11 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
             return builder;
         }
 
-        public void SetupBuilder(Action<WebApplicationBuilder> setup)
-            => builderCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
-        
         public void SetupApplication(Action<WebApplication> setup)
             => applicationCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
         
-        public void SetupHost(Action<IHostBuilder> setup)
-            => builderCustomization.AddCustomization(b => 
-                (setup ?? throw new ArgumentNullException(nameof(setup)))
-                    .Invoke(new GenericHostBuilderWrapper(b.Host)));
+        public void SetupHost(Action<WebApplicationBuilder> setup)
+            => builderCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
 
         public void SetupLogger(Action<VostokLoggerProviderSettings> setup)
             => loggerCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));

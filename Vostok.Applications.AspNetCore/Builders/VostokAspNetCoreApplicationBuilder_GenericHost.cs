@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP
+﻿#if NETCOREAPP && !NET6_0
 using System;
 using Microsoft.Extensions.Hosting;
 
