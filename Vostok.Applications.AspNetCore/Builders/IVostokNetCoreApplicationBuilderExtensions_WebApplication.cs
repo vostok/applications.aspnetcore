@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP
+﻿#if NET6_0
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,23 +12,20 @@ namespace Vostok.Applications.AspNetCore.Builders
     {
         public static IVostokNetCoreApplicationBuilder AddHostedService<THostedService>([NotNull] this IVostokNetCoreApplicationBuilder builder)
             where THostedService : class, IHostedService
-            => builder.SetupGenericHost(b => b.ConfigureServices(services => services.AddHostedService<THostedService>()));
+            => builder.SetupWebApplicationBuilder(b => b.Services
+                .AddHostedService<THostedService>());
 
         public static IVostokNetCoreApplicationBuilder AddHostedServiceFromApplication<TApplication>([NotNull] this IVostokNetCoreApplicationBuilder builder)
             where TApplication : class, IVostokApplication
-            => builder.SetupGenericHost(b => b.ConfigureServices(services =>
-            {
-                services.AddSingleton<TApplication>();
-                services.AddHostedService<VostokHostedService<TApplication>>();
-            }));
+            => builder.SetupWebApplicationBuilder(b => b.Services
+                .AddSingleton<TApplication>()
+                .AddHostedService<VostokHostedService<TApplication>>());
 
         public static IVostokNetCoreApplicationBuilder AddHostedServiceFromApplication<TApplication>([NotNull] this IVostokNetCoreApplicationBuilder builder, [NotNull] TApplication application)
             where TApplication : class, IVostokApplication
-            => builder.SetupGenericHost(b => b.ConfigureServices(services =>
-            {
-                services.AddSingleton(application);
-                services.AddHostedService<VostokHostedService<TApplication>>();
-            }));
+            => builder.SetupWebApplicationBuilder(b => b.Services
+                .AddSingleton(application)
+                .AddHostedService<VostokHostedService<TApplication>>());
     }
 }
 #endif
