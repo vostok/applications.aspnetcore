@@ -68,10 +68,8 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
             webHostBuilder.UseSockets();
             webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
 
-#if !NET6_0
-            if (startupType != typeof(EmptyStartup))
+            if (startupType != null)
                 webHostBuilder.UseStartup(startupType);
-#endif
 
             webHostCustomization.Customize(webHostBuilder);
 

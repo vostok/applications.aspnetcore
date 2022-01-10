@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Middlewares;
+using Vostok.Applications.AspNetCore.Models;
 using Vostok.Clusterclient.Core;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Topology;
@@ -66,11 +67,13 @@ namespace Vostok.Applications.AspNetCore
             var log = environment.Log.ForContext<VostokAspNetCoreApplication>();
 
 #if NET6_0
-            var builder = new VostokAspNetCoreApplicationBuilder(null, environment, this, disposables);
+            Type startupType = null;
 #else
-            var builder = new VostokAspNetCoreApplicationBuilder(typeof(TStartup), environment, this, disposables);
+            var startupType = typeof(TStartup) == typeof(EmptyStartup) ? null : typeof(TStartup);
 #endif
             
+            // ReSharper disable once ExpressionIsAlwaysNull
+            var builder = new VostokAspNetCoreApplicationBuilder(startupType, environment, this, disposables);
 
             builder.SetupPingApi(
                 settings =>
