@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,7 @@ namespace Vostok.Applications.AspNetCore.Tests
         {
 #if NETCOREAPP
             services.AddControllers()
+                .AddApplicationPart(typeof(Startup).Assembly)
                 .AddNewtonsoftJson();
 #else
             services.AddMvc();
