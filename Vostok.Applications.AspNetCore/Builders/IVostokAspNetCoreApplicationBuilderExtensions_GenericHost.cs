@@ -1,10 +1,9 @@
-﻿#if NETCOREAPP
+﻿#if NETCOREAPP && !NET6_0
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Hosting.Abstractions;
-#pragma warning disable CS0618
 
 namespace Vostok.Applications.AspNetCore.Builders
 {
