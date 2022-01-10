@@ -18,7 +18,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// </summary>
         IVostokAspNetCoreApplicationBuilder DisableWebHost();
 
-        [Obsolete("Use SetupWebApplicationBuilder instead.")]
+        [Obsolete("Use `IVostokAspNetCoreApplicationBuilder.SetupWebApplicationBuilder(webApplicationBuilder => webApplicationBuilder.Host...)` instead.")]
         IVostokAspNetCoreApplicationBuilder SetupGenericHost([NotNull] Action<IHostBuilder> setup);
         
         IVostokAspNetCoreApplicationBuilder SetupWebApplicationBuilder([NotNull] Action<WebApplicationBuilder> setup);

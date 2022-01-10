@@ -67,6 +67,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// <summary>
         /// Applies an arbitrary customization to web host.
         /// </summary>
+#if NET6_0
+        [Obsolete("Use `IVostokAspNetCoreApplicationBuilder.SetupWebApplicationBuilder(webApplicationBuilder => webApplicationBuilder.WebHost...)` instead.")]
+#endif
         IVostokAspNetCoreApplicationBuilder SetupWebHost([NotNull] Action<IWebHostBuilder> setup);
 
         /// <summary>

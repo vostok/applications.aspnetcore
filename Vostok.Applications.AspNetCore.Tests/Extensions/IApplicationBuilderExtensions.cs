@@ -1,4 +1,5 @@
 ﻿using Vostok.Applications.AspNetCore.Builders;
+#pragma warning disable CS0618
 
 namespace Vostok.Applications.AspNetCore.Tests.Extensions
 {
