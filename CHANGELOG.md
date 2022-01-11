@@ -1,3 +1,7 @@
+## 1.0.0 (17-01-2022):
+
+Breaking change: `net6.0` target now uses new `WebApplicationBuilder` and `WebApplication` classes.
+
 ## 0.2.18 (06-12-2021):
 
 Added `net6.0` target.

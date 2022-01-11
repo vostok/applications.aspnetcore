@@ -7,7 +7,7 @@
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionPrefix>0.2.19</VersionPrefix>
+    <VersionPrefix>1.0.0</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup>
     <Title>Vostok.Applications.AspNetCore</Title>
