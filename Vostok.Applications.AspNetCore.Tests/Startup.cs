@@ -6,18 +6,13 @@ namespace Vostok.Applications.AspNetCore.Tests
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
-
         public void ConfigureServices(IServiceCollection services)
         {
 #if NETCOREAPP
-            services.AddControllers()
-                .AddNewtonsoftJson();
+            services
+                .AddControllers()
+                .AddNewtonsoftJson()
+                .AddApplicationPart(typeof(Startup).Assembly);
 #else
             services.AddMvc();
 #endif

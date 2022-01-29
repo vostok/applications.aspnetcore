@@ -26,7 +26,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Extensions
         public static async Task<T> GetResponseOrDie<T>(this Task<ClusterResult> resultTask)
         {
             var result = await resultTask;
-            result.Status.Should().Be(ClusterResultStatus.Success);
+            result.Response.IsSuccessful.Should().BeTrue();
 
             return JsonConvert.DeserializeObject<T>(result.Response.Content.ToString());
         }

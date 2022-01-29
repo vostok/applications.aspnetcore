@@ -1,11 +1,12 @@
 ﻿using System;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Commons.Helpers;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
 
-namespace Vostok.Applications.AspNetCore.Helpers
+namespace Vostok.Applications.AspNetCore.HostBuilders
 {
     internal class WebHostFactory
     {

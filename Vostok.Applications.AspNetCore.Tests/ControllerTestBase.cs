@@ -10,6 +10,8 @@ using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Setup;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console;
+using Vostok.Logging.File;
+using Vostok.Logging.File.Configuration;
 
 namespace Vostok.Applications.AspNetCore.Tests
 {
@@ -20,7 +22,12 @@ namespace Vostok.Applications.AspNetCore.Tests
         [OneTimeSetUp]
         public async Task OneTimeSetup()
         {
-            Log = new SynchronousConsoleLog();
+            Log = new CompositeLog(
+                new SynchronousConsoleLog(),
+                new FileLog(new FileLogSettings
+                {
+                    FileOpenMode = FileOpenMode.Rewrite
+                }));
 
             var serverPort = FreeTcpPortFinder.GetFreePort();
             

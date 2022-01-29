@@ -1,17 +1,19 @@
-﻿using System;
+﻿#if NETCOREAPP
+using Host = Microsoft.Extensions.Hosting.IHost;
+using HostFactory = Vostok.Applications.AspNetCore.HostBuilders.GenericHostFactory;
+#else
+using Host = Microsoft.AspNetCore.Hosting.IWebHost;
+using HostFactory = Vostok.Applications.AspNetCore.HostBuilders.WebHostFactory;
+#endif
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Configuration;
+using Vostok.Applications.AspNetCore.Helpers;
+using Vostok.Applications.AspNetCore.HostBuilders;
 using Vostok.Context;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
-#if NETCOREAPP
-using Host = Microsoft.Extensions.Hosting.IHost;
-using HostFactory = Vostok.Applications.AspNetCore.Helpers.GenericHostFactory;
-#else
-using Host = Microsoft.AspNetCore.Hosting.IWebHost;
-using HostFactory = Vostok.Applications.AspNetCore.Helpers.WebHostFactory;
-#endif
 
 // ReSharper disable PartialTypeWithSinglePart
 
@@ -42,14 +44,15 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public Host BuildHost()
         {
-            using (FlowingContext.Globals.Use(environment))
-            {
-                var hostBuilder = hostFactory.CreateHostBuilder();
+            lock (FlowingContextSync.Object)
+                using (FlowingContext.Globals.Use(environment))
+                {
+                    var hostBuilder = hostFactory.CreateHostBuilder();
 
-                webHostBuilder.ConfigureWebHost(hostBuilder);
+                    webHostBuilder.ConfigureWebHost(hostBuilder);
 
-                return hostBuilder.Build();
-            }
+                    return hostBuilder.Build();
+                }
         }
 
         public bool IsMiddlewareEnabled<TMiddleware>() =>
@@ -99,16 +102,16 @@ namespace Vostok.Applications.AspNetCore.Builders
         public IVostokAspNetCoreApplicationBuilder SetupPingApi(Action<PingApiSettings> setup)
             => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
-        public IVostokAspNetCoreApplicationBuilder SetupDiagnosticApi(Action<DiagnosticApiSettings> setup) 
+        public IVostokAspNetCoreApplicationBuilder SetupDiagnosticApi(Action<DiagnosticApiSettings> setup)
             => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
-        public IVostokAspNetCoreApplicationBuilder SetupDiagnosticFeatures(Action<DiagnosticFeaturesSettings> setup) 
+        public IVostokAspNetCoreApplicationBuilder SetupDiagnosticFeatures(Action<DiagnosticFeaturesSettings> setup)
             => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupUnhandledExceptions(Action<UnhandledExceptionSettings> setup)
             => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
-        public IVostokAspNetCoreApplicationBuilder SetupHttpContextTweaks(Action<HttpContextTweakSettings> setup) 
+        public IVostokAspNetCoreApplicationBuilder SetupHttpContextTweaks(Action<HttpContextTweakSettings> setup)
             => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         public IVostokAspNetCoreApplicationBuilder SetupThrottling(Action<IVostokThrottlingBuilder> setup)
