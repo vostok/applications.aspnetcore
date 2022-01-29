@@ -12,9 +12,6 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// </summary>
         IVostokAspNetCoreApplicationBuilder DisableWebHost();
 
-        /// <summary>
-        /// Applies an arbitrary customization to generic host.
-        /// </summary>
         IVostokAspNetCoreApplicationBuilder SetupGenericHost([NotNull] Action<IHostBuilder> setup);
     }
 }
