@@ -12,9 +12,17 @@ using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    [TestFixture]
+    [TestFixture(false)]
+#if NET6_0
+    [TestFixture(true)]
+#endif
     public class DistributedContextMiddlewareTestBase : ControllerTestBase
     {
+        public DistributedContextMiddlewareTestBase(bool webApplication)
+            : base(webApplication)
+        {
+        }
+        
         [Theory]
         public async Task Invoke_ShouldRestoreRequestPriority(RequestPriority requestPriority)
         {
@@ -45,6 +53,13 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
         {
             builder.SetupDistributedContext(s => s.AdditionalActions.AddRange(CreateDistributedContextActions()));
         }
+
+#if NET6_0
+        protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
+        {
+            builder.SetupDistributedContext(s => s.AdditionalActions.AddRange(CreateDistributedContextActions()));
+        }
+#endif
 
         private static IEnumerable<Action<HttpRequest>> CreateDistributedContextActions()
         {

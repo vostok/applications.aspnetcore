@@ -10,12 +10,20 @@ using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    [TestFixture]
+    [TestFixture(false)]
+#if NET6_0
+    [TestFixture(true)]
+#endif
     public class PingApiMiddlewareTestBase : ControllerTestBase
     {
         private bool isHealthy = true;
         private string commitHash;
 
+        public PingApiMiddlewareTestBase(bool webApplication)
+            : base(webApplication)
+        {
+        }
+        
         [SetUp]
         public void Setup()
         {
@@ -52,13 +60,20 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
 
         protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
-            void ConfigurePingApi(PingApiSettings obj)
-            {
-                obj.HealthCheck = () => isHealthy;
-                obj.CommitHashProvider = () => commitHash;
-            }
-
             builder.SetupPingApi(ConfigurePingApi);
+        }
+
+#if NET6_0
+        protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
+        {
+            builder.SetupPingApi(ConfigurePingApi);
+        }
+#endif
+        
+        private void ConfigurePingApi(PingApiSettings obj)
+        {
+            obj.HealthCheck = () => isHealthy;
+            obj.CommitHashProvider = () => commitHash;
         }
     }
 }

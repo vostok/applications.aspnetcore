@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Clusterclient.Core;
@@ -15,9 +16,15 @@ using Vostok.Logging.File.Configuration;
 
 namespace Vostok.Applications.AspNetCore.Tests
 {
-    public class ControllerTestBase
+    public abstract class ControllerTestBase
     {
+        private readonly bool webApplication;
         private VostokHost testHost;
+
+        protected ControllerTestBase(bool webApplication)
+        {
+            this.webApplication = webApplication;
+        }
 
         [OneTimeSetUp]
         public async Task OneTimeSetup()
@@ -47,10 +54,24 @@ namespace Vostok.Applications.AspNetCore.Tests
         {
             // use this method to override host configuration in each test fixture
         }
+        
+#if NET6_0
+        protected virtual void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
+        {
+            // use this method to override host configuration in each test fixture
+        }
+#endif
 
         private async Task<VostokHost> StartHost(int port)
         {
-            var app = new TestVostokAspNetCoreApplication(SetupGlobal);
+            IVostokApplication app = webApplication
+#if NET6_0
+                ? new TestVostokAspNetCoreWebApplication(SetupGlobal)
+#else
+                ? throw new Exception("Should not be called")
+#endif
+                
+                : new TestVostokAspNetCoreApplication(SetupGlobal);
             var hostSettings = new VostokHostSettings(app, b => SetupEnvironment(b, port));
             var host = new VostokHost(hostSettings);
 

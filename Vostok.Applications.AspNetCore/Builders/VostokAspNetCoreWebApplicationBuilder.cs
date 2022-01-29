@@ -37,7 +37,7 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public WebApplication Build()
         {
-            webApplicationFactory.SetupWebApplicationBuilder(b => webHostBuilder.ConfigureWebHost(b.WebHost));
+            webApplicationFactory.SetupWebApplicationBuilder(b => webHostBuilder.ConfigureWebHost(b));
             
             lock (FlowingContextSync.Object)
                 using (FlowingContext.Globals.Use(environment))

@@ -16,12 +16,20 @@ using IHealthCheck = Vostok.Hosting.Abstractions.Diagnostics.IHealthCheck;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    [TestFixture]
+    [TestFixture(false)]
+#if NET6_0
+    [TestFixture(true)]
+#endif
     public class HealthCheckIntegrationTests : ControllerTestBase
     {
         private volatile IVostokHostingEnvironment environment;
         private  IVostokApplicationDiagnostics diagnostics;
 
+        public HealthCheckIntegrationTests(bool webApplication)
+            : base(webApplication)
+        {
+        }
+        
         protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment env)
         {
             environment = env;
@@ -36,6 +44,17 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
                     }));
             #endif
         }
+
+#if NET6_0
+        protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment env)
+        {
+            environment = env;
+            environment.HostExtensions.TryGet(out diagnostics).Should().BeTrue();
+
+            builder.SetupWebApplicationBuilder(b => b.Services.AddHealthChecks().AddCheck("ms", new MicrosoftHealthCheck()));
+        }
+#endif
+        
 
         [Test]
         public async Task Should_include_vostok_health_checks_in_aspnetcore_middleware()
