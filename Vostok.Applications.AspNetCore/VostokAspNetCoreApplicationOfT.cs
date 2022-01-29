@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Applications.AspNetCore.Configuration;
+using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Clusterclient.Core;
 using Vostok.Clusterclient.Core.Model;
@@ -52,15 +54,7 @@ namespace Vostok.Applications.AspNetCore
 
             var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, this, disposables);
 
-            builder.SetupPingApi(
-                settings =>
-                {
-                    settings.CommitHashProvider = GetCommitHash;
-                    settings.InitializationCheck = () => initialized;
-
-                    if (environment.HostExtensions.TryGet<IVostokApplicationDiagnostics>(out var diagnostics))
-                        settings.HealthCheck = () => diagnostics.HealthTracker.CurrentStatus == HealthStatus.Healthy;
-                });
+            builder.SetupPingApi(PingApiSettingsSetup.Get(environment, GetType(), initialized));
 
             Setup(builder, environment);
 
@@ -72,7 +66,8 @@ namespace Vostok.Applications.AspNetCore
 
             await WarmupAsync(environment, manager.Services);
 
-            await WarmupMiddlewares(environment, builder);
+            if (builder.IsMiddlewareEnabled<PingApiMiddleware>())
+                await MiddlewaresWarmup.WarmupPingApi(environment);
 
             initialized.TrySetTrue();
         }
@@ -121,36 +116,6 @@ namespace Vostok.Applications.AspNetCore
             DoDispose();
         }
 
-        private string GetCommitHash()
-        {
-            try
-            {
-                return AssemblyCommitHashExtractor.ExtractFromAssembly(Assembly.GetAssembly(GetType()));
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        private async Task WarmupMiddlewares(IVostokHostingEnvironment environment, VostokAspNetCoreApplicationBuilder<TStartup> builder)
-        {
-            if (environment.ServiceBeacon.ReplicaInfo.TryGetUrl(out var url))
-            {
-                var client = new ClusterClient(
-                    environment.Log,
-                    configuration =>
-                    {
-                        configuration.ClusterProvider = new FixedClusterProvider(url);
-                        configuration.SetupUniversalTransport();
-                        configuration.SetupDistributedTracing(environment.Tracer);
-                    });
-
-                if (builder.IsMiddlewareEnabled<PingApiMiddleware>())
-                    await client.SendAsync(Request.Get("_status/ping"), 20.Seconds());
-            }
-            else
-                environment.Log.Warn("Unable to warmup middlewares. Couldn't obtain replica url.");
-        }
+        
     }
 }
