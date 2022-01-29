@@ -14,6 +14,7 @@ using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Helpers;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Context;
 
 namespace Vostok.Applications.AspNetCore
 {
@@ -44,17 +45,21 @@ namespace Vostok.Applications.AspNetCore
             await SetupAsync(builder, environment);
 
             var webApplication = builder.Build();
-            
+
             disposables.Add(manager = new GenericHostManager(webApplication, log));
 
-            await WarmupServicesAsync(environment, webApplication);
+            using (new OperationContextToken("Warmup"))
+                await WarmupServicesAsync(environment, webApplication);
 
             await manager.StartHostAsync(environment.ShutdownToken, environment.HostExtensions.TryGet<IVostokHostShutdown>(out var shutdown) ? shutdown : null);
 
-            await WarmupAsync(environment, webApplication);
+            using (new OperationContextToken("Warmup"))
+            {
+                await WarmupAsync(environment, webApplication);
 
-            if (builder.IsMiddlewareEnabled<PingApiMiddleware>())
-                await MiddlewaresWarmup.WarmupPingApi(environment);
+                if (builder.IsMiddlewareEnabled<PingApiMiddleware>())
+                    await MiddlewaresWarmup.WarmupPingApi(environment);
+            }
 
             initialized.TrySetTrue();
         }

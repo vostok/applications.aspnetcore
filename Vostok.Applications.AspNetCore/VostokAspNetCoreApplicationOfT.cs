@@ -1,9 +1,4 @@
-﻿#if NETCOREAPP
-using HostManager = Vostok.Applications.AspNetCore.HostBuilders.GenericHostManager;
-#else
-using HostManager = Vostok.Applications.AspNetCore.HostBuilders.WebHostManager;
-#endif
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -17,6 +12,12 @@ using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Helpers;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Context;
+#if NETCOREAPP
+using HostManager = Vostok.Applications.AspNetCore.HostBuilders.GenericHostManager;
+#else
+using HostManager = Vostok.Applications.AspNetCore.HostBuilders.WebHostManager;
+#endif
 
 namespace Vostok.Applications.AspNetCore
 {
@@ -49,14 +50,18 @@ namespace Vostok.Applications.AspNetCore
 
             disposables.Add(manager = new HostManager(builder.BuildHost(), log));
 
-            await WarmupServicesAsync(environment, manager.Services);
+            using (new OperationContextToken("Warmup"))
+                await WarmupServicesAsync(environment, manager.Services);
 
             await manager.StartHostAsync(environment.ShutdownToken, environment.HostExtensions.TryGet<IVostokHostShutdown>(out var shutdown) ? shutdown : null);
 
-            await WarmupAsync(environment, manager.Services);
+            using (new OperationContextToken("Warmup"))
+            {
+                await WarmupAsync(environment, manager.Services);
 
-            if (builder.IsMiddlewareEnabled<PingApiMiddleware>())
-                await MiddlewaresWarmup.WarmupPingApi(environment);
+                if (builder.IsMiddlewareEnabled<PingApiMiddleware>())
+                    await MiddlewaresWarmup.WarmupPingApi(environment);
+            }
 
             initialized.TrySetTrue();
         }
