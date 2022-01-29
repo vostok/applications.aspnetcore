@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.HostBuilders;
+using Vostok.Applications.AspNetCore.Models;
 using Vostok.Context;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
@@ -26,7 +27,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly VostokKestrelBuilder kestrelBuilder;
         private readonly VostokThrottlingBuilder throttlingBuilder;
         private readonly VostokMiddlewaresBuilder middlewaresBuilder;
-        private readonly VostokWebHostBuilder<TStartup> webHostBuilder;
+        private readonly VostokWebHostBuilder webHostBuilder;
         private readonly HostFactory hostFactory;
 
         public VostokAspNetCoreApplicationBuilder(IVostokHostingEnvironment environment, IVostokApplication application, List<IDisposable> disposables)
@@ -39,7 +40,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             kestrelBuilder = new VostokKestrelBuilder();
             throttlingBuilder = new VostokThrottlingBuilder(environment, disposables);
             middlewaresBuilder = new VostokMiddlewaresBuilder(environment, disposables, throttlingBuilder);
-            webHostBuilder = new VostokWebHostBuilder<TStartup>(environment, kestrelBuilder, middlewaresBuilder, disposables);
+            webHostBuilder = new VostokWebHostBuilder(environment, kestrelBuilder, middlewaresBuilder, disposables, typeof(TStartup));
         }
 
         public Host BuildHost()
