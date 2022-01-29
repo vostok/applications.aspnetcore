@@ -18,12 +18,23 @@ namespace Vostok.Applications.AspNetCore.Tests
 {
     public abstract class ControllerTestBase
     {
-        private readonly bool webApplication;
+        private readonly IVostokApplication application;
         private VostokHost testHost;
 
         protected ControllerTestBase(bool webApplication)
         {
-            this.webApplication = webApplication;
+            application = webApplication
+#if NET6_0
+                ? new TestVostokAspNetCoreWebApplication(SetupGlobal)
+#else
+                ? throw new Exception("Should not be called")
+#endif
+                : new TestVostokAspNetCoreApplication(SetupGlobal);
+        }
+
+        protected ControllerTestBase(IVostokApplication application)
+        {
+            this.application = application;
         }
 
         [OneTimeSetUp]
@@ -64,15 +75,7 @@ namespace Vostok.Applications.AspNetCore.Tests
 
         private async Task<VostokHost> StartHost(int port)
         {
-            IVostokApplication app = webApplication
-#if NET6_0
-                ? new TestVostokAspNetCoreWebApplication(SetupGlobal)
-#else
-                ? throw new Exception("Should not be called")
-#endif
-                
-                : new TestVostokAspNetCoreApplication(SetupGlobal);
-            var hostSettings = new VostokHostSettings(app, b => SetupEnvironment(b, port));
+            var hostSettings = new VostokHostSettings(application, b => SetupEnvironment(b, port));
             var host = new VostokHost(hostSettings);
 
             await host.StartAsync();
