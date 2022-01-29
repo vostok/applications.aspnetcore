@@ -1,6 +1,10 @@
-﻿using System;
+﻿#if NETCOREAPP
+using HostManager = Vostok.Applications.AspNetCore.HostBuilders.GenericHostManager;
+#else
+using HostManager = Vostok.Applications.AspNetCore.HostBuilders.WebHostManager;
+#endif
+using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
@@ -8,26 +12,11 @@ using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.Middlewares;
-using Vostok.Clusterclient.Core;
-using Vostok.Clusterclient.Core.Model;
-using Vostok.Clusterclient.Core.Topology;
-using Vostok.Clusterclient.Tracing;
-using Vostok.Clusterclient.Transport;
-using Vostok.Commons.Environment;
 using Vostok.Commons.Threading;
-using Vostok.Commons.Time;
 using Vostok.Hosting.Abstractions;
-using Vostok.Hosting.Abstractions.Diagnostics;
 using Vostok.Hosting.Abstractions.Helpers;
 using Vostok.Hosting.Abstractions.Requirements;
 using Vostok.Logging.Abstractions;
-using Vostok.ServiceDiscovery.Abstractions;
-#if NETCOREAPP
-using HostManager = Vostok.Applications.AspNetCore.HostBuilders.GenericHostManager;
-
-#else
-using HostManager = Vostok.Applications.AspNetCore.HostBuilders.WebHostManager;
-#endif
 
 namespace Vostok.Applications.AspNetCore
 {
@@ -87,7 +76,7 @@ namespace Vostok.Applications.AspNetCore
         /// </summary>
         public virtual Task WarmupServicesAsync([NotNull] IVostokHostingEnvironment environment, [NotNull] IServiceProvider serviceProvider) =>
             Task.CompletedTask;
-        
+
         /// <summary>
         /// Override this method to perform any initialization that needs to happen after DI container is built and host is started, but before registering in service discovery.
         /// </summary>
@@ -115,7 +104,5 @@ namespace Vostok.Applications.AspNetCore
             DoDisposeAsync().GetAwaiter().GetResult();
             DoDispose();
         }
-
-        
     }
 }
