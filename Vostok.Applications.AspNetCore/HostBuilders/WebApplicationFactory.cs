@@ -16,7 +16,6 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
         private readonly IVostokHostingEnvironment environment;
         private readonly IVostokApplication application;
 
-        //private readonly Customization<IHostBuilder> hostCustomization = new Customization<IHostBuilder>();
         private readonly Customization<WebApplicationBuilder> webApplicationBuilderCustomization = new Customization<WebApplicationBuilder>();
         private readonly Customization<WebApplication> webApplicationCustomization = new Customization<WebApplication>();
         private readonly Customization<VostokLoggerProviderSettings> loggerCustomization = new Customization<VostokLoggerProviderSettings>();
