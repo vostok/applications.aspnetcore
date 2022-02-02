@@ -66,7 +66,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
         protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             builder.SetupDatacenterAwareness(ConfigureDatacenter);
-            builder. OverrideSingleton(CreateDataCentersMock());
+            builder.OverrideSingleton(CreateDataCentersMock());
         }
 #endif
 

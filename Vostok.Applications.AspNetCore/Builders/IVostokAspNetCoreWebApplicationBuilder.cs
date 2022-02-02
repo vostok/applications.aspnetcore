@@ -21,124 +21,97 @@ namespace Vostok.Applications.AspNetCore.Builders
         IVostokAspNetCoreWebApplicationBuilder SetupWebApplication([NotNull] Action<WebApplication> setup);
         
         /// <summary>
-        /// Disables web host and HTTP server entirely.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.DisableWebHost"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder DisableWebHost();
         
         /// <summary>
-        /// Disables all built-in Vostok middlewares. 
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.DisableVostokMiddlewares"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder DisableVostokMiddlewares();
 
         /// <summary>
-        /// <para>Disables the built-in Vostok middleware of given type <typeparamref name="TMiddleware"></typeparamref>.</para>
-        /// <para>Current list of Vostok middlewares:</para>
-        /// <list type="bullet">
-        ///     <item><description><see cref="HttpContextTweakMiddleware"/></description></item>
-        ///     <item><description><see cref="FillRequestInfoMiddleware"/></description></item>
-        ///     <item><description><see cref="DistributedContextMiddleware"/></description></item>
-        ///     <item><description><see cref="TracingMiddleware"/></description></item>
-        ///     <item><description><see cref="ThrottlingMiddleware"/></description></item>
-        ///     <item><description><see cref="LoggingMiddleware"/></description></item>
-        ///     <item><description><see cref="DatacenterAwarenessMiddleware"/></description></item>
-        ///     <item><description><see cref="UnhandledExceptionMiddleware"/></description></item>
-        ///     <item><description><see cref="PingApiMiddleware"/></description></item>
-        ///     <item><description><see cref="DiagnosticApiMiddleware"/></description></item>
-        /// </list>
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.DisableVostokMiddleware{TMiddleware}"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder DisableVostokMiddleware<TMiddleware>();
         
         /// <summary>
-        /// <para>Enables the built-in Vostok middleware of given type <typeparamref name="TMiddleware"></typeparamref>.</para>
-        /// <para>Use this method to partially enable vostok middlewares after calling <see cref="DisableVostokMiddlewares"/>.</para>
-        /// <para>Current list of Vostok middlewares:</para>
-        /// <list type="bullet">
-        ///     <item><description><see cref="HttpContextTweakMiddleware"/></description></item>
-        ///     <item><description><see cref="FillRequestInfoMiddleware"/></description></item>
-        ///     <item><description><see cref="DistributedContextMiddleware"/></description></item>
-        ///     <item><description><see cref="TracingMiddleware"/></description></item>
-        ///     <item><description><see cref="ThrottlingMiddleware"/></description></item>
-        ///     <item><description><see cref="LoggingMiddleware"/></description></item>
-        ///     <item><description><see cref="DatacenterAwarenessMiddleware"/></description></item>
-        ///     <item><description><see cref="UnhandledExceptionMiddleware"/></description></item>
-        ///     <item><description><see cref="PingApiMiddleware"/></description></item>
-        ///     <item><description><see cref="DiagnosticApiMiddleware"/></description></item>
-        /// </list>
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.EnableVostokMiddleware{TMiddleware}"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder EnableVostokMiddleware<TMiddleware>();
 
         /// <summary>
-        /// Injects a singleton middleware of type <typeparamref name="TMiddleware"/> before Vostok middleware of type <typeparamref name="TBefore"/>.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.InjectPreVostokMiddleware{TMiddleware,TBefore}"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder InjectPreVostokMiddleware<TMiddleware, TBefore>();
 
         /// <summary>
-        /// Injects a singleton middleware of type <typeparamref name="TMiddleware"/> before the earliest Vostok middleware.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.InjectPreVostokMiddleware{TMiddleware,TBefore}"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder InjectPreVostokMiddleware<TMiddleware>();
 
         /// <summary>
-        /// Customizes Kestrel settings.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.SetupKestrel"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder SetupKestrel([NotNull] Action<KestrelSettings> setup);
 
         /// <summary>
-        /// Customizes built-in <see cref="LoggingMiddleware"/>.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.SetupLogging"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder SetupLogging([NotNull] Action<LoggingSettings> setup);
 
         /// <summary>
-        /// Customizes built-in <see cref="TracingMiddleware"/>.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.SetupTracing"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder SetupTracing([NotNull] Action<TracingSettings> setup);
 
         /// <summary>
-        /// Customizes built-in <see cref="ThrottlingMiddleware"/>.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.SetupThrottling"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder SetupThrottling([NotNull] Action<IVostokThrottlingBuilder> setup);
 
         /// <summary>
-        /// Customizes built-in <see cref="DatacenterAwarenessMiddleware"/>.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.SetupDatacenterAwareness"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder SetupDatacenterAwareness([NotNull] Action<DatacenterAwarenessSettings> setup);
 
         /// <summary>
-        /// Customizes built-in <see cref="PingApiMiddleware"/>.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.SetupPingApi"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder SetupPingApi([NotNull] Action<PingApiSettings> setup);
 
         /// <summary>
-        /// Customizes built-in diagnostic features (info providers and health checks).
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.SetupDiagnosticFeatures"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder SetupDiagnosticFeatures([NotNull] Action<DiagnosticFeaturesSettings> setup);
 
         /// <summary>
-        /// Customizes built-in <see cref="DiagnosticApiMiddleware"/>.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.SetupDiagnosticApi"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder SetupDiagnosticApi([NotNull] Action<DiagnosticApiSettings> setup);
 
         /// <summary>
-        /// Customizes built-in <see cref="FillRequestInfoMiddleware"/>.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.SetupRequestInfoFilling"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder SetupRequestInfoFilling([NotNull] Action<FillRequestInfoSettings> setup);
 
         /// <summary>
-        /// Customizes built-in <see cref="DistributedContextMiddleware"/>.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.SetupDistributedContext"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder SetupDistributedContext([NotNull] Action<DistributedContextSettings> setup);
 
         /// <summary>
-        /// Customizes built-in <see cref="UnhandledExceptionMiddleware"/>.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.SetupUnhandledExceptions"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder SetupUnhandledExceptions([NotNull] Action<UnhandledExceptionSettings> setup);
 
         /// <summary>
-        /// Customizes built-in <see cref="HttpContextTweakMiddleware"/>.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.SetupHttpContextTweaks"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder SetupHttpContextTweaks([NotNull] Action<HttpContextTweakSettings> setup);
 
         /// <summary>
-        /// Customizes the adapter between Vostok <see cref="Vostok.Logging.Abstractions.ILog"/> and Microsoft <see cref="Microsoft.Extensions.Logging.ILogger"/>.
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.SetupMicrosoftLog"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder SetupMicrosoftLog([NotNull] Action<VostokLoggerProviderSettings> setup);
     }
