@@ -118,3 +118,5 @@ full-build > notests:
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: Release
+    tool:
+      name: dotnet
