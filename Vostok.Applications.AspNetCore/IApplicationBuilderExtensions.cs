@@ -13,7 +13,7 @@ namespace Vostok.Applications.AspNetCore
     {
         /// <summary>
         /// <para>Adds the <see cref="DistributedContextMiddleware"/> to the specified application builder.</para>
-        /// <para>Use <see cref="IServiceCollectionExtensions.AddVostokDistributedContext(IServiceCollection,System.Action{Vostok.Applications.AspNetCore.Configuration.DistributedContextSettings}(Vostok.Applications.AspNetCore.Configuration.DistributedContextSettings))"/> to register its options.</para>
+        /// <para>Use <see cref="IServiceCollectionExtensions.AddVostokDistributedContext(IServiceCollection,System.Action{Vostok.Applications.AspNetCore.Configuration.DistributedContextSettings})"/> to register its options.</para>
         /// </summary>
         public static IApplicationBuilder UseVostokDistributedContext(this IApplicationBuilder builder)
             => builder.UseMiddleware<DistributedContextMiddleware>();
