@@ -16,11 +16,7 @@ using IHealthCheck = Vostok.Hosting.Abstractions.Diagnostics.IHealthCheck;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    [TestFixture(false)]
-#if NET6_0
-    [TestFixture(true)]
-#endif
-    public class HealthCheckIntegrationTests : ControllerTestBase
+    public class HealthCheckIntegrationTests : TestsBase
     {
         private volatile IVostokHostingEnvironment environment;
         private  IVostokApplicationDiagnostics diagnostics;

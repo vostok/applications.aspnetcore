@@ -11,11 +11,7 @@ using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    [TestFixture(false)]
-#if NET6_0
-    [TestFixture(true)]
-#endif
-    public class DiagnosticApiMiddlewareTests : ControllerTestBase
+    public class DiagnosticApiMiddlewareTests : TestsBase
     {
         public DiagnosticApiMiddlewareTests(bool webApplication)
             : base(webApplication)

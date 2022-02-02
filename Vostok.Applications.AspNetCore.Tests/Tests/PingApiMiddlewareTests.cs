@@ -10,16 +10,12 @@ using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    [TestFixture(false)]
-#if NET6_0
-    [TestFixture(true)]
-#endif
-    public class PingApiMiddlewareTestBase : ControllerTestBase
+    public class PingApiMiddlewareTests : TestsBase
     {
         private bool isHealthy = true;
         private string commitHash;
 
-        public PingApiMiddlewareTestBase(bool webApplication)
+        public PingApiMiddlewareTests(bool webApplication)
             : base(webApplication)
         {
         }

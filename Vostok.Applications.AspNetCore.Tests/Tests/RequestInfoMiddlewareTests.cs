@@ -8,13 +8,9 @@ using Vostok.Clusterclient.Core.Model;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    [TestFixture(false)]
-#if NET6_0
-    [TestFixture(true)]
-#endif
-    public class RequestInfoMiddlewareTestBase : ControllerTestBase
+    public class RequestInfoMiddlewareTests : TestsBase
     {
-        public RequestInfoMiddlewareTestBase(bool webApplication)
+        public RequestInfoMiddlewareTests(bool webApplication)
             : base(webApplication)
         {
         }

@@ -7,11 +7,7 @@ using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    [TestFixture(false)]
-#if NET6_0
-    [TestFixture(true)]
-#endif
-    public class UnhandledExceptionMiddlewareTests : ControllerTestBase
+    public class UnhandledExceptionMiddlewareTests : TestsBase
     {
         private const int ResponseCode = 418;
 

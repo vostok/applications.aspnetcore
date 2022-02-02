@@ -9,7 +9,8 @@ using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests;
 
-public class MinimalApiTests : ControllerTestBase
+[TestFixture]
+public class MinimalApiTests : TestsBase
 {
     public MinimalApiTests()
         : base(new MinimalApiApplication())

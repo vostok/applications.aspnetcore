@@ -16,12 +16,16 @@ using Vostok.Logging.File.Configuration;
 
 namespace Vostok.Applications.AspNetCore.Tests
 {
-    public abstract class ControllerTestBase
+    [TestFixture(false)]
+#if NET6_0
+    [TestFixture(true)]
+#endif
+    public abstract class TestsBase
     {
         private readonly IVostokApplication application;
         private VostokHost testHost;
 
-        protected ControllerTestBase(bool webApplication)
+        protected TestsBase(bool webApplication)
         {
             application = webApplication
 #if NET6_0
@@ -32,7 +36,7 @@ namespace Vostok.Applications.AspNetCore.Tests
                 : new TestVostokAspNetCoreApplication(SetupGlobal);
         }
 
-        protected ControllerTestBase(IVostokApplication application)
+        protected TestsBase(IVostokApplication application)
         {
             this.application = application;
         }

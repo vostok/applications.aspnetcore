@@ -12,13 +12,9 @@ using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    [TestFixture(false)]
-#if NET6_0
-    [TestFixture(true)]
-#endif
-    public class DistributedContextMiddlewareTestBase : ControllerTestBase
+    public class DistributedContextMiddlewareTests : TestsBase
     {
-        public DistributedContextMiddlewareTestBase(bool webApplication)
+        public DistributedContextMiddlewareTests(bool webApplication)
             : base(webApplication)
         {
         }
