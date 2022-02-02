@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="..\..\vostok.devtools\library-common-props\Main-Project.props"/>
-    <Import Project="..\..\vostok.devtools\git-commit-to-assembly-title\Vostok.Tools.GitCommit2AssemblyTitle.props"/>
+    <Import Project="..\..\vostok.devtools\library-common-props\Main-Project.props" />
+    <Import Project="..\..\vostok.devtools\git-commit-to-assembly-title\Vostok.Tools.GitCommit2AssemblyTitle.props" />
     <PropertyGroup>
         <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.0</TargetFrameworks>
         <Configurations>Debug;Release</Configurations>
     </PropertyGroup>
     <PropertyGroup>
-        <VersionPrefix>0.3.0</VersionPrefix>
+        <VersionPrefix>0.3.1</VersionPrefix>
     </PropertyGroup>
     <PropertyGroup>
         <Title>Vostok.Applications.AspNetCore</Title>
@@ -23,26 +23,26 @@
         <IsPackable>true</IsPackable>
     </PropertyGroup>
     <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" Condition="'$(TargetFramework)' != 'netstandard2.0'"/>
-        <PackageReference Include="Microsoft.AspNetCore" Version="2.1.7" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
+        <PackageReference Include="Microsoft.AspNetCore" Version="2.1.7" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ByReferenceEqualityComparer.cs" Link="Commons\ByReferenceEqualityComparer.cs"/>
-        <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\AssemblyCommitHashExtractor.cs" Link="Commons\AssemblyCommitHashExtractor.cs"/>
-        <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\AssemblyTitleParser.cs" Link="Commons\AssemblyTitleParser.cs"/>
-        <Compile Include="..\..\vostok.commons.formatting\Vostok.Commons.Formatting\StringBuilderCache.cs" Link="Commons\StringBuilderCache.cs"/>
-        <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\AtomicBoolean.cs" Link="Commons\AtomicBoolean.cs"/>
-        <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Customization.cs" Link="Commons\Customization.cs"/>
-        <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Disposable\ActionDisposable.cs" Link="Commons\ActionDisposable.cs"/>
-        <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Extensions\CancellationTokenExtensions.cs" Link="Commons\CancellationTokenExtensions.cs"/>
-        <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Url\UrlNormalizer.cs" Link="Commons\UrlNormalizer.cs"/>
-        <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Url\UrlExtensions.cs" Link="Commons\UrlExtensions.cs"/>
-        <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\NumericTypeParser.cs" Link="Commons\NumericTypeParser.cs"/>
-        <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\PreciseDateTime.cs" Link="Commons\PreciseDateTime.cs"/>
-        <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeBudget.cs" Link="Commons\TimeBudget.cs"/>
-        <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanConversions.cs" Link="Commons\TimeSpanConversions.cs"/>
-        <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanFormatting.cs" Link="Commons\TimeSpanFormatting.cs"/>
-        <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanArithmetics.cs" Link="Commons\TimeSpanArithmetics.cs"/>
+        <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ByReferenceEqualityComparer.cs" Link="Commons\ByReferenceEqualityComparer.cs" />
+        <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\AssemblyCommitHashExtractor.cs" Link="Commons\AssemblyCommitHashExtractor.cs" />
+        <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\AssemblyTitleParser.cs" Link="Commons\AssemblyTitleParser.cs" />
+        <Compile Include="..\..\vostok.commons.formatting\Vostok.Commons.Formatting\StringBuilderCache.cs" Link="Commons\StringBuilderCache.cs" />
+        <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\AtomicBoolean.cs" Link="Commons\AtomicBoolean.cs" />
+        <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Customization.cs" Link="Commons\Customization.cs" />
+        <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Disposable\ActionDisposable.cs" Link="Commons\ActionDisposable.cs" />
+        <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Extensions\CancellationTokenExtensions.cs" Link="Commons\CancellationTokenExtensions.cs" />
+        <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Url\UrlNormalizer.cs" Link="Commons\UrlNormalizer.cs" />
+        <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Url\UrlExtensions.cs" Link="Commons\UrlExtensions.cs" />
+        <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\NumericTypeParser.cs" Link="Commons\NumericTypeParser.cs" />
+        <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\PreciseDateTime.cs" Link="Commons\PreciseDateTime.cs" />
+        <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeBudget.cs" Link="Commons\TimeBudget.cs" />
+        <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanConversions.cs" Link="Commons\TimeSpanConversions.cs" />
+        <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanFormatting.cs" Link="Commons\TimeSpanFormatting.cs" />
+        <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanArithmetics.cs" Link="Commons\TimeSpanArithmetics.cs" />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="Vostok.Hosting.Abstractions">
