@@ -17,7 +17,7 @@ namespace Vostok.Applications.AspNetCore.Builders
     {
         IVostokAspNetCoreWebApplicationBuilder SetupWebApplication([NotNull] Action<WebApplicationBuilder> setup);
 
-        IVostokAspNetCoreWebApplicationBuilder CustomizeWebApplication([NotNull] Action<WebApplication> webApplicationCustomization);
+        IVostokAspNetCoreWebApplicationBuilder CustomizeWebApplication([NotNull] Action<WebApplication> customization);
 
         /// <summary>
         /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.DisableWebHost"/>
