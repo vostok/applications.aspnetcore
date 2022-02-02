@@ -3,7 +3,6 @@ using System;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Builder;
 using Vostok.Applications.AspNetCore.Configuration;
-using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Logging.Microsoft;
 
 namespace Vostok.Applications.AspNetCore.Builders
@@ -17,14 +16,14 @@ namespace Vostok.Applications.AspNetCore.Builders
     public interface IVostokAspNetCoreWebApplicationBuilder
     {
         IVostokAspNetCoreWebApplicationBuilder SetupWebApplication([NotNull] Action<WebApplicationBuilder> setup);
-        
+
         IVostokAspNetCoreWebApplicationBuilder CustomizeWebApplication([NotNull] Action<WebApplication> webApplicationCustomization);
-        
+
         /// <summary>
         /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.DisableWebHost"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder DisableWebHost();
-        
+
         /// <summary>
         /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.DisableVostokMiddlewares"/>
         /// </summary>
@@ -34,7 +33,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.DisableVostokMiddleware{TMiddleware}"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder DisableVostokMiddleware<TMiddleware>();
-        
+
         /// <summary>
         /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.EnableVostokMiddleware{TMiddleware}"/>
         /// </summary>

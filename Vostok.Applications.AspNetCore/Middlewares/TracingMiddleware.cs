@@ -39,8 +39,8 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
             using (var spanBuilder = tracer.BeginHttpServerSpan())
             using (new OperationContextToken(
-                TracingLogPropertiesFormatter.FormatPrefix(
-                    spanBuilder.CurrentSpan.ParentSpanId ?? spanBuilder.CurrentSpan.SpanId) ?? string.Empty))
+                       TracingLogPropertiesFormatter.FormatPrefix(
+                           spanBuilder.CurrentSpan.ParentSpanId ?? spanBuilder.CurrentSpan.SpanId) ?? string.Empty))
             {
                 spanBuilder.SetClientDetails(requestInfo?.ClientApplicationIdentity, requestInfo?.ClientIpAddress);
                 spanBuilder.SetRequestDetails(context.Request.Path, context.Request.Method, context.Request.ContentLength);

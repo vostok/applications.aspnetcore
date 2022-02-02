@@ -65,7 +65,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             if (!TryAuthorize(context))
                 return Task.CompletedTask;
 
-            var printSettings = new PrintSettings { Format = PrintFormat.JSON };
+            var printSettings = new PrintSettings {Format = PrintFormat.JSON};
             var responseBody = Encoding.UTF8.GetBytes(ConfigurationPrinter.Print(payload, printSettings));
 
             context.Response.StatusCode = 200;
@@ -87,7 +87,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             context.Response.StatusCode = 200;
             context.Response.ContentLength = responseBody.Length;
             context.Response.ContentType = "text/html";
-            
+
             DisableResponseCaching(context);
 
             return context.Response.Body.WriteAsync(responseBody, 0, responseBody.Length);
@@ -110,8 +110,8 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             var builder = new StringBuilder();
 
             foreach (var group in info.ListAll()
-                .GroupBy(entry => entry.Component, StringComparer.OrdinalIgnoreCase)
-                .OrderBy(group => group.Key))
+                         .GroupBy(entry => entry.Component, StringComparer.OrdinalIgnoreCase)
+                         .OrderBy(group => group.Key))
             {
                 builder.AppendLine($"<h2>{group.Key}</h2>");
                 builder.AppendLine("<ul>");

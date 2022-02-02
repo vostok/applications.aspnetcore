@@ -36,7 +36,7 @@ namespace Vostok.Applications.AspNetCore.Diagnostics
             RegisterMicrosoftChecksInVostokTracker();
         }
 
-        public override Task<HealthReport> CheckHealthAsync(Func<HealthCheckRegistration, bool> predicate, CancellationToken cancellationToken = new CancellationToken()) 
+        public override Task<HealthReport> CheckHealthAsync(Func<HealthCheckRegistration, bool> predicate, CancellationToken cancellationToken = new CancellationToken())
             => CreateService(CreateOptions()).CheckHealthAsync(predicate, cancellationToken);
 
         private void RegisterMicrosoftChecksInVostokTracker()
@@ -60,7 +60,7 @@ namespace Vostok.Applications.AspNetCore.Diagnostics
             {
                 if (check.IsAdapter())
                     continue;
-                
+
                 var registration = new HealthCheckRegistration(name, check.ToMicrosoftCheck(), null, new[] {"vostok"});
 
                 result.Registrations.Add(registration);
@@ -70,7 +70,7 @@ namespace Vostok.Applications.AspNetCore.Diagnostics
         }
 
         private HealthCheckService CreateService(HealthCheckServiceOptions optionsToUse)
-            => (HealthCheckService) ActivatorUtilities.CreateInstance(serviceProvider, defaultServiceType, Options.Create(optionsToUse));
+            => (HealthCheckService)ActivatorUtilities.CreateInstance(serviceProvider, defaultServiceType, Options.Create(optionsToUse));
     }
 }
 #endif

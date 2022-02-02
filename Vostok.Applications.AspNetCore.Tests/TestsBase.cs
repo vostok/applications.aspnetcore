@@ -52,7 +52,7 @@ namespace Vostok.Applications.AspNetCore.Tests
                 }));
 
             var serverPort = FreeTcpPortFinder.GetFreePort();
-            
+
             Client = CreateClusterClient(serverPort);
 
             testHost = await StartHost(serverPort);
@@ -69,7 +69,7 @@ namespace Vostok.Applications.AspNetCore.Tests
         {
             // use this method to override host configuration in each test fixture
         }
-        
+
 #if NET6_0
         protected virtual void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
         {

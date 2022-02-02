@@ -27,8 +27,8 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
         private readonly Customization<IWebHostBuilder> webHostCustomization;
 
         public VostokWebHostBuilder(
-            IVostokHostingEnvironment environment, 
-            VostokKestrelBuilder kestrelBuilder, 
+            IVostokHostingEnvironment environment,
+            VostokKestrelBuilder kestrelBuilder,
             VostokMiddlewaresBuilder middlewaresBuilder,
             List<IDisposable> disposables,
             Type startupType)

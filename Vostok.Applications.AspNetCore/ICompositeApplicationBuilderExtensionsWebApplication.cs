@@ -31,7 +31,7 @@ namespace Vostok.Applications.AspNetCore
             private readonly Func<IVostokHostingEnvironment, WebApplication, Task> warmup;
 
             public AdHocAspnetcoreApplication(
-                [NotNull] Func<IVostokAspNetCoreWebApplicationBuilder, IVostokHostingEnvironment, Task> setup, 
+                [NotNull] Func<IVostokAspNetCoreWebApplicationBuilder, IVostokHostingEnvironment, Task> setup,
                 [CanBeNull] Func<IVostokHostingEnvironment, WebApplication, Task> warmup)
             {
                 this.setup = setup ?? throw new ArgumentNullException(nameof(setup));

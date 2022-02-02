@@ -19,7 +19,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             : base(webApplication)
         {
         }
-        
+
         [SetUp]
         public void Setup()
         {
@@ -65,7 +65,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             builder.SetupPingApi(ConfigurePingApi);
         }
 #endif
-        
+
         private void ConfigurePingApi(PingApiSettings obj)
         {
             obj.HealthCheck = () => isHealthy;

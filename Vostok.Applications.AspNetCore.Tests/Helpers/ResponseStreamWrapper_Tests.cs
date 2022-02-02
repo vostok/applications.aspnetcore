@@ -39,16 +39,16 @@ namespace Vostok.Applications.AspNetCore.Tests.Helpers
 
             await wrapper2.WriteAsync(merged, leadingGarbage.Length, payload.Length, CancellationToken.None);
 
-            #if NETCOREAPP
+#if NETCOREAPP
             await wrapper3.WriteAsync(new ReadOnlyMemory<byte>(merged, leadingGarbage.Length, payload.Length));
-            #endif
+#endif
 
             output1.ToArray().Should().Equal(payload);
             output2.ToArray().Should().Equal(payload);
 
-            #if NETCOREAPP
+#if NETCOREAPP
             output3.ToArray().Should().Equal(payload);
-            #endif
+#endif
         }
 
         private void GenerateData(int payloadLength)

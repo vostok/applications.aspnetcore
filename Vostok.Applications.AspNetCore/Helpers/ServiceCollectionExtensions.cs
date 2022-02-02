@@ -59,7 +59,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
             {
                 var methodInfo = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddSettingsProvider), BindingFlags.NonPublic | BindingFlags.Static);
                 var genericMethodInfo = methodInfo.MakeGenericMethod(type);
-                genericMethodInfo.Invoke(null, new object[] { services, provider });
+                genericMethodInfo.Invoke(null, new object[] {services, provider});
             }
         }
 

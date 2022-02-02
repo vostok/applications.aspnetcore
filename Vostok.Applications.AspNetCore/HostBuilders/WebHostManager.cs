@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Vostok.Commons.Helpers.Extensions;
 using Vostok.Hosting.Abstractions.Helpers;
 using Vostok.Logging.Abstractions;
-using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 // ReSharper disable MethodSupportsCancellation
 

@@ -17,18 +17,6 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             : base(webApplication)
         {
         }
-        
-        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
-        {
-            builder.SetupDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
-        }
-
-#if NET6_0
-        protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
-        {
-            builder.SetupDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
-        }
-#endif
 
         [Test]
         public async Task Root_path_should_return_an_html_page_with_a_list_of_registered_info_providers()
@@ -85,5 +73,17 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             response.Code.Should().Be(ResponseCode.NotFound);
             response.HasContent.Should().BeFalse();
         }
+
+        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
+        {
+            builder.SetupDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
+        }
+
+#if NET6_0
+        protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
+        {
+            builder.SetupDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
+        }
+#endif
     }
 }

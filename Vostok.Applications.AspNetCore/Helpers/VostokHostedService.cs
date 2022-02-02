@@ -18,6 +18,9 @@ namespace Vostok.Applications.AspNetCore.Helpers
             this.environment = environment;
         }
 
+        public override void Dispose()
+            => (application as IDisposable)?.Dispose();
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var executionEnvironment = environment.WithAdditionalShutdownToken(stoppingToken);
@@ -28,8 +31,5 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
             await application.RunAsync(executionEnvironment);
         }
-
-        public override void Dispose()
-            => (application as IDisposable)?.Dispose();
     }
 }

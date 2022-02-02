@@ -39,7 +39,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         /// </list>
         /// </summary>
         IVostokAspNetCoreApplicationBuilder DisableVostokMiddleware<TMiddleware>();
-        
+
         /// <summary>
         /// <para>Enables the built-in Vostok middleware of given type <typeparamref name="TMiddleware"></typeparamref>.</para>
         /// <para>Use this method to partially enable vostok middlewares after calling <see cref="DisableVostokMiddlewares"/>.</para>

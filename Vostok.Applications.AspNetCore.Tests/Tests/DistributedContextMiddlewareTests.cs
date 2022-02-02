@@ -18,7 +18,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             : base(webApplication)
         {
         }
-        
+
         [Theory]
         public async Task Invoke_ShouldRestoreRequestPriority(RequestPriority requestPriority)
         {

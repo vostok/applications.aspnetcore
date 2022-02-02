@@ -2,9 +2,6 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-#if NETCOREAPP
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-#endif
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
@@ -12,6 +9,10 @@ using Vostok.Clusterclient.Core.Model;
 using Vostok.Hosting.Abstractions;
 using HealthCheckResult = Vostok.Hosting.Abstractions.Diagnostics.HealthCheckResult;
 using IHealthCheck = Vostok.Hosting.Abstractions.Diagnostics.IHealthCheck;
+#if NETCOREAPP
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+#endif
+
 #pragma warning disable 162
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
@@ -19,45 +20,19 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
     public class HealthCheckIntegrationTests : TestsBase
     {
         private volatile IVostokHostingEnvironment environment;
-        private  IVostokApplicationDiagnostics diagnostics;
+        private IVostokApplicationDiagnostics diagnostics;
 
         public HealthCheckIntegrationTests(bool webApplication)
             : base(webApplication)
         {
         }
-        
-        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment env)
-        {
-            environment = env;
-            environment.HostExtensions.TryGet(out diagnostics).Should().BeTrue();
-
-            #if NETCOREAPP
-            builder.SetupGenericHost(
-                host => host.ConfigureServices(
-                    (ctx, services) =>
-                    {
-                        services.AddHealthChecks().AddCheck("ms", new MicrosoftHealthCheck());
-                    }));
-            #endif
-        }
-
-#if NET6_0
-        protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment env)
-        {
-            environment = env;
-            environment.HostExtensions.TryGet(out diagnostics).Should().BeTrue();
-
-            builder.SetupWebApplication(b => b.Services.AddHealthChecks().AddCheck("ms", new MicrosoftHealthCheck()));
-        }
-#endif
-        
 
         [Test]
         public async Task Should_include_vostok_health_checks_in_aspnetcore_middleware()
         {
-            #if NETFRAMEWORK
+#if NETFRAMEWORK
             return;
-            #endif
+#endif
 
             await CheckHealthEndpoint(ResponseCode.Ok, "Healthy");
 
@@ -77,12 +52,34 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
         [Test]
         public void Should_include_aspnetcore_health_checks_in_vostok_tracker()
         {
-            #if NETFRAMEWORK
+#if NETFRAMEWORK
             return;
-            #endif
+#endif
 
             diagnostics.HealthTracker.Should().ContainSingle(pair => pair.name == "ms");
         }
+
+        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment env)
+        {
+            environment = env;
+            environment.HostExtensions.TryGet(out diagnostics).Should().BeTrue();
+
+#if NETCOREAPP
+            builder.SetupGenericHost(
+                host => host.ConfigureServices(
+                    (ctx, services) => { services.AddHealthChecks().AddCheck("ms", new MicrosoftHealthCheck()); }));
+#endif
+        }
+
+#if NET6_0
+        protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment env)
+        {
+            environment = env;
+            environment.HostExtensions.TryGet(out diagnostics).Should().BeTrue();
+
+            builder.SetupWebApplication(b => b.Services.AddHealthChecks().AddCheck("ms", new MicrosoftHealthCheck()));
+        }
+#endif
 
         private async Task CheckHealthEndpoint(ResponseCode expectedCode, string expectedStatus)
         {
@@ -104,12 +101,12 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
                 Task.FromResult(HealthCheckResult.Failing("Because I have failed."));
         }
 
-        #if NETCOREAPP
+#if NETCOREAPP
         private class MicrosoftHealthCheck : Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheck
         {
             public Task<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken()) =>
                 Task.FromResult(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy());
         }
-        #endif
+#endif
     }
 }

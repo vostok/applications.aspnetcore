@@ -16,17 +16,18 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
         public static void AddDefaultLoggingFilters(this IConfigurationBuilder builder)
         {
-            builder.Sources.Insert(0, new VostokConfigurationSource(new ObjectSource(new
-            {
-                Logging = new
+            builder.Sources.Insert(0,
+                new VostokConfigurationSource(new ObjectSource(new
                 {
-                    LogLevel = new
+                    Logging = new
                     {
-                        Default = "Information",
-                        Microsoft = "Warning"
+                        LogLevel = new
+                        {
+                            Default = "Information",
+                            Microsoft = "Warning"
+                        }
                     }
-                }
-            })));
+                })));
         }
     }
 }

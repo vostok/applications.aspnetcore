@@ -11,7 +11,7 @@ namespace Vostok.Applications.AspNetCore.Configuration
         public bool AddThrottlingInfoProvider { get; set; } = true;
 
         public bool AddThrottlingHealthCheck { get; set; } = true;
-        
+
         public bool AddCurrentRequestsInfoProvider { get; set; } = true;
     }
 }

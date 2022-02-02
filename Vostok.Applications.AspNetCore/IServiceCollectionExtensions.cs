@@ -70,7 +70,7 @@ namespace Vostok.Applications.AspNetCore
         /// </summary>
         public static IServiceCollection AddVostokHttpContextTweaks(this IServiceCollection services, Action<HttpContextTweakSettings> setup)
             => services.Configure(setup);
-        
+
         /// <summary>
         /// Adds <see cref="UnhandledExceptionSettings"/> to the specified service collection.
         /// </summary>

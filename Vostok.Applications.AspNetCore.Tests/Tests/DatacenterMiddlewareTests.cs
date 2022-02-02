@@ -75,7 +75,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             settings.RejectRequestsWhenDatacenterIsInactive = rejectResponses;
             settings.RejectionResponseCode = RejectionCode;
         }
-        
+
         private IDatacenters CreateDataCentersMock()
         {
             var dataCenters = Substitute.For<IDatacenters>();

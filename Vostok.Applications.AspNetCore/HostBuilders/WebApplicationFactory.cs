@@ -37,6 +37,15 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
             return webApplication;
         }
 
+        public void SetupWebApplicationBuilder(Action<WebApplicationBuilder> setup)
+            => webApplicationBuilderCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+
+        public void SetupWebApplication(Action<WebApplication> setup)
+            => webApplicationCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+
+        public void SetupLogger(Action<VostokLoggerProviderSettings> setup)
+            => loggerCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+
         private WebApplicationBuilder CreateBuilder()
         {
             var builder = WebApplication.CreateBuilder();
@@ -56,15 +65,6 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
 
             return builder;
         }
-
-        public void SetupWebApplicationBuilder(Action<WebApplicationBuilder> setup)
-            => webApplicationBuilderCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
-        
-        public void SetupWebApplication(Action<WebApplication> setup)
-            => webApplicationCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
-
-        public void SetupLogger(Action<VostokLoggerProviderSettings> setup)
-            => loggerCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
 
         private VostokLoggerProviderSettings GetLoggerSettings()
             => loggerCustomization.Customize(new VostokLoggerProviderSettings());

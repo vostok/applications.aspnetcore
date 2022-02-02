@@ -1,20 +1,19 @@
-﻿#if NETCOREAPP
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Hosting;
+using Vostok.Applications.AspNetCore.Configuration;
+using Vostok.Applications.AspNetCore.Helpers;
+using Vostok.Applications.AspNetCore.HostBuilders;
+using Vostok.Context;
+using Vostok.Hosting.Abstractions;
+using Vostok.Logging.Microsoft;
+#if NETCOREAPP
 using Host = Microsoft.Extensions.Hosting.IHost;
 using HostFactory = Vostok.Applications.AspNetCore.HostBuilders.GenericHostFactory;
 #else
 using Host = Microsoft.AspNetCore.Hosting.IWebHost;
 using HostFactory = Vostok.Applications.AspNetCore.HostBuilders.WebHostFactory;
 #endif
-using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Hosting;
-using Vostok.Applications.AspNetCore.Configuration;
-using Vostok.Applications.AspNetCore.Helpers;
-using Vostok.Applications.AspNetCore.HostBuilders;
-using Vostok.Applications.AspNetCore.Models;
-using Vostok.Context;
-using Vostok.Hosting.Abstractions;
-using Vostok.Logging.Microsoft;
 
 // ReSharper disable PartialTypeWithSinglePart
 

@@ -14,7 +14,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             : base(webApplication)
         {
         }
-        
+
         [Test]
         public async Task Invoke_ShouldFillRequestInfo()
         {

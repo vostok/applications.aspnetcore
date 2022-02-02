@@ -38,7 +38,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         public WebApplication Build()
         {
             webApplicationFactory.SetupWebApplicationBuilder(b => webHostBuilder.ConfigureWebHost(b));
-            
+
             lock (FlowingContextSync.Object)
                 using (FlowingContext.Globals.Use(environment))
                     return webApplicationFactory.Create();
@@ -54,10 +54,10 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public IVostokAspNetCoreWebApplicationBuilder CustomizeWebApplication(Action<WebApplication> webApplicationCustomization)
             => Setup(() => webApplicationFactory.SetupWebApplication(webApplicationCustomization));
-        
+
         public IVostokAspNetCoreWebApplicationBuilder DisableWebHost()
             => Setup(webHostBuilder.Disable);
-        
+
         public IVostokAspNetCoreWebApplicationBuilder DisableVostokMiddlewares()
             => Setup(middlewaresBuilder.Disable);
 
@@ -87,7 +87,7 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public IVostokAspNetCoreWebApplicationBuilder SetupKestrel(Action<KestrelSettings> setup)
             => Setup(() => kestrelBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
-        
+
         public IVostokAspNetCoreWebApplicationBuilder SetupLogging(Action<LoggingSettings> setup)
             => Setup(() => middlewaresBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
@@ -108,7 +108,7 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public IVostokAspNetCoreWebApplicationBuilder SetupThrottling(Action<IVostokThrottlingBuilder> setup)
             => Setup(() => setup(throttlingBuilder));
-        
+
         public IVostokAspNetCoreWebApplicationBuilder SetupMicrosoftLog(Action<VostokLoggerProviderSettings> setup)
             => Setup(() => webApplicationFactory.SetupLogger(setup ?? throw new ArgumentNullException(nameof(setup))));
 

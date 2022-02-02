@@ -41,7 +41,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 if (IsCancellationError(error) && context.RequestAborted.IsCancellationRequested)
                 {
                     log.Warn("Request has been canceled. This is likely due to connection close from client side.");
-                    context.Response.StatusCode = (int) ResponseCode.Canceled;
+                    context.Response.StatusCode = (int)ResponseCode.Canceled;
                 }
                 else
                 {

@@ -25,12 +25,12 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
                 ConfigureWebHostInternal(builder);
             }
         }
-        
+
         private void ConfigureWebHostInternal(WebApplicationBuilder builder)
         {
             if (!environment.ServiceBeacon.ReplicaInfo.TryGetUrl(out var url))
                 throw new Exception("Port or url should be configured in ServiceBeacon using VostokHostingEnvironmentSetup.");
-            
+
             builder.WebHost.UseKestrel(options =>
             {
                 kestrelBuilder.ConfigureKestrel(options);

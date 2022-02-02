@@ -44,7 +44,7 @@ namespace Vostok.Applications.AspNetCore
             private readonly Func<IVostokHostingEnvironment, IServiceProvider, Task> warmup;
 
             public AdHocAspnetcoreApplication(
-                [NotNull] Action<IVostokAspNetCoreApplicationBuilder, IVostokHostingEnvironment> setup, 
+                [NotNull] Action<IVostokAspNetCoreApplicationBuilder, IVostokHostingEnvironment> setup,
                 [CanBeNull] Func<IVostokHostingEnvironment, IServiceProvider, Task> warmup)
             {
                 this.setup = setup ?? throw new ArgumentNullException(nameof(setup));
@@ -61,7 +61,7 @@ namespace Vostok.Applications.AspNetCore
         private class AdHocAspnetcoreApplication : AdHocAspnetcoreApplication<EmptyStartup>
         {
             public AdHocAspnetcoreApplication(
-                [NotNull] Action<IVostokAspNetCoreApplicationBuilder, IVostokHostingEnvironment> setup, 
+                [NotNull] Action<IVostokAspNetCoreApplicationBuilder, IVostokHostingEnvironment> setup,
                 [CanBeNull] Func<IVostokHostingEnvironment, IServiceProvider, Task> warmup)
                 : base(setup, warmup)
             {

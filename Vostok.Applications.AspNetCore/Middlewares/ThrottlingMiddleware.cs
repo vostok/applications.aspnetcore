@@ -57,7 +57,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 if (context.RequestAborted.IsCancellationRequested)
                 {
                     LogConnectionAlreadyAborted(context, info);
-                    context.Response.StatusCode = (int) ResponseCode.Canceled;
+                    context.Response.StatusCode = (int)ResponseCode.Canceled;
                     return;
                 }
 
@@ -152,10 +152,10 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
         private void LogFailure(HttpContext context, IRequestInfo info, IThrottlingResult result)
         {
-            const string messageTemplate = 
+            const string messageTemplate =
                 "Dropping request from '{ClientIdentity}' at {RequestConnection} due to throttling status {ThrottlingStatus}. Rejection reason = '{RejectionReason}'.";
-            
-            var args = new object[] 
+
+            var args = new object[]
             {
                 info?.ClientApplicationIdentity ?? "unknown",
                 GetClientConnectionInfo(context),
@@ -170,11 +170,12 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         }
 
         private void LogConnectionAlreadyAborted(HttpContext context, IRequestInfo info)
-            => log.Warn("Request from '{ClientIdentity}' at {RequestConnection} was aborted by client before passing through throttling.", new
-            {
-                ClientIdentity = info?.ClientApplicationIdentity ?? "unknown",
-                RequestConnection = GetClientConnectionInfo(context),
-            });
+            => log.Warn("Request from '{ClientIdentity}' at {RequestConnection} was aborted by client before passing through throttling.",
+                new
+                {
+                    ClientIdentity = info?.ClientApplicationIdentity ?? "unknown",
+                    RequestConnection = GetClientConnectionInfo(context),
+                });
 
         private void LogAbortingConnection()
             => log.Info("Aborting client connection..");

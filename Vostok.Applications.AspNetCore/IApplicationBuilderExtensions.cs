@@ -13,7 +13,7 @@ namespace Vostok.Applications.AspNetCore
     {
         /// <summary>
         /// <para>Adds the <see cref="DistributedContextMiddleware"/> to the specified application builder.</para>
-        /// <para>Use <see cref="IServiceCollectionExtensions.AddVostokDistributedContext(IServiceCollection,Action{DistributedContextSettings})"/> to register its options.</para>
+        /// <para>Use <see cref="IServiceCollectionExtensions.AddVostokDistributedContext(IServiceCollection,System.Action{Vostok.Applications.AspNetCore.Configuration.DistributedContextSettings}(Vostok.Applications.AspNetCore.Configuration.DistributedContextSettings))"/> to register its options.</para>
         /// </summary>
         public static IApplicationBuilder UseVostokDistributedContext(this IApplicationBuilder builder)
             => builder.UseMiddleware<DistributedContextMiddleware>();
@@ -76,7 +76,7 @@ namespace Vostok.Applications.AspNetCore
         /// </summary>
         public static IApplicationBuilder UseVostokHttpContextTweaks(this IApplicationBuilder builder)
             => builder.UseMiddleware<HttpContextTweakMiddleware>();
-        
+
         /// <summary>
         /// <para>Adds the <see cref="UnhandledExceptionMiddleware"/> to the specified application builder.</para>
         /// <para>Use <see cref="IServiceCollectionExtensions.AddVostokUnhandledExceptions(IServiceCollection,Action{UnhandledExceptionSettings})"/> to register its options.</para>
