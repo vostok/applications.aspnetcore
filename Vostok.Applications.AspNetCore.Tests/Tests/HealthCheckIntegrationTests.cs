@@ -47,7 +47,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             environment = env;
             environment.HostExtensions.TryGet(out diagnostics).Should().BeTrue();
 
-            builder.SetupWebApplicationBuilder(b => b.Services.AddHealthChecks().AddCheck("ms", new MicrosoftHealthCheck()));
+            builder.SetupWebApplication(b => b.Services.AddHealthChecks().AddCheck("ms", new MicrosoftHealthCheck()));
         }
 #endif
         

@@ -30,7 +30,7 @@ public class MinimalApiTests : TestsBase
     {
         public override Task SetupAsync(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
-            builder.SetupWebApplication(app => app.MapGet("/", () => "Hello World!"));
+            builder.CustomizeWebApplication(app => app.MapGet("/", () => "Hello World!"));
 
             return Task.CompletedTask;
         }

@@ -49,11 +49,11 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         #region SetupComponents
 
-        public IVostokAspNetCoreWebApplicationBuilder SetupWebApplicationBuilder(Action<WebApplicationBuilder> setup)
+        public IVostokAspNetCoreWebApplicationBuilder SetupWebApplication(Action<WebApplicationBuilder> setup)
             => Setup(() => webApplicationFactory.SetupWebApplicationBuilder(setup));
 
-        public IVostokAspNetCoreWebApplicationBuilder SetupWebApplication(Action<WebApplication> setup)
-            => Setup(() => webApplicationFactory.SetupWebApplication(setup));
+        public IVostokAspNetCoreWebApplicationBuilder CustomizeWebApplication(Action<WebApplication> webApplicationCustomization)
+            => Setup(() => webApplicationFactory.SetupWebApplication(webApplicationCustomization));
         
         public IVostokAspNetCoreWebApplicationBuilder DisableWebHost()
             => Setup(webHostBuilder.Disable);

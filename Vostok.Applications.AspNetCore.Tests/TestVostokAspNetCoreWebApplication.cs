@@ -19,12 +19,12 @@ public class TestVostokAspNetCoreWebApplication : VostokAspNetCoreWebApplication
 
     public override Task SetupAsync(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
     {
-        builder.SetupWebApplicationBuilder(b => b.Services
+        builder.SetupWebApplication(b => b.Services
             .AddControllers()
             .AddNewtonsoftJson()
             .AddApplicationPart(typeof(Startup).Assembly));
 
-        builder.SetupWebApplication(a => a
+        builder.CustomizeWebApplication(a => a
             .UseRouting()
             .UseEndpoints(s => s.MapControllers())
             .UseHealthChecks("/health"));
