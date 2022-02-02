@@ -11,12 +11,11 @@ using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    [TestFixture]
-    public class DiagnosticApiMiddlewareTests : ControllerTestBase
+    public class DiagnosticApiMiddlewareTests : TestsBase
     {
-        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
+        public DiagnosticApiMiddlewareTests(bool webApplication)
+            : base(webApplication)
         {
-            builder.SetupDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
         }
 
         [Test]
@@ -67,12 +66,24 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
         [Test]
         public async Task Info_path_should_not_handle_requests_with_unknown_entries()
         {
-            var request = Request.Get($"/_diagnostic/unknown-component/request-throttling");
+            var request = Request.Get("/_diagnostic/unknown-component/request-throttling");
 
             var response = (await Client.SendAsync(request)).Response;
 
             response.Code.Should().Be(ResponseCode.NotFound);
             response.HasContent.Should().BeFalse();
         }
+
+        protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
+        {
+            builder.SetupDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
+        }
+
+#if NET6_0
+        protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
+        {
+            builder.SetupDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
+        }
+#endif
     }
 }

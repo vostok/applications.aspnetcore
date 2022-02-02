@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
-using Vostok.Applications.AspNetCore.Helpers;
+using Vostok.Applications.AspNetCore.HostBuilders;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Helpers;
 using Vostok.Logging.Abstractions;

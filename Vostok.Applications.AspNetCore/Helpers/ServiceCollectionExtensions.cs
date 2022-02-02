@@ -13,7 +13,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddVostokEnvironment(this IServiceCollection services, IVostokHostingEnvironment environment, IVostokApplication application)
+        public static IServiceCollection AddVostokEnvironment(this IServiceCollection services, IVostokHostingEnvironment environment, IVostokApplication application)
         {
             services
                 .AddSingleton(environment)
@@ -49,6 +49,8 @@ namespace Vostok.Applications.AspNetCore.Helpers
             AddSettingsProviders(services, RequirementDetector.GetRequiredSecretConfigurations(application).Select(r => r.Type), environment.SecretConfigurationProvider);
 
             services.AddScoped(_ => FlowingContext.Globals.Get<IRequestInfo>());
+
+            return services;
         }
 
         private static void AddSettingsProviders(IServiceCollection services, IEnumerable<Type> types, IConfigurationProvider provider)
@@ -57,7 +59,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
             {
                 var methodInfo = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddSettingsProvider), BindingFlags.NonPublic | BindingFlags.Static);
                 var genericMethodInfo = methodInfo.MakeGenericMethod(type);
-                genericMethodInfo.Invoke(null, new object[] { services, provider });
+                genericMethodInfo.Invoke(null, new object[] {services, provider});
             }
         }
 

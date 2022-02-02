@@ -7,10 +7,14 @@ using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    [TestFixture]
-    public class UnhandledExceptionMiddlewareTests : ControllerTestBase
+    public class UnhandledExceptionMiddlewareTests : TestsBase
     {
         private const int ResponseCode = 418;
+
+        public UnhandledExceptionMiddlewareTests(bool webApplication)
+            : base(webApplication)
+        {
+        }
 
         [Test]
         public async Task Invoke_ShouldCatch_UnhandledExceptions()
@@ -24,5 +28,12 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
         {
             builder.SetupUnhandledExceptions(s => s.ErrorResponseCode = ResponseCode);
         }
+
+#if NET6_0
+        protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
+        {
+            builder.SetupUnhandledExceptions(s => s.ErrorResponseCode = ResponseCode);
+        }
+#endif
     }
 }

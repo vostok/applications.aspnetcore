@@ -110,7 +110,7 @@ namespace Vostok.Applications.AspNetCore.Diagnostics
                         return MicrosoftHealthStatus.Unhealthy;
                 }
             }
-        } 
+        }
 
         #endregion
     }

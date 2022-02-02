@@ -2,12 +2,13 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Commons.Helpers;
 using Vostok.Commons.Time;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
 
-namespace Vostok.Applications.AspNetCore.Helpers
+namespace Vostok.Applications.AspNetCore.HostBuilders
 {
     internal class GenericHostFactory
     {

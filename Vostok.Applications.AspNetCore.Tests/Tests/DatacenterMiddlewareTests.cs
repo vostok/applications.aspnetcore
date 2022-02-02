@@ -12,16 +12,21 @@ using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    [TestFixture(true)]
-    [TestFixture(false)]
-    public class DatacenterMiddlewareTests : ControllerTestBase
+    [TestFixture(false, false)]
+    [TestFixture(false, true)]
+#if NET6_0
+    [TestFixture(true, false)]
+    [TestFixture(true, true)]
+#endif
+    public class DatacenterMiddlewareTests : TestsBase
     {
         private const int RejectionCode = 503;
 
         private readonly bool rejectResponses;
         private string[] activeDataCenters = {"local"};
 
-        public DatacenterMiddlewareTests(bool rejectResponses)
+        public DatacenterMiddlewareTests(bool webApplication, bool rejectResponses)
+            : base(webApplication)
         {
             this.rejectResponses = rejectResponses;
         }
@@ -53,14 +58,22 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
 
         protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
-            void ConfigureDatacenter(DatacenterAwarenessSettings settings)
-            {
-                settings.RejectRequestsWhenDatacenterIsInactive = rejectResponses;
-                settings.RejectionResponseCode = RejectionCode;
-            }
-
             builder.SetupDatacenterAwareness(ConfigureDatacenter);
             builder.OverrideSingleton(CreateDataCentersMock());
+        }
+
+#if NET6_0
+        protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
+        {
+            builder.SetupDatacenterAwareness(ConfigureDatacenter);
+            builder.OverrideSingleton(CreateDataCentersMock());
+        }
+#endif
+
+        private void ConfigureDatacenter(DatacenterAwarenessSettings settings)
+        {
+            settings.RejectRequestsWhenDatacenterIsInactive = rejectResponses;
+            settings.RejectionResponseCode = RejectionCode;
         }
 
         private IDatacenters CreateDataCentersMock()

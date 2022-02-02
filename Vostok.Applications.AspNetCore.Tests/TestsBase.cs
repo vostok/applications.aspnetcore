@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Clusterclient.Core;
@@ -10,20 +11,48 @@ using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Setup;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console;
+using Vostok.Logging.File;
+using Vostok.Logging.File.Configuration;
 
 namespace Vostok.Applications.AspNetCore.Tests
 {
-    public class ControllerTestBase
+    [TestFixture(false)]
+#if NET6_0
+    [TestFixture(true)]
+#endif
+    public abstract class TestsBase
     {
+        private readonly IVostokApplication application;
         private VostokHost testHost;
+
+        protected TestsBase(bool webApplication)
+        {
+            application = webApplication
+#if NET6_0
+                ? new TestVostokAspNetCoreWebApplication(SetupGlobal)
+#else
+                ? throw new Exception("Should not be called")
+#endif
+                : new TestVostokAspNetCoreApplication(SetupGlobal);
+        }
+
+        protected TestsBase(IVostokApplication application)
+        {
+            this.application = application;
+        }
 
         [OneTimeSetUp]
         public async Task OneTimeSetup()
         {
-            Log = new SynchronousConsoleLog();
+            Log = new CompositeLog(
+                new SynchronousConsoleLog(),
+                new FileLog(new FileLogSettings
+                {
+                    FileOpenMode = FileOpenMode.Rewrite
+                }));
 
             var serverPort = FreeTcpPortFinder.GetFreePort();
-            
+
             Client = CreateClusterClient(serverPort);
 
             testHost = await StartHost(serverPort);
@@ -41,10 +70,16 @@ namespace Vostok.Applications.AspNetCore.Tests
             // use this method to override host configuration in each test fixture
         }
 
+#if NET6_0
+        protected virtual void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
+        {
+            // use this method to override host configuration in each test fixture
+        }
+#endif
+
         private async Task<VostokHost> StartHost(int port)
         {
-            var app = new TestVostokAspNetCoreApplication(SetupGlobal);
-            var hostSettings = new VostokHostSettings(app, b => SetupEnvironment(b, port));
+            var hostSettings = new VostokHostSettings(application, b => SetupEnvironment(b, port));
             var host = new VostokHost(hostSettings);
 
             await host.StartAsync();

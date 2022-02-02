@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace Vostok.Applications.AspNetCore.Helpers
+namespace Vostok.Applications.AspNetCore.HostBuilders
 {
     internal class GenericHostEmptyLifetime : IHostLifetime
     {

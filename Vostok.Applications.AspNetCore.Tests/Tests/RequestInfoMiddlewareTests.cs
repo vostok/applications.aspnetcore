@@ -8,9 +8,13 @@ using Vostok.Clusterclient.Core.Model;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
-    [TestFixture]
-    public class RequestInfoMiddlewareTestBase : ControllerTestBase
+    public class RequestInfoMiddlewareTests : TestsBase
     {
+        public RequestInfoMiddlewareTests(bool webApplication)
+            : base(webApplication)
+        {
+        }
+
         [Test]
         public async Task Invoke_ShouldFillRequestInfo()
         {

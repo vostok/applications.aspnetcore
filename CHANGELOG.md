@@ -1,3 +1,7 @@
+## 0.3.0 (02-02-2022):
+
+Added new `VostokAspNetCoreWebApplication` template based on .NET 6 Minimal API.
+
 ## 0.2.18 (06-12-2021):
 
 Added `net6.0` target.

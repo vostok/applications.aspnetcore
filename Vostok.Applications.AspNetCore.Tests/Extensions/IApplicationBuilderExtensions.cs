@@ -9,5 +9,13 @@ namespace Vostok.Applications.AspNetCore.Tests.Extensions
         {
             builder.SetupWebHost(s => s.ConfigureServices((_, c) => c.OverrideSingleton(impl)));
         }
+
+#if NET6_0
+        public static void OverrideSingleton<TService>(this IVostokAspNetCoreWebApplicationBuilder builder, TService impl)
+            where TService : class
+        {
+            builder.SetupWebApplication(b => b.Services.OverrideSingleton(impl));
+        }
+#endif
     }
 }

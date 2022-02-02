@@ -9,7 +9,7 @@ using Vostok.Logging.Abstractions;
 
 // ReSharper disable MethodSupportsCancellation
 
-namespace Vostok.Applications.AspNetCore.Helpers
+namespace Vostok.Applications.AspNetCore.HostBuilders
 {
     internal class GenericHostManager : IDisposable
     {

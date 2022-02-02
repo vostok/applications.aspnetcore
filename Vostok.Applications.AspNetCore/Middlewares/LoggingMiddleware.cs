@@ -46,7 +46,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 LogRequest(context.Request);
 
             var watch = Stopwatch.StartNew();
-           
+
             if (options.LogResponseCompletion)
             {
                 var tracingContext = FlowingContext.Globals.Get<TraceContext>();
@@ -136,11 +136,12 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         }
 
         private void LogResponseCompleted(TimeSpan elapsed)
-            => log.Info("Response has completed in {ElapsedTime}.", new
-            {
-                ElapsedTime = elapsed.ToPrettyString(),
-                ElapsedTimeMs = elapsed.TotalMilliseconds,
-            });
+            => log.Info("Response has completed in {ElapsedTime}.",
+                new
+                {
+                    ElapsedTime = elapsed.ToPrettyString(),
+                    ElapsedTimeMs = elapsed.TotalMilliseconds,
+                });
 
         private static void AppendSegment(StringBuilder builder, object[] parameters, string templateSegment, object parameter, ref int parameterIndex)
         {

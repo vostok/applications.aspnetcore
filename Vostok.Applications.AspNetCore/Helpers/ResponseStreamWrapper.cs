@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+
 #pragma warning disable 618
 #pragma warning disable 672
 #pragma warning disable SYSLIB0010
@@ -61,7 +62,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
             }
         }
 
-        #if NETCOREAPP
+#if NETCOREAPP
         public override ValueTask WriteAsync(ReadOnlyMemory<byte> source, CancellationToken cancellationToken = default)
         {
             if (source.Length <= maxWriteSize)
@@ -81,7 +82,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
                 source = source.Slice(bytesToWrite);
             }
         }
-        #endif
+#endif
 
         #region Delegating members
 
@@ -125,10 +126,10 @@ namespace Vostok.Applications.AspNetCore.Helpers
         public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
             => stream.ReadAsync(buffer, offset, count, cancellationToken);
 
-        #if NETCOREAPP
+#if NETCOREAPP
         public override ValueTask<int> ReadAsync(Memory<byte> destination, CancellationToken cancellationToken = default)
             => stream.ReadAsync(destination, cancellationToken);
-        #endif
+#endif
 
         public override int ReadByte()
             => stream.ReadByte();

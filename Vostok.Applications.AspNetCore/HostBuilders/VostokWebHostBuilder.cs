@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Applications.AspNetCore.StartupFilters;
 using Vostok.Commons.Helpers;
@@ -12,29 +13,31 @@ using Vostok.ServiceDiscovery.Abstractions;
 
 // ReSharper disable PartialTypeWithSinglePart
 
-namespace Vostok.Applications.AspNetCore.Builders
+namespace Vostok.Applications.AspNetCore.HostBuilders
 {
-    internal partial class VostokWebHostBuilder<TStartup>
-        where TStartup : class
+    internal partial class VostokWebHostBuilder
     {
         private readonly IVostokHostingEnvironment environment;
         private readonly VostokKestrelBuilder kestrelBuilder;
         private readonly VostokMiddlewaresBuilder middlewaresBuilder;
         private readonly List<IDisposable> disposables;
+        private readonly Type startupType;
 
         private readonly AtomicBoolean webHostEnabled;
         private readonly Customization<IWebHostBuilder> webHostCustomization;
 
         public VostokWebHostBuilder(
-            IVostokHostingEnvironment environment, 
-            VostokKestrelBuilder kestrelBuilder, 
+            IVostokHostingEnvironment environment,
+            VostokKestrelBuilder kestrelBuilder,
             VostokMiddlewaresBuilder middlewaresBuilder,
-            List<IDisposable> disposables)
+            List<IDisposable> disposables,
+            Type startupType)
         {
             this.environment = environment;
             this.kestrelBuilder = kestrelBuilder;
             this.middlewaresBuilder = middlewaresBuilder;
             this.disposables = disposables;
+            this.startupType = startupType;
 
             webHostEnabled = true;
             webHostCustomization = new Customization<IWebHostBuilder>();
@@ -65,8 +68,8 @@ namespace Vostok.Applications.AspNetCore.Builders
             webHostBuilder.UseSockets();
             webHostBuilder.UseShutdownTimeout(environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
 
-            if (typeof(TStartup) != typeof(EmptyStartup))
-                webHostBuilder.UseStartup<TStartup>();
+            if (startupType != null && startupType != typeof(EmptyStartup))
+                webHostBuilder.UseStartup(startupType);
 
             webHostCustomization.Customize(webHostBuilder);
 

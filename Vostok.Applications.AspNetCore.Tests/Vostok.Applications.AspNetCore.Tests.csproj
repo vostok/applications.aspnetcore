@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="..\..\vostok.devtools\library-common-props\Test-Project.props" />
-    <Import Project="..\..\vostok.devtools\git-commit-to-assembly-title\Vostok.Tools.GitCommit2AssemblyTitle.props" />
+    <Import Project="..\..\vostok.devtools\library-common-props\Test-Project.props"/>
+    <Import Project="..\..\vostok.devtools\git-commit-to-assembly-title\Vostok.Tools.GitCommit2AssemblyTitle.props"/>
 
     <PropertyGroup>
         <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;net48</TargetFrameworks>
@@ -9,30 +9,30 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentAssertions" Version="5.10.3" />
-        <PackageReference Include="NSubstitute" Version="4.2.1" />
+        <PackageReference Include="FluentAssertions" Version="5.10.3"/>
+        <PackageReference Include="NSubstitute" Version="4.2.1"/>
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.0"/>
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.0"/>
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.2"/>
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-        <PackageReference Include="Microsoft.AspNetCore" Version="2.1.7" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.3" />
+        <PackageReference Include="Microsoft.AspNetCore" Version="2.1.7"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.3"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Vostok.Applications.AspNetCore\Vostok.Applications.AspNetCore.csproj" />
+        <ProjectReference Include="..\Vostok.Applications.AspNetCore\Vostok.Applications.AspNetCore.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Network\FreeTcpPortFinder.cs" Link="Commons\FreeTcpPortFinder.cs" />
+        <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Network\FreeTcpPortFinder.cs" Link="Commons\FreeTcpPortFinder.cs"/>
     </ItemGroup>
 
     <ItemGroup>

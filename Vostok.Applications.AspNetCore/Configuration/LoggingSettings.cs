@@ -23,7 +23,7 @@ namespace Vostok.Applications.AspNetCore.Configuration
         /// Determines whether to log outbound responses.
         /// </summary>
         public bool LogResponses { get; set; } = true;
-        
+
         /// <summary>
         /// Determines whether to log full response completion time.
         /// </summary>
