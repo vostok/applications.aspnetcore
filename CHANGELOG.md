@@ -1,3 +1,7 @@
+## 0.3.1 (04-02-2022):
+
+Use `MergedConfigurationSource` instead of combining `ConfigurationSource` and `SecretConfigurationSource`.
+
 ## 0.3.0 (02-02-2022):
 
 Added new `VostokAspNetCoreWebApplication` template based on .NET 6 Minimal API.
