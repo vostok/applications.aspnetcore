@@ -43,7 +43,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                            spanBuilder.CurrentSpan.ParentSpanId ?? spanBuilder.CurrentSpan.SpanId) ?? string.Empty))
             {
                 spanBuilder.SetClientDetails(requestInfo?.ClientApplicationIdentity, requestInfo?.ClientIpAddress);
-                spanBuilder.SetRequestDetails(context.Request.Path, context.Request.Method, context.Request.ContentLength);
+                spanBuilder.SetRequestDetails(GetUrl(context.Request.Path), context.Request.Method, context.Request.ContentLength);
 
                 SetResponseHeaderIfRequired(context, spanBuilder);
 
@@ -65,5 +65,10 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
             context.Response.Headers[options.ResponseTraceIdHeader] = spanBuilder.CurrentSpan?.TraceId.ToString("N");
         }
+
+        private string GetUrl(string path) =>
+            options.BaseUrl == null ?
+                path :
+                new Uri(options.BaseUrl, path).AbsoluteUri;
     }
 }
