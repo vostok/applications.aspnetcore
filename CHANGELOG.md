@@ -1,3 +1,7 @@
+## 0.3.2 (08-02-2022):
+
+Added `BaseUrl` setting to `TracingMiddleware`. Set default of `IReplicaInfo.Url`.
+
 ## 0.3.1 (04-02-2022):
 
 Use `MergedConfigurationSource` instead of combining `ConfigurationSource` and `SecretConfigurationSource`.
