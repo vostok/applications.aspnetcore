@@ -52,9 +52,7 @@ namespace Vostok.Applications.AspNetCore.Tests
                     FileOpenMode = FileOpenMode.Rewrite
                 }));
 
-            serverPort = GetPort();
-
-            Client = CreateClusterClient(serverPort);
+            Client = CreateClusterClient(GetPort());
 
             testHost = await StartHost();
         }
@@ -80,7 +78,7 @@ namespace Vostok.Applications.AspNetCore.Tests
 
         private async Task<VostokHost> StartHost()
         {
-            var hostSettings = new VostokHostSettings(application, b => SetupEnvironment(b, serverPort));
+            var hostSettings = new VostokHostSettings(application, b => SetupEnvironment(b, GetPort()));
             var host = new VostokHost(hostSettings);
 
             await host.StartAsync();
