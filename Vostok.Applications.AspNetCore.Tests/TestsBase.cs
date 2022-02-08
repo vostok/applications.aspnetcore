@@ -22,6 +22,7 @@ namespace Vostok.Applications.AspNetCore.Tests
 #endif
     public abstract class TestsBase
     {
+        private int serverPort;
         private readonly IVostokApplication application;
         private VostokHost testHost;
 
@@ -51,11 +52,11 @@ namespace Vostok.Applications.AspNetCore.Tests
                     FileOpenMode = FileOpenMode.Rewrite
                 }));
 
-            var serverPort = FreeTcpPortFinder.GetFreePort();
+            serverPort = GetPort();
 
             Client = CreateClusterClient(serverPort);
 
-            testHost = await StartHost(serverPort);
+            testHost = await StartHost();
         }
 
         [OneTimeTearDown]
@@ -77,9 +78,9 @@ namespace Vostok.Applications.AspNetCore.Tests
         }
 #endif
 
-        private async Task<VostokHost> StartHost(int port)
+        private async Task<VostokHost> StartHost()
         {
-            var hostSettings = new VostokHostSettings(application, b => SetupEnvironment(b, port));
+            var hostSettings = new VostokHostSettings(application, b => SetupEnvironment(b, serverPort));
             var host = new VostokHost(hostSettings);
 
             await host.StartAsync();
@@ -99,6 +100,19 @@ namespace Vostok.Applications.AspNetCore.Tests
                 .SetupLog(s => s.AddLog(Log));
 
             builder.DisableClusterConfig();
+
+            SetupVostokEnvironment(builder);
+        }
+
+        protected virtual void SetupVostokEnvironment(IVostokHostingEnvironmentBuilder builder)
+        {
+        }
+
+        protected int GetPort()
+        {
+            return serverPort == 0 
+                ? serverPort = FreeTcpPortFinder.GetFreePort() 
+                : serverPort;
         }
 
         private IClusterClient CreateClusterClient(int port)

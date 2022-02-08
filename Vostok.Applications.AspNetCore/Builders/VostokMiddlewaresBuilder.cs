@@ -10,6 +10,7 @@ using Vostok.Commons.Helpers;
 using Vostok.Commons.Threading;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Diagnostics;
+using Vostok.ServiceDiscovery.Abstractions;
 using Vostok.Throttling;
 
 namespace Vostok.Applications.AspNetCore.Builders
@@ -40,6 +41,8 @@ namespace Vostok.Applications.AspNetCore.Builders
             this.environment = environment;
             this.disposables = disposables;
             this.throttlingBuilder = throttlingBuilder;
+
+            SetDefaultCustomizations();
         }
 
         public void Disable()
@@ -137,6 +140,12 @@ namespace Vostok.Applications.AspNetCore.Builders
 
                 middlewares.Add(typeof(TMiddleware));
             }
+        }
+
+        private void SetDefaultCustomizations()
+        {
+            if (environment.ServiceBeacon.ReplicaInfo.TryGetUrl(out var url))
+                Customize(settings => settings.BaseUrl = url);
         }
 
         private void RegisterThrottlingProvider(IServiceCollection services, DiagnosticFeaturesSettings settings)

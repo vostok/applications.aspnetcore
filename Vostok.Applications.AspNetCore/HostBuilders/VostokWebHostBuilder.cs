@@ -81,7 +81,6 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
             if (!environment.ServiceBeacon.ReplicaInfo.TryGetUrl(out var url))
                 throw new Exception("Port or url should be configured in ServiceBeacon using VostokHostingEnvironmentSetup.");
 
-            middlewaresBuilder.Customize(settings => settings.BaseUrl = url);
             webHostBuilder.UseUrls($"{url.Scheme}://*:{url.Port}/");
         }
 
