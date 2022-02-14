@@ -1,3 +1,7 @@
+## 0.3.3 (14-02-2022):
+
+Added virtual methods `WarmupAsync` and `WarmupServicesAsync` to `VostokNetCoreApplication`.
+
 ## 0.3.2 (08-02-2022):
 
 Added `BaseUrl` setting to `TracingMiddleware`. Set default of `IReplicaInfo.Url`.
