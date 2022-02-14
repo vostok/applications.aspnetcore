@@ -8,6 +8,7 @@ using Vostok.Applications.AspNetCore.HostBuilders;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Helpers;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Context;
 
 namespace Vostok.Applications.AspNetCore
 {
@@ -32,8 +33,22 @@ namespace Vostok.Applications.AspNetCore
 
             manager = new GenericHostManager(hostBuilder.CreateHost(), log);
 
+            using (new OperationContextToken("Warmup"))
+                await WarmupServicesAsync(environment, manager.Services);
+
             await manager.StartHostAsync(environment.ShutdownToken, environment.HostExtensions.TryGet<IVostokHostShutdown>(out var shutdown) ? shutdown : null);
+
+            using (new OperationContextToken("Warmup"))
+                await WarmupAsync(environment, manager.Services);
         }
+
+        /// <inheritdoc cref="VostokAspNetCoreApplication.WarmupServicesAsync"/>
+        public virtual Task WarmupServicesAsync(IVostokHostingEnvironment environment, IServiceProvider serviceProvider) =>
+            Task.CompletedTask;
+        
+        /// <inheritdoc cref="VostokAspNetCoreApplication.WarmupAsync"/>
+        public virtual Task WarmupAsync(IVostokHostingEnvironment environment, IServiceProvider serviceProvider) =>
+            Task.CompletedTask;
 
         public Task RunAsync(IVostokHostingEnvironment environment) =>
             manager.RunHostAsync();
