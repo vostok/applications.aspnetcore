@@ -67,8 +67,8 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         }
 
         private string GetUrl(string path) =>
-            options.BaseUrl == null ?
+            options.BaseUrl == null || Uri.TryCreate(options.BaseUrl, path, out var created) ?
                 path :
-                new Uri(options.BaseUrl, path).AbsoluteUri;
+                created!.AbsoluteUri;
     }
 }

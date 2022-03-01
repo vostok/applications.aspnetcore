@@ -13,8 +13,8 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
     public class TracingMiddlewareTests : TestsBase
     {
-        private Uri customUri;
-        private StubSpanSender spanSender = new();
+        private readonly Uri customUri;
+        private readonly StubSpanSender spanSender = new();
 
         public TracingMiddlewareTests(bool webApplication)
             : base(webApplication)
