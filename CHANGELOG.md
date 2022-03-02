@@ -1,3 +1,7 @@
+## 0.3.4 (02-03-2022):
+
+Fixed a bug where `TracingMiddleware` could fail building an url when path is malicious.
+
 ## 0.3.3 (14-02-2022):
 
 Added virtual methods `WarmupAsync` and `WarmupServicesAsync` to `VostokNetCoreApplication`.
