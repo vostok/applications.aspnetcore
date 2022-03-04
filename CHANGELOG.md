@@ -1,3 +1,7 @@
+## 0.3.5 (04-03-2022):
+
+By default ignored only `Microsoft.AspNetCore*` scopes instead of `Microsoft*`.
+
 ## 0.3.4 (02-03-2022):
 
 Fixed a bug where `TracingMiddleware` could fail building an url when path is malicious.

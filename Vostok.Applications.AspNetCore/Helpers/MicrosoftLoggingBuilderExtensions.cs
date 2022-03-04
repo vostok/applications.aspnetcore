@@ -9,6 +9,9 @@ namespace Vostok.Applications.AspNetCore.Helpers
 {
     internal static class MicrosoftLoggingBuilderExtensions
     {
+        public static void AddDefaultLoggingSettings(this VostokLoggerProviderSettings settings) =>
+            settings.IgnoredScopePrefixes = new[] {"Microsoft.AspNetCore"};
+
         public static void AddVostokLogging(this ILoggingBuilder builder, IVostokHostingEnvironment environment, VostokLoggerProviderSettings settings)
         {
             builder.ClearProviders().AddProvider(new VostokLoggerProvider(environment.Log, settings));

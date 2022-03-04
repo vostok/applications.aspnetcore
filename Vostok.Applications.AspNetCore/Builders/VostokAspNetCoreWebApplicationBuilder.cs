@@ -27,7 +27,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             this.environment = environment;
 
             webApplicationFactory = new WebApplicationFactory(environment, application);
-            webApplicationFactory.SetupLogger(s => { s.IgnoredScopePrefixes = new[] {"Microsoft"}; });
+            webApplicationFactory.SetupLogger(s => s.AddDefaultLoggingSettings());
 
             kestrelBuilder = new VostokKestrelBuilder();
             throttlingBuilder = new VostokThrottlingBuilder(environment, disposables);
