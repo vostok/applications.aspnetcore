@@ -16,11 +16,10 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
         private readonly IVostokHostingEnvironment environment;
         private readonly IVostokApplication application;
 
+        private readonly Customization<WebApplicationOptions> webApplicationOptionsCustomization = new Customization<WebApplicationOptions>();
         private readonly Customization<WebApplicationBuilder> webApplicationBuilderCustomization = new Customization<WebApplicationBuilder>();
         private readonly Customization<WebApplication> webApplicationCustomization = new Customization<WebApplication>();
         private readonly Customization<VostokLoggerProviderSettings> loggerCustomization = new Customization<VostokLoggerProviderSettings>();
-
-        private Func<WebApplicationOptions> webApplicationOptionsFactory = () => new WebApplicationOptions();
 
         public WebApplicationFactory(IVostokHostingEnvironment environment, IVostokApplication application)
         {
@@ -39,8 +38,8 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
             return webApplication;
         }
 
-        public void SetupWebApplicationOptions(Func<WebApplicationOptions> factory)
-            => webApplicationOptionsFactory = factory ?? throw new ArgumentNullException(nameof(factory));
+        public void SetupWebApplicationOptions(Func<WebApplicationOptions, WebApplicationOptions> customization)
+            => webApplicationOptionsCustomization.AddCustomization(customization ?? throw new ArgumentNullException(nameof(customization)));
 
         public void SetupWebApplicationBuilder(Action<WebApplicationBuilder> setup)
             => webApplicationBuilderCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
@@ -53,9 +52,7 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
 
         private WebApplicationBuilder CreateBuilder()
         {
-            var webApplicationOptions = webApplicationOptionsFactory();
-
-            var builder = WebApplication.CreateBuilder(webApplicationOptions);
+            var builder = WebApplication.CreateBuilder(webApplicationOptionsCustomization.Customize(new WebApplicationOptions()));
 
             builder.Configuration.AddDefaultLoggingFilters();
 
