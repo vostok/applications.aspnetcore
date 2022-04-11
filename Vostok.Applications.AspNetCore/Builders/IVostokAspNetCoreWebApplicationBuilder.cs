@@ -10,11 +10,13 @@ namespace Vostok.Applications.AspNetCore.Builders
     /// <summary>
     /// <para>Builds the configuration of <see cref="VostokAspNetCoreWebApplication"/>.</para>
     /// <para>Can be customized in app's <see cref="VostokAspNetCoreWebApplication.SetupAsync"/> method.</para>
-    /// <para>Allows to configure <see cref="WebApplicationBuilder" />, <see cref="WebApplication" /> and customize built-in Vostok middlewares.</para>
+    /// <para>Allows to configure <see cref="WebApplicationOptions" />, <see cref="WebApplicationBuilder" />, <see cref="WebApplication" /> and customize built-in Vostok middlewares.</para>
     /// </summary>
     [PublicAPI]
     public interface IVostokAspNetCoreWebApplicationBuilder
     {
+        IVostokAspNetCoreWebApplicationBuilder CustomizeWebApplicationOptions([NotNull] Func<WebApplicationOptions, WebApplicationOptions> customization);
+
         IVostokAspNetCoreWebApplicationBuilder SetupWebApplication([NotNull] Action<WebApplicationBuilder> setup);
 
         IVostokAspNetCoreWebApplicationBuilder CustomizeWebApplication([NotNull] Action<WebApplication> customization);
