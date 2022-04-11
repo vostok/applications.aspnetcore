@@ -16,6 +16,7 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
         private readonly IVostokHostingEnvironment environment;
         private readonly IVostokApplication application;
 
+        private readonly Customization<WebApplicationOptions> webApplicationOptionsCustomization = new Customization<WebApplicationOptions>();
         private readonly Customization<WebApplicationBuilder> webApplicationBuilderCustomization = new Customization<WebApplicationBuilder>();
         private readonly Customization<WebApplication> webApplicationCustomization = new Customization<WebApplication>();
         private readonly Customization<VostokLoggerProviderSettings> loggerCustomization = new Customization<VostokLoggerProviderSettings>();
@@ -37,6 +38,9 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
             return webApplication;
         }
 
+        public void SetupWebApplicationOptions(Action<WebApplicationOptions> setup)
+            => webApplicationOptionsCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
+
         public void SetupWebApplicationBuilder(Action<WebApplicationBuilder> setup)
             => webApplicationBuilderCustomization.AddCustomization(setup ?? throw new ArgumentNullException(nameof(setup)));
 
@@ -48,7 +52,9 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
 
         private WebApplicationBuilder CreateBuilder()
         {
-            var builder = WebApplication.CreateBuilder();
+            var webApplicationOptions = webApplicationOptionsCustomization.Customize(new WebApplicationOptions());
+
+            var builder = WebApplication.CreateBuilder(webApplicationOptions);
 
             builder.Configuration.AddDefaultLoggingFilters();
 
