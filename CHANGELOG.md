@@ -1,5 +1,9 @@
 ## 0.3.5 (04-03-2022):
 
+Added a way to provide `WebApplicationOptions`.
+
+## 0.3.5 (04-03-2022):
+
 By default ignored only `Microsoft.AspNetCore*` scopes instead of `Microsoft*`.
 
 ## 0.3.4 (02-03-2022):
