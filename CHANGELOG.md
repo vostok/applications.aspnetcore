@@ -1,4 +1,4 @@
-## 0.3.5 (04-03-2022):
+## 0.3.6 (04-03-2022):
 
 Added a way to provide `WebApplicationOptions`.
 
