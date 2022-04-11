@@ -49,8 +49,8 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         #region SetupComponents
 
-        public IVostokAspNetCoreWebApplicationBuilder SetupWebApplicationOptions(Action<WebApplicationOptions> setup)
-            => Setup(() => webApplicationFactory.SetupWebApplicationOptions(setup));
+        public IVostokAspNetCoreWebApplicationBuilder CustomizeWebApplicationOptions(Func<WebApplicationOptions> factory)
+            => Setup(() => webApplicationFactory.SetupWebApplicationOptions(factory));
 
         public IVostokAspNetCoreWebApplicationBuilder SetupWebApplication(Action<WebApplicationBuilder> setup)
             => Setup(() => webApplicationFactory.SetupWebApplicationBuilder(setup));

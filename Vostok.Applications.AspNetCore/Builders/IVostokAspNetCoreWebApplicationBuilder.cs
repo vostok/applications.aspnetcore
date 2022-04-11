@@ -15,7 +15,7 @@ namespace Vostok.Applications.AspNetCore.Builders
     [PublicAPI]
     public interface IVostokAspNetCoreWebApplicationBuilder
     {
-        IVostokAspNetCoreWebApplicationBuilder SetupWebApplicationOptions(Action<WebApplicationOptions> setup);
+        IVostokAspNetCoreWebApplicationBuilder CustomizeWebApplicationOptions([NotNull] Func<WebApplicationOptions> factory);
 
         IVostokAspNetCoreWebApplicationBuilder SetupWebApplication([NotNull] Action<WebApplicationBuilder> setup);
 
