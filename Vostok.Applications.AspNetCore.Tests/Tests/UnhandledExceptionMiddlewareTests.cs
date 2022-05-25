@@ -29,7 +29,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             builder.SetupUnhandledExceptions(s => s.ErrorResponseCode = ResponseCode);
         }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
         protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             builder.SetupUnhandledExceptions(s => s.ErrorResponseCode = ResponseCode);

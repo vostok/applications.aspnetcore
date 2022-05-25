@@ -50,7 +50,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             builder.SetupDistributedContext(s => s.AdditionalActions.AddRange(CreateDistributedContextActions()));
         }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
         protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             builder.SetupDistributedContext(s => s.AdditionalActions.AddRange(CreateDistributedContextActions()));

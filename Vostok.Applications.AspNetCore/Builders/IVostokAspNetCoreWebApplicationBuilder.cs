@@ -1,4 +1,4 @@
-﻿#if NET6_0
+﻿#if NET6_0_OR_GREATER
 using System;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Builder;
@@ -10,7 +10,7 @@ namespace Vostok.Applications.AspNetCore.Builders
     /// <summary>
     /// <para>Builds the configuration of <see cref="VostokAspNetCoreWebApplication"/>.</para>
     /// <para>Can be customized in app's <see cref="VostokAspNetCoreWebApplication.SetupAsync"/> method.</para>
-    /// <para>Allows to configure <see cref="WebApplicationOptions" />, <see cref="WebApplicationBuilder" />, <see cref="WebApplication" /> and customize built-in Vostok middlewares.</para>
+    /// <para>Allows to configure <see cref="WebApplicationOptions" />, <see cref="WebApplicationBuilder" />, <see cref="WebApplication" /> and customize built-in Vostok middlewares.</para>
     /// </summary>
     [PublicAPI]
     public interface IVostokAspNetCoreWebApplicationBuilder

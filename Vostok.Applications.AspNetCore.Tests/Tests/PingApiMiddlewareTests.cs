@@ -59,7 +59,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             builder.SetupPingApi(ConfigurePingApi);
         }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
         protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             builder.SetupPingApi(ConfigurePingApi);

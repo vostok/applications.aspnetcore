@@ -1,4 +1,4 @@
-﻿#if NET6_0
+﻿#if NET6_0_OR_GREATER
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

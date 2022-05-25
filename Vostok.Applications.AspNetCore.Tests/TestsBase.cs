@@ -17,7 +17,7 @@ using Vostok.Logging.File.Configuration;
 namespace Vostok.Applications.AspNetCore.Tests
 {
     [TestFixture(false)]
-#if NET6_0
+#if NET6_0_OR_GREATER
     [TestFixture(true)]
 #endif
     public abstract class TestsBase
@@ -29,7 +29,7 @@ namespace Vostok.Applications.AspNetCore.Tests
         protected TestsBase(bool webApplication)
         {
             application = webApplication
-#if NET6_0
+#if NET6_0_OR_GREATER
                 ? new TestVostokAspNetCoreWebApplication(SetupGlobal)
 #else
                 ? throw new Exception("Should not be called")
@@ -69,7 +69,7 @@ namespace Vostok.Applications.AspNetCore.Tests
             // use this method to override host configuration in each test fixture
         }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
         protected virtual void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             // use this method to override host configuration in each test fixture

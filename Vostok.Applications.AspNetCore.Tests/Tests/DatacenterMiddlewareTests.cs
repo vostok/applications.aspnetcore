@@ -14,7 +14,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
     [TestFixture(false, false)]
     [TestFixture(false, true)]
-#if NET6_0
+#if NET6_0_OR_GREATER
     [TestFixture(true, false)]
     [TestFixture(true, true)]
 #endif
@@ -62,7 +62,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             builder.OverrideSingleton(CreateDataCentersMock());
         }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
         protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             builder.SetupDatacenterAwareness(ConfigureDatacenter);

@@ -71,7 +71,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
 #endif
         }
 
-#if NET6_0
+#if NET6_0_OR_GREATER
         protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment env)
         {
             environment = env;
