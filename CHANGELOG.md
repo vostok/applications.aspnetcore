@@ -1,3 +1,7 @@
+## 0.3.7 (08-06-2022):
+
+Use `ConfigureWebHostInternal` for `WebApplicationBuilder` instead of Kestrel configuration.
+
 ## 0.3.6 (04-03-2022):
 
 Added a way to provide `WebApplicationOptions`.
