@@ -47,6 +47,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
             AddSettingsProviders(services, RequirementDetector.GetRequiredConfigurations(application).Select(r => r.Type), environment.ConfigurationProvider);
             AddSettingsProviders(services, RequirementDetector.GetRequiredSecretConfigurations(application).Select(r => r.Type), environment.SecretConfigurationProvider);
+            AddSettingsProviders(services, RequirementDetector.GetRequiredMergedConfigurations(application).Select(r => r.Type), environment.ConfigurationProvider);
 
             services.AddScoped(_ => FlowingContext.Globals.Get<IRequestInfo>());
 
