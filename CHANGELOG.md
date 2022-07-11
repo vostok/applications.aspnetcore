@@ -1,3 +1,7 @@
+## 0.3.8 (11-07-2022):
+
+Fixed bug with non-registered `RequiresMergedConfigurationAttribute` as settings provider.
+
 ## 0.3.7 (08-06-2022):
 
 Use `ConfigureWebHostInternal` for `WebApplicationBuilder` instead of Kestrel configuration.
