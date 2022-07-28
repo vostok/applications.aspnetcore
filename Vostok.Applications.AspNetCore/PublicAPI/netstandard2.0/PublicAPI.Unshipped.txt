@@ -1,4 +1,0 @@
-Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.SetupHttpContextTweaks(System.Action<Vostok.Applications.AspNetCore.Configuration.HttpContextTweakSettings> setup) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
-Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder
-Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder.Metrics.get -> Vostok.Throttling.Metrics.ThrottlingMetricsOptions
-Vostok.Applications.AspNetCore.Middlewares.DatacenterAwarenessMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext context) -> System.Threading.Tasks.Task
