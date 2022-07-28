@@ -23,6 +23,10 @@
         <IsPackable>true</IsPackable>
     </PropertyGroup>
     <ItemGroup>
+        <AdditionalFiles Include="PublicAPI/$(TargetFramework)/PublicAPI.Shipped.txt" />
+        <AdditionalFiles Include="PublicAPI/$(TargetFramework)/PublicAPI.Unshipped.txt" />
+    </ItemGroup>
+    <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
         <PackageReference Include="Microsoft.AspNetCore" Version="2.1.7" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     </ItemGroup>
