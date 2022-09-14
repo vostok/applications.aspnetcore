@@ -1,0 +1,4 @@
+Vostok.Applications.AspNetCore.Configuration.TracingSettings.SetAdditionalRequestDetails.get -> System.Action<Vostok.Tracing.Extensions.Http.IHttpRequestServerSpanBuilder, Microsoft.AspNetCore.Http.HttpContext>
+Vostok.Applications.AspNetCore.Configuration.TracingSettings.SetAdditionalRequestDetails.set -> void
+Vostok.Applications.AspNetCore.Configuration.TracingSettings.SetAdditionalResponseDetails.get -> System.Action<Vostok.Tracing.Extensions.Http.IHttpRequestServerSpanBuilder, Microsoft.AspNetCore.Http.HttpContext>
+Vostok.Applications.AspNetCore.Configuration.TracingSettings.SetAdditionalResponseDetails.set -> void
