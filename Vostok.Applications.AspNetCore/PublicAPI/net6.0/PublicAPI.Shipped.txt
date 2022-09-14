@@ -1,4 +1,4 @@
-abstract Vostok.Applications.AspNetCore.VostokAspNetCoreWebApplication.SetupAsync(Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreWebApplicationBuilder builder, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> System.Threading.Tasks.Task
+﻿abstract Vostok.Applications.AspNetCore.VostokAspNetCoreWebApplication.SetupAsync(Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreWebApplicationBuilder builder, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> System.Threading.Tasks.Task
 abstract Vostok.Applications.AspNetCore.VostokNetCoreApplication.Setup(Vostok.Applications.AspNetCore.Builders.IVostokNetCoreApplicationBuilder builder, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> void
 static Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilderExtensionsCore.AddHostedService<THostedService>(this Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder builder) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 static Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilderExtensionsCore.AddHostedServiceFromApplication<TApplication>(this Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder builder) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
@@ -230,6 +230,10 @@ Vostok.Applications.AspNetCore.Configuration.TracingSettings.BaseUrl.get -> Syst
 Vostok.Applications.AspNetCore.Configuration.TracingSettings.BaseUrl.set -> void
 Vostok.Applications.AspNetCore.Configuration.TracingSettings.ResponseTraceIdHeader.get -> string
 Vostok.Applications.AspNetCore.Configuration.TracingSettings.ResponseTraceIdHeader.set -> void
+Vostok.Applications.AspNetCore.Configuration.TracingSettings.SetAdditionalRequestDetails.get -> System.Action<Vostok.Tracing.Extensions.Http.IHttpRequestServerSpanBuilder, Microsoft.AspNetCore.Http.HttpContext>
+Vostok.Applications.AspNetCore.Configuration.TracingSettings.SetAdditionalRequestDetails.set -> void
+Vostok.Applications.AspNetCore.Configuration.TracingSettings.SetAdditionalResponseDetails.get -> System.Action<Vostok.Tracing.Extensions.Http.IHttpRequestServerSpanBuilder, Microsoft.AspNetCore.Http.HttpContext>
+Vostok.Applications.AspNetCore.Configuration.TracingSettings.SetAdditionalResponseDetails.set -> void
 Vostok.Applications.AspNetCore.Configuration.TracingSettings.TracingSettings() -> void
 Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings
 Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings.ErrorResponseCode.get -> int

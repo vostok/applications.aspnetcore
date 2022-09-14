@@ -1,4 +1,4 @@
-static Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilderExtensions.DisableMetrics(this Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder builder) -> Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder
+﻿static Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilderExtensions.DisableMetrics(this Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder builder) -> Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder
 static Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilderExtensions.DisableThrottling(this Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder builder) -> Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder
 static Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilderExtensions.UseConsumerQuota(this Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder builder, System.Func<Vostok.Throttling.Quotas.PropertyQuotaOptions> quotaOptionsProvider) -> Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder
 static Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilderExtensions.UseCustomPropertyQuota(this Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder builder, string propertyName, System.Func<Microsoft.AspNetCore.Http.HttpContext, string> propertyValueProvider, System.Func<Vostok.Throttling.Quotas.PropertyQuotaOptions> quotaOptionsProvider) -> Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder
@@ -48,6 +48,7 @@ Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.Setu
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.SetupDiagnosticApi(System.Action<Vostok.Applications.AspNetCore.Configuration.DiagnosticApiSettings> setup) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.SetupDiagnosticFeatures(System.Action<Vostok.Applications.AspNetCore.Configuration.DiagnosticFeaturesSettings> setup) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.SetupDistributedContext(System.Action<Vostok.Applications.AspNetCore.Configuration.DistributedContextSettings> setup) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
+Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.SetupHttpContextTweaks(System.Action<Vostok.Applications.AspNetCore.Configuration.HttpContextTweakSettings> setup) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.SetupKestrel(System.Action<Vostok.Applications.AspNetCore.Configuration.KestrelSettings> setup) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.SetupLogging(System.Action<Vostok.Applications.AspNetCore.Configuration.LoggingSettings> setup) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.SetupMicrosoftLog(System.Action<Vostok.Logging.Microsoft.VostokLoggerProviderSettings> setup) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
@@ -57,7 +58,9 @@ Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.Setu
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.SetupTracing(System.Action<Vostok.Applications.AspNetCore.Configuration.TracingSettings> setup) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.SetupUnhandledExceptions(System.Action<Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings> setup) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.SetupWebHost(System.Action<Microsoft.AspNetCore.Hosting.IWebHostBuilder> setup) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
+Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder.CustomizeMiddleware(System.Action<Vostok.Applications.AspNetCore.Configuration.ThrottlingSettings> customization) -> Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder
+Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder.Metrics.get -> Vostok.Throttling.Metrics.ThrottlingMetricsOptions
 Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder.Metrics.set -> void
 Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder.UseCustomQuota(Vostok.Throttling.Quotas.IThrottlingQuota quota) -> Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder.UseEssentials(System.Func<Vostok.Throttling.Config.ThrottlingEssentials> essentialsProvider) -> Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder
@@ -173,6 +176,10 @@ Vostok.Applications.AspNetCore.Configuration.TracingSettings.BaseUrl.get -> Syst
 Vostok.Applications.AspNetCore.Configuration.TracingSettings.BaseUrl.set -> void
 Vostok.Applications.AspNetCore.Configuration.TracingSettings.ResponseTraceIdHeader.get -> string
 Vostok.Applications.AspNetCore.Configuration.TracingSettings.ResponseTraceIdHeader.set -> void
+Vostok.Applications.AspNetCore.Configuration.TracingSettings.SetAdditionalRequestDetails.get -> System.Action<Vostok.Tracing.Extensions.Http.IHttpRequestServerSpanBuilder, Microsoft.AspNetCore.Http.HttpContext>
+Vostok.Applications.AspNetCore.Configuration.TracingSettings.SetAdditionalRequestDetails.set -> void
+Vostok.Applications.AspNetCore.Configuration.TracingSettings.SetAdditionalResponseDetails.get -> System.Action<Vostok.Tracing.Extensions.Http.IHttpRequestServerSpanBuilder, Microsoft.AspNetCore.Http.HttpContext>
+Vostok.Applications.AspNetCore.Configuration.TracingSettings.SetAdditionalResponseDetails.set -> void
 Vostok.Applications.AspNetCore.Configuration.TracingSettings.TracingSettings() -> void
 Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings
 Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings.ErrorResponseCode.get -> int
@@ -186,6 +193,7 @@ Vostok.Applications.AspNetCore.ICompositeApplicationBuilderExtensions
 Vostok.Applications.AspNetCore.IServiceCollectionExtensions
 Vostok.Applications.AspNetCore.Middlewares.DatacenterAwarenessMiddleware
 Vostok.Applications.AspNetCore.Middlewares.DatacenterAwarenessMiddleware.DatacenterAwarenessMiddleware(Microsoft.AspNetCore.Http.RequestDelegate next, Microsoft.Extensions.Options.IOptions<Vostok.Applications.AspNetCore.Configuration.DatacenterAwarenessSettings> options, Vostok.Datacenters.IDatacenters datacenters, Vostok.Logging.Abstractions.ILog log) -> void
+Vostok.Applications.AspNetCore.Middlewares.DatacenterAwarenessMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext context) -> System.Threading.Tasks.Task
 Vostok.Applications.AspNetCore.Middlewares.DiagnosticApiMiddleware
 Vostok.Applications.AspNetCore.Middlewares.DiagnosticApiMiddleware.DiagnosticApiMiddleware(Microsoft.AspNetCore.Http.RequestDelegate next, Vostok.Hosting.Abstractions.IVostokHostExtensions extensions, Microsoft.Extensions.Options.IOptions<Vostok.Applications.AspNetCore.Configuration.DiagnosticApiSettings> options, Vostok.Logging.Abstractions.ILog log) -> void
 Vostok.Applications.AspNetCore.Middlewares.DiagnosticApiMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext context) -> System.Threading.Tasks.Task
@@ -228,7 +236,3 @@ Vostok.Applications.AspNetCore.VostokAspNetCoreApplication<TStartup>
 Vostok.Applications.AspNetCore.VostokAspNetCoreApplication<TStartup>.Dispose() -> void
 Vostok.Applications.AspNetCore.VostokAspNetCoreApplication<TStartup>.RunAsync(Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> System.Threading.Tasks.Task
 Vostok.Applications.AspNetCore.VostokAspNetCoreApplication<TStartup>.VostokAspNetCoreApplication() -> void
-Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.SetupHttpContextTweaks(System.Action<Vostok.Applications.AspNetCore.Configuration.HttpContextTweakSettings> setup) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
-Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder
-Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder.Metrics.get -> Vostok.Throttling.Metrics.ThrottlingMetricsOptions
-Vostok.Applications.AspNetCore.Middlewares.DatacenterAwarenessMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext context) -> System.Threading.Tasks.Task
