@@ -1,3 +1,7 @@
+## 0.3.9 (14-09-2022):
+
+Added a way to provide additional annotations based on HttpContext.
+
 ## 0.3.8 (11-07-2022):
 
 Fixed bug with non-registered `RequiresMergedConfigurationAttribute` as settings provider.

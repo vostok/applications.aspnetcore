@@ -44,6 +44,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             {
                 spanBuilder.SetClientDetails(requestInfo?.ClientApplicationIdentity, requestInfo?.ClientIpAddress);
                 spanBuilder.SetRequestDetails(GetUrl(context.Request.Path), context.Request.Method, context.Request.ContentLength);
+                options.SetAdditionalRequestDetails?.Invoke(spanBuilder, context);
 
                 SetResponseHeaderIfRequired(context, spanBuilder);
 
@@ -52,6 +53,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 SetResponseHeaderIfRequired(context, spanBuilder);
 
                 spanBuilder.SetResponseDetails(context.Response.StatusCode, context.Response.ContentLength);
+                options.SetAdditionalResponseDetails?.Invoke(spanBuilder, context);
             }
         }
 
