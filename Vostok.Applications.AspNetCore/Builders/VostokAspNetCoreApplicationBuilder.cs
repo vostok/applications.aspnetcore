@@ -23,10 +23,10 @@ namespace Vostok.Applications.AspNetCore.Builders
         where TStartup : class
     {
         private readonly IVostokHostingEnvironment environment;
-        private readonly VostokKestrelBuilder kestrelBuilder;
-        private readonly VostokThrottlingBuilder throttlingBuilder;
-        private readonly VostokMiddlewaresBuilder middlewaresBuilder;
-        private readonly VostokWebHostBuilder webHostBuilder;
+        private readonly IVostokKestrelBuilder kestrelBuilder;
+        private readonly IVostokThrottlingBuilder throttlingBuilder;
+        private readonly IVostokMiddlewaresBuilder middlewaresBuilder;
+        private readonly IVostokWebHostBuilder webHostBuilder;
         private readonly HostFactory hostFactory;
 
         public VostokAspNetCoreApplicationBuilder(IVostokHostingEnvironment environment, IVostokApplication application, List<IDisposable> disposables)
@@ -36,10 +36,8 @@ namespace Vostok.Applications.AspNetCore.Builders
             hostFactory = new HostFactory(environment, application);
             hostFactory.SetupLogger(s => s.AddDefaultLoggingSettings());
 
-            kestrelBuilder = new VostokKestrelBuilder();
-            throttlingBuilder = new VostokThrottlingBuilder(environment, disposables);
-            middlewaresBuilder = new VostokMiddlewaresBuilder(environment, disposables, throttlingBuilder);
-            webHostBuilder = new VostokWebHostBuilder(environment, kestrelBuilder, middlewaresBuilder, disposables, typeof(TStartup));
+            (kestrelBuilder, throttlingBuilder, middlewaresBuilder, webHostBuilder) =
+                VostokWebHostBuilderFactory.Create<TStartup>(environment, disposables);
         }
 
         public Host BuildHost()

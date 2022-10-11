@@ -15,7 +15,7 @@ using Vostok.ServiceDiscovery.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.HostBuilders
 {
-    internal partial class VostokWebHostBuilder
+    internal partial class VostokWebHostBuilder : IVostokWebHostBuilder
     {
         private readonly IVostokHostingEnvironment environment;
         private readonly VostokKestrelBuilder kestrelBuilder;

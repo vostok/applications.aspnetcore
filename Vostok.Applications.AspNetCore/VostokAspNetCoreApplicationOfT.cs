@@ -45,7 +45,7 @@ namespace Vostok.Applications.AspNetCore
 
             var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, this, disposables);
 
-            builder.SetupPingApi(PingApiSettingsSetup.Get(environment, GetType(), initialized));
+            builder.SetupPingApi(PingApiSettingsSetup.Get(environment, GetType(), () => initialized));
 
             Setup(builder, environment);
 

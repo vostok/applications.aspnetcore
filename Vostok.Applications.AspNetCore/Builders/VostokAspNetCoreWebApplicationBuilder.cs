@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.HostBuilders;
+using Vostok.Applications.AspNetCore.Models;
 using Vostok.Context;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Microsoft;
@@ -16,10 +17,10 @@ namespace Vostok.Applications.AspNetCore.Builders
     internal class VostokAspNetCoreWebApplicationBuilder : IVostokAspNetCoreWebApplicationBuilder
     {
         private readonly IVostokHostingEnvironment environment;
-        private readonly VostokKestrelBuilder kestrelBuilder;
-        private readonly VostokThrottlingBuilder throttlingBuilder;
-        private readonly VostokMiddlewaresBuilder middlewaresBuilder;
-        private readonly VostokWebHostBuilder webHostBuilder;
+        private readonly IVostokKestrelBuilder kestrelBuilder;
+        private readonly IVostokThrottlingBuilder throttlingBuilder;
+        private readonly IVostokMiddlewaresBuilder middlewaresBuilder;
+        private readonly IVostokWebHostBuilder webHostBuilder;
         private readonly WebApplicationFactory webApplicationFactory;
 
         public VostokAspNetCoreWebApplicationBuilder(IVostokHostingEnvironment environment, IVostokApplication application, List<IDisposable> disposables)
@@ -29,10 +30,8 @@ namespace Vostok.Applications.AspNetCore.Builders
             webApplicationFactory = new WebApplicationFactory(environment, application);
             webApplicationFactory.SetupLogger(s => s.AddDefaultLoggingSettings());
 
-            kestrelBuilder = new VostokKestrelBuilder();
-            throttlingBuilder = new VostokThrottlingBuilder(environment, disposables);
-            middlewaresBuilder = new VostokMiddlewaresBuilder(environment, disposables, throttlingBuilder);
-            webHostBuilder = new VostokWebHostBuilder(environment, kestrelBuilder, middlewaresBuilder, disposables, null);
+            (kestrelBuilder, throttlingBuilder, middlewaresBuilder, webHostBuilder) =
+                VostokWebHostBuilderFactory.Create<EmptyStartup>(environment, disposables);
         }
 
         public WebApplication Build()
