@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Configuration.Abstractions;
@@ -11,9 +12,10 @@ using Vostok.Hosting.Abstractions.Requirements;
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {
+    [PublicAPI]
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddVostokEnvironment(this IServiceCollection services, IVostokHostingEnvironment environment, IVostokApplication application)
+        public static IServiceCollection AddVostokEnvironment(this IServiceCollection services, IVostokHostingEnvironment environment)
         {
             services
                 .AddSingleton(environment)
@@ -45,11 +47,18 @@ namespace Vostok.Applications.AspNetCore.Helpers
                     .AddSingleton(diagnostics.HealthTracker);
             }
 
+            services.AddScoped(_ => FlowingContext.Globals.Get<IRequestInfo>());
+
+            return services;
+        }
+
+        public static IServiceCollection AddVostokEnvironment(this IServiceCollection services, IVostokHostingEnvironment environment, IVostokApplication application)
+        {
+            AddVostokEnvironment(services, environment);
+            
             AddSettingsProviders(services, RequirementDetector.GetRequiredConfigurations(application).Select(r => r.Type), environment.ConfigurationProvider);
             AddSettingsProviders(services, RequirementDetector.GetRequiredSecretConfigurations(application).Select(r => r.Type), environment.SecretConfigurationProvider);
             AddSettingsProviders(services, RequirementDetector.GetRequiredMergedConfigurations(application).Select(r => r.Type), environment.ConfigurationProvider);
-
-            services.AddScoped(_ => FlowingContext.Globals.Get<IRequestInfo>());
 
             return services;
         }

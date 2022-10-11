@@ -1,11 +1,13 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using JetBrains.Annotations;
+using Microsoft.Extensions.Configuration;
 using Vostok.Configuration.Microsoft;
 using Vostok.Hosting.Abstractions;
 using IConfigurationSource = Vostok.Configuration.Abstractions.IConfigurationSource;
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {
-    internal static class MicrosoftConfigurationBuilderExtensions
+    [PublicAPI]
+    public static class MicrosoftConfigurationBuilderExtensions
     {
         public static void AddVostokSources(this IConfigurationBuilder builder, IVostokHostingEnvironment environment)
         {

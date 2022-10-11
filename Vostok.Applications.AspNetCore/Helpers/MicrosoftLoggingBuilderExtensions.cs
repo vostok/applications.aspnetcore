@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using JetBrains.Annotations;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Vostok.Configuration.Microsoft;
 using Vostok.Configuration.Sources.Object;
@@ -7,7 +8,8 @@ using Vostok.Logging.Microsoft;
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {
-    internal static class MicrosoftLoggingBuilderExtensions
+    [PublicAPI]
+    public static class MicrosoftLoggingBuilderExtensions
     {
         public static void AddDefaultLoggingSettings(this VostokLoggerProviderSettings settings) =>
             settings.IgnoredScopePrefixes = new[] {"Microsoft.AspNetCore"};
