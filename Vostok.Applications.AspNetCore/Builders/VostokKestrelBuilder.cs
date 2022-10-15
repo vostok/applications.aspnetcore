@@ -5,7 +5,7 @@ using Vostok.Commons.Helpers;
 
 namespace Vostok.Applications.AspNetCore.Builders
 {
-    internal class VostokKestrelBuilder : IVostokKestrelBuilder
+    internal class VostokKestrelBuilder
     {
         public const int MaxResponseBufferSize = 64 * 1024;
 

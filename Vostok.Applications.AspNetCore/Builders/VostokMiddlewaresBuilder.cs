@@ -15,7 +15,7 @@ using Vostok.Throttling;
 
 namespace Vostok.Applications.AspNetCore.Builders
 {
-    internal class VostokMiddlewaresBuilder : IVostokMiddlewaresBuilder
+    internal class VostokMiddlewaresBuilder
     {
         private readonly IVostokHostingEnvironment environment;
         private readonly VostokThrottlingBuilder throttlingBuilder;

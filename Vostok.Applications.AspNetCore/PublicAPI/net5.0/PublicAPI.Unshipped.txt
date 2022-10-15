@@ -1,35 +1,7 @@
-static Vostok.Applications.AspNetCore.Configuration.PingApiSettingsSetup.Get(Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment, System.Type applicationType, System.Func<bool> initialization) -> System.Action<Vostok.Applications.AspNetCore.Configuration.PingApiSettings>
 static Vostok.Applications.AspNetCore.Helpers.MicrosoftConfigurationBuilderExtensions.AddVostokSources(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> void
 static Vostok.Applications.AspNetCore.Helpers.MicrosoftLoggingBuilderExtensions.AddDefaultLoggingFilters(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder) -> void
 static Vostok.Applications.AspNetCore.Helpers.MicrosoftLoggingBuilderExtensions.AddDefaultLoggingSettings(this Vostok.Logging.Microsoft.VostokLoggerProviderSettings settings) -> void
 static Vostok.Applications.AspNetCore.Helpers.MicrosoftLoggingBuilderExtensions.AddVostokLogging(this Microsoft.Extensions.Logging.ILoggingBuilder builder, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment, Vostok.Logging.Microsoft.VostokLoggerProviderSettings settings) -> void
 static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVostokEnvironment(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
-static Vostok.Applications.AspNetCore.HostBuilders.VostokWebHostBuilderFactory.Create<TStartup>(Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment, System.Collections.Generic.List<System.IDisposable> disposables) -> (Vostok.Applications.AspNetCore.Builders.IVostokKestrelBuilder, Vostok.Applications.AspNetCore.Builders.IVostokThrottlingBuilder, Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder, Vostok.Applications.AspNetCore.HostBuilders.IVostokWebHostBuilder)
-Vostok.Applications.AspNetCore.Builders.IVostokKestrelBuilder
-Vostok.Applications.AspNetCore.Builders.IVostokKestrelBuilder.Customize(System.Action<Vostok.Applications.AspNetCore.Configuration.KestrelSettings> setup) -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.Customize(System.Action<Vostok.Applications.AspNetCore.Configuration.DatacenterAwarenessSettings> customization) -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.Customize(System.Action<Vostok.Applications.AspNetCore.Configuration.DiagnosticApiSettings> customization) -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.Customize(System.Action<Vostok.Applications.AspNetCore.Configuration.DiagnosticFeaturesSettings> customization) -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.Customize(System.Action<Vostok.Applications.AspNetCore.Configuration.DistributedContextSettings> customization) -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.Customize(System.Action<Vostok.Applications.AspNetCore.Configuration.FillRequestInfoSettings> customization) -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.Customize(System.Action<Vostok.Applications.AspNetCore.Configuration.HttpContextTweakSettings> customization) -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.Customize(System.Action<Vostok.Applications.AspNetCore.Configuration.LoggingSettings> customization) -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.Customize(System.Action<Vostok.Applications.AspNetCore.Configuration.PingApiSettings> customization) -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.Customize(System.Action<Vostok.Applications.AspNetCore.Configuration.TracingSettings> customization) -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.Customize(System.Action<Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings> customization) -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.Disable() -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.Disable<TMiddleware>() -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.Enable<TMiddleware>() -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.InjectPreVostok<TMiddleware, TBefore>() -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.InjectPreVostok<TMiddleware>() -> void
-Vostok.Applications.AspNetCore.Builders.IVostokMiddlewaresBuilder.IsEnabled<TMiddleware>() -> bool
-Vostok.Applications.AspNetCore.Configuration.PingApiSettingsSetup
 Vostok.Applications.AspNetCore.Helpers.MicrosoftConfigurationBuilderExtensions
 Vostok.Applications.AspNetCore.Helpers.MicrosoftLoggingBuilderExtensions
-Vostok.Applications.AspNetCore.HostBuilders.IVostokWebHostBuilder
-Vostok.Applications.AspNetCore.HostBuilders.IVostokWebHostBuilder.ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder hostBuilder) -> void
-Vostok.Applications.AspNetCore.HostBuilders.IVostokWebHostBuilder.ConfigureWebHost(Microsoft.Extensions.Hosting.IHostBuilder genericHostBuilder) -> void
-Vostok.Applications.AspNetCore.HostBuilders.IVostokWebHostBuilder.Customize(System.Action<Microsoft.AspNetCore.Hosting.IWebHostBuilder> setup) -> void
-Vostok.Applications.AspNetCore.HostBuilders.IVostokWebHostBuilder.Disable() -> void
-Vostok.Applications.AspNetCore.HostBuilders.VostokWebHostBuilderFactory
