@@ -45,10 +45,6 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
 
             webApplicationCustomizer.CustomizeWebApplicationBuilder(builder);
             
-            // builder.Services
-            //     .AddSingleton<IHostLifetime, GenericHostEmptyLifetime>()
-            //     .AddVostokEnvironment(environment, application);
-            //
             return builder;
         }
     }
