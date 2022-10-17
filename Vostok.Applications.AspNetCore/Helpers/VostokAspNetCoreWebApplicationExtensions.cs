@@ -16,18 +16,20 @@ namespace Vostok.Applications.AspNetCore.Helpers
         public static void SetupWebApplicationBuilder(
             [NotNull] this WebApplicationBuilder webApplicationBuilder,
             VostokAspNetCoreWebApplicationSetup setup,
-            IVostokHostingEnvironment environment)
+            IVostokHostingEnvironment environment,
+            out List<IDisposable> disposables
+        )
         {
-            var disposables = new List<IDisposable>();
+            disposables = new List<IDisposable>();
             var vostokBuilder = new VostokAspNetCoreCustomizeWebApplicationBuilder(environment, new EmptyApplication(), disposables);
             vostokBuilder.SetupPingApi(PingApiSettingsSetup.Get(environment, typeof(WebApplicationBuilder), false));
-            
+
             setup(vostokBuilder, environment);
-            
+
             vostokBuilder.CustomizeWebApplicationBuilder(webApplicationBuilder);
         }
     }
-    
+
     internal class EmptyApplication : VostokAspNetCoreWebApplication
     {
         public override Task SetupAsync(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment) =>
