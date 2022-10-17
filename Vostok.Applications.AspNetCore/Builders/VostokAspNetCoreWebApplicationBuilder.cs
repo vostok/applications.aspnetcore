@@ -21,13 +21,17 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly VostokMiddlewaresBuilder middlewaresBuilder;
         private readonly VostokWebHostBuilder webHostBuilder;
         private readonly WebApplicationFactory webApplicationFactory;
+        
+        protected private readonly WebApplicationCustomizer WebApplicationCustomizer;
 
         public VostokAspNetCoreWebApplicationBuilder(IVostokHostingEnvironment environment, IVostokApplication application, List<IDisposable> disposables)
         {
             this.environment = environment;
 
-            webApplicationFactory = new WebApplicationFactory(environment, application);
-            webApplicationFactory.SetupLogger(s => s.AddDefaultLoggingSettings());
+            WebApplicationCustomizer = new WebApplicationCustomizer(environment);
+            WebApplicationCustomizer.SetupLogger(s => s.AddDefaultLoggingSettings());
+            
+            webApplicationFactory = new WebApplicationFactory(environment, application, WebApplicationCustomizer);
 
             kestrelBuilder = new VostokKestrelBuilder();
             throttlingBuilder = new VostokThrottlingBuilder(environment, disposables);
@@ -37,26 +41,28 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         public WebApplication Build()
         {
-            webApplicationFactory.SetupWebApplicationBuilder(b => webHostBuilder.ConfigureWebHost(b));
+            WebApplicationCustomizer.SetupWebApplicationBuilder(ConfigureWebHost());
 
             lock (FlowingContextSync.Object)
                 using (FlowingContext.Globals.Use(environment))
                     return webApplicationFactory.Create();
         }
-
+        
         public bool IsMiddlewareEnabled<TMiddleware>() =>
             middlewaresBuilder.IsEnabled<TMiddleware>();
+        
+        protected Action<WebApplicationBuilder> ConfigureWebHost() => (builder => webHostBuilder.ConfigureWebHost(builder));
 
         #region SetupComponents
 
         public IVostokAspNetCoreWebApplicationBuilder CustomizeWebApplicationOptions(Func<WebApplicationOptions, WebApplicationOptions> customization)
-            => Setup(() => webApplicationFactory.SetupWebApplicationOptions(customization));
+            => Setup(() => WebApplicationCustomizer.SetupWebApplicationOptions(customization));
 
         public IVostokAspNetCoreWebApplicationBuilder SetupWebApplication(Action<WebApplicationBuilder> setup)
-            => Setup(() => webApplicationFactory.SetupWebApplicationBuilder(setup));
+            => Setup(() => WebApplicationCustomizer.SetupWebApplicationBuilder(setup));
 
         public IVostokAspNetCoreWebApplicationBuilder CustomizeWebApplication(Action<WebApplication> customization)
-            => Setup(() => webApplicationFactory.SetupWebApplication(customization));
+            => Setup(() => WebApplicationCustomizer.SetupWebApplication(customization));
 
         public IVostokAspNetCoreWebApplicationBuilder DisableWebHost()
             => Setup(webHostBuilder.Disable);
@@ -113,7 +119,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             => Setup(() => setup(throttlingBuilder));
 
         public IVostokAspNetCoreWebApplicationBuilder SetupMicrosoftLog(Action<VostokLoggerProviderSettings> setup)
-            => Setup(() => webApplicationFactory.SetupLogger(setup ?? throw new ArgumentNullException(nameof(setup))));
+            => Setup(() => WebApplicationCustomizer.SetupLogger(setup ?? throw new ArgumentNullException(nameof(setup))));
 
         private IVostokAspNetCoreWebApplicationBuilder Setup(Action setup)
         {
