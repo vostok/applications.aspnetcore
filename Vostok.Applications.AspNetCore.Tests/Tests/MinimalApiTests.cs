@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Hosting.Abstractions;
+using Vostok.Hosting.Setup;
 
 namespace Vostok.Applications.AspNetCore.Tests.Tests;
 
@@ -13,7 +14,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests;
 public class MinimalApiTests : TestsBase
 {
     public MinimalApiTests()
-        : base(new MinimalApiApplication())
+        : base(false)
     {
     }
 
@@ -25,6 +26,9 @@ public class MinimalApiTests : TestsBase
         response.Response.IsSuccessful.Should().BeTrue();
         response.Response.Content.ToString().Should().Be("Hello World!");
     }
+
+    protected override IApplicationRunner CreateRunner(VostokHostingEnvironmentSetup setup) 
+        => new TestVostokApplicationRunner(new MinimalApiApplication(), setup);
 
     internal class MinimalApiApplication : VostokAspNetCoreWebApplication
     {
