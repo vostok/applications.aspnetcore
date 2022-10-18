@@ -23,23 +23,12 @@ namespace Vostok.Applications.AspNetCore.Tests
     public abstract class TestsBase
     {
         private int serverPort;
-        private readonly IVostokApplication application;
-        private VostokHost testHost;
+        private IApplicationRunner runner;
+        private readonly bool webApplication;
 
         protected TestsBase(bool webApplication)
         {
-            application = webApplication
-#if NET6_0_OR_GREATER
-                ? new TestVostokAspNetCoreWebApplication(SetupGlobal)
-#else
-                ? throw new Exception("Should not be called")
-#endif
-                : new TestVostokAspNetCoreApplication(SetupGlobal);
-        }
-
-        protected TestsBase(IVostokApplication application)
-        {
-            this.application = application;
+            this.webApplication = webApplication;
         }
 
         [OneTimeSetUp]
@@ -53,16 +42,30 @@ namespace Vostok.Applications.AspNetCore.Tests
                 }));
 
             Client = CreateClusterClient(GetPort());
+            runner = CreateRunner(b => SetupEnvironment(b, GetPort()));
 
-            testHost = await StartHost();
+            await runner.RunAsync();
         }
 
         [OneTimeTearDown]
         public Task OneTimeTearDown()
-            => testHost?.StopAsync();
+            => runner.StopAsync();
 
         protected IClusterClient Client { get; private set; }
         protected ILog Log { get; private set; }
+
+        protected virtual IApplicationRunner CreateRunner(VostokHostingEnvironmentSetup setup)
+        {
+            IVostokApplication application = webApplication
+#if NET6_0_OR_GREATER
+                            ? new TestVostokAspNetCoreWebApplication(SetupGlobal)
+#else
+                            ? throw new Exception("Should not be called")
+#endif
+                            : new TestVostokAspNetCoreApplication(SetupGlobal);
+
+            return new TestVostokApplicationRunner(application, setup);
+        }
 
         protected virtual void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
@@ -75,16 +78,6 @@ namespace Vostok.Applications.AspNetCore.Tests
             // use this method to override host configuration in each test fixture
         }
 #endif
-
-        private async Task<VostokHost> StartHost()
-        {
-            var hostSettings = new VostokHostSettings(application, b => SetupEnvironment(b, GetPort()));
-            var host = new VostokHost(hostSettings);
-
-            await host.StartAsync();
-
-            return host;
-        }
 
         private void SetupEnvironment(IVostokHostingEnvironmentBuilder builder, int port)
         {
