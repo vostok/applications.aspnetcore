@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Vostok.Applications.AspNetCore.Tests.Extensions;
 
 namespace Vostok.Applications.AspNetCore.Tests
 {
@@ -8,10 +9,7 @@ namespace Vostok.Applications.AspNetCore.Tests
         public void ConfigureServices(IServiceCollection services)
         {
 #if NETCOREAPP
-            services
-                .AddControllers()
-                .AddNewtonsoftJson()
-                .AddApplicationPart(typeof(Startup).Assembly);
+            services.ConfigureServiceCollection();
 #else
             services.AddMvc();
 #endif
@@ -20,9 +18,7 @@ namespace Vostok.Applications.AspNetCore.Tests
         public void Configure(IApplicationBuilder app)
         {
 #if NETCOREAPP
-            app.UseRouting();
-            app.UseEndpoints(s => s.MapControllers());
-            app.UseHealthChecks("/health");
+            app.ConfigureWebApplication();
 #else
             app.UseMvc();
 #endif

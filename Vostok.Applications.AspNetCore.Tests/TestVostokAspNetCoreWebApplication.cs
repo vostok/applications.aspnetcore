@@ -1,9 +1,8 @@
 ﻿#if NET6_0_OR_GREATER
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests;
@@ -19,15 +18,9 @@ public class TestVostokAspNetCoreWebApplication : VostokAspNetCoreWebApplication
 
     public override Task SetupAsync(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
     {
-        builder.SetupWebApplication(b => b.Services
-            .AddControllers()
-            .AddNewtonsoftJson()
-            .AddApplicationPart(typeof(Startup).Assembly));
+        builder.SetupWebApplication(b => b.Services.ConfigureServiceCollection());
 
-        builder.CustomizeWebApplication(a => a
-            .UseRouting()
-            .UseEndpoints(s => s.MapControllers())
-            .UseHealthChecks("/health"));
+        builder.CustomizeWebApplication(a => a.ConfigureWebApplication());
 
         configure(builder, environment);
 
