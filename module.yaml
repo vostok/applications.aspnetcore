@@ -62,6 +62,18 @@ v6_0 > base:
   install:
     - Vostok.Applications.AspNetCore/bin/Release/net6.0/Vostok.Applications.AspNetCore.dll
 
+v6_0_with_tests > base:
+  build:
+    target: Vostok.Applications.AspNetCore.sln
+    configuration: Release
+    parameters: build -property:TargetFrameworks=net6.0
+    tool:
+      name: dotnet
+
+  install:
+    - Vostok.Applications.AspNetCore/bin/Release/net6.0/Vostok.Applications.AspNetCore.dll      
+    - Vostok.Applications.AspNetCore.Tests/bin/Release/net6.0/Vostok.Applications.AspNetCore.Tests.dll
+
 v5_0 > base:
   build:
     target: Vostok.Applications.AspNetCore.sln
