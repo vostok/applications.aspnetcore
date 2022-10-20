@@ -15,10 +15,6 @@ using Vostok.Logging.File.Configuration;
 
 namespace Vostok.Applications.AspNetCore.Tests
 {
-    [TestFixture(false)]
-#if NET6_0_OR_GREATER
-    [TestFixture(true)]
-#endif
     public abstract partial class TestsBase
     {
         private int serverPort;
