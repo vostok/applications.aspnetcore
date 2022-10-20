@@ -5,7 +5,7 @@ using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Hosting.Abstractions;
 
-namespace Vostok.Applications.AspNetCore.Tests;
+namespace Vostok.Applications.AspNetCore.Tests.Applications;
 
 public class TestVostokAspNetCoreWebApplication : VostokAspNetCoreWebApplication
 {

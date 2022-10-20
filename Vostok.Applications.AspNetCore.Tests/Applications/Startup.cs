@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 
-namespace Vostok.Applications.AspNetCore.Tests
+namespace Vostok.Applications.AspNetCore.Tests.Applications
 {
     public class Startup
     {
