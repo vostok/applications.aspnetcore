@@ -21,7 +21,7 @@ namespace Vostok.Applications.AspNetCore.Tests
     public abstract partial class TestsBase
     {
         private int serverPort;
-        private IApplicationRunner runner;
+        private ITestHostRunner runner;
         private readonly bool webApplication;
 
         protected TestsBase()
@@ -44,9 +44,9 @@ namespace Vostok.Applications.AspNetCore.Tests
                 }));
 
             Client = CreateClusterClient(GetPort());
-            InitRunner(b => SetupEnvironment(b, GetPort()));
+            CreateRunner(b => SetupEnvironment(b, GetPort()));
 
-            await runner.RunAsync();
+            await runner.StartAsync();
         }
 
         [OneTimeTearDown]
@@ -55,8 +55,6 @@ namespace Vostok.Applications.AspNetCore.Tests
 
         protected IClusterClient Client { get; private set; }
         protected ILog Log { get; private set; }
-
-        protected partial void InitRunner(VostokHostingEnvironmentSetup setup);
 
         protected virtual void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {

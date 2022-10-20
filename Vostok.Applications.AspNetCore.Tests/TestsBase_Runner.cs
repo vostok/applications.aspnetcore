@@ -1,4 +1,5 @@
 using System;
+using Vostok.Applications.AspNetCore.Tests.Applications;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Setup;
 
@@ -6,10 +7,8 @@ namespace Vostok.Applications.AspNetCore.Tests
 {
     public abstract partial class TestsBase
     {
-        protected partial void InitRunner(VostokHostingEnvironmentSetup setup)
-        {
-            runner = new TestVostokApplicationRunner(CreateVostokApplication(), setup);
-        }
+        private void CreateRunner(VostokHostingEnvironmentSetup setup) =>
+            runner = new TestVostokHostRunner(CreateVostokApplication(), setup);
 
         protected virtual IVostokApplication CreateVostokApplication()
         {
