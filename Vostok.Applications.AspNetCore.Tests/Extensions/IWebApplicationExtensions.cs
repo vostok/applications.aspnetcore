@@ -14,14 +14,13 @@ namespace Vostok.Applications.AspNetCore.Tests.Extensions
                 .AddNewtonsoftJson()
                 .AddApplicationPart(typeof(ContextController).Assembly);
         }
-#endif
 
         public static void ConfigureWebApplication(this IApplicationBuilder application)
         {
-            application
-                .UseRouting()
-                .UseEndpoints(s => s.MapControllers())
-                .UseHealthChecks("/health");
+            application.UseRouting();
+            application.UseEndpoints(s => s.MapControllers());
+            application.UseHealthChecks("/health");
         }
+#endif        
     }
 }
