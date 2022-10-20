@@ -6,6 +6,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Extensions
 {
     internal static class IWebApplicationExtensions
     {
+#if NETCOREAPP
         public static void ConfigureServiceCollection(this IServiceCollection services)
         {
             services
@@ -13,6 +14,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Extensions
                 .AddNewtonsoftJson()
                 .AddApplicationPart(typeof(ContextController).Assembly);
         }
+#endif
 
         public static void ConfigureWebApplication(this IApplicationBuilder application)
         {
