@@ -9,7 +9,7 @@ namespace Vostok.Applications.AspNetCore.Tests
         public void ConfigureServices(IServiceCollection services)
         {
 #if NETCOREAPP
-            services.ConfigureServiceCollection();
+            services.ConfigureTestsDefaults();
 #else
             services.AddMvc();
 #endif
@@ -18,7 +18,7 @@ namespace Vostok.Applications.AspNetCore.Tests
         public void Configure(IApplicationBuilder app)
         {
 #if NETCOREAPP
-            app.ConfigureWebApplication();
+            app.ConfigureTestsDefaults();
 #else
             app.UseMvc();
 #endif

@@ -18,9 +18,9 @@ public class TestVostokAspNetCoreWebApplication : VostokAspNetCoreWebApplication
 
     public override Task SetupAsync(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
     {
-        builder.SetupWebApplication(b => b.Services.ConfigureServiceCollection());
+        builder.SetupWebApplication(b => b.Services.ConfigureTestsDefaults());
 
-        builder.CustomizeWebApplication(a => a.ConfigureWebApplication());
+        builder.CustomizeWebApplication(a => a.ConfigureTestsDefaults());
 
         configure(builder, environment);
 
