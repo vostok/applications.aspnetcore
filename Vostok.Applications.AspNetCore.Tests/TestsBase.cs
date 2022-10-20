@@ -1,12 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Clusterclient.Core;
 using Vostok.Clusterclient.Core.Topology;
 using Vostok.Clusterclient.Transport;
 using Vostok.Commons.Helpers.Network;
-using Vostok.Hosting;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Setup;
 using Vostok.Logging.Abstractions;
@@ -20,11 +18,15 @@ namespace Vostok.Applications.AspNetCore.Tests
 #if NET6_0_OR_GREATER
     [TestFixture(true)]
 #endif
-    public abstract class TestsBase
+    public abstract partial class TestsBase
     {
         private int serverPort;
         private IApplicationRunner runner;
         private readonly bool webApplication;
+
+        protected TestsBase()
+        {
+        }
 
         protected TestsBase(bool webApplication)
         {
@@ -42,7 +44,7 @@ namespace Vostok.Applications.AspNetCore.Tests
                 }));
 
             Client = CreateClusterClient(GetPort());
-            runner = CreateRunner(b => SetupEnvironment(b, GetPort()));
+            InitRunner(b => SetupEnvironment(b, GetPort()));
 
             await runner.RunAsync();
         }
@@ -54,18 +56,7 @@ namespace Vostok.Applications.AspNetCore.Tests
         protected IClusterClient Client { get; private set; }
         protected ILog Log { get; private set; }
 
-        protected virtual IApplicationRunner CreateRunner(VostokHostingEnvironmentSetup setup)
-        {
-            IVostokApplication application = webApplication
-#if NET6_0_OR_GREATER
-                            ? new TestVostokAspNetCoreWebApplication(SetupGlobal)
-#else
-                            ? throw new Exception("Should not be called")
-#endif
-                            : new TestVostokAspNetCoreApplication(SetupGlobal);
-
-            return new TestVostokApplicationRunner(application, setup);
-        }
+        protected partial void InitRunner(VostokHostingEnvironmentSetup setup);
 
         protected virtual void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
@@ -101,8 +92,8 @@ namespace Vostok.Applications.AspNetCore.Tests
 
         protected int GetPort()
         {
-            return serverPort == 0 
-                ? serverPort = FreeTcpPortFinder.GetFreePort() 
+            return serverPort == 0
+                ? serverPort = FreeTcpPortFinder.GetFreePort()
                 : serverPort;
         }
 
