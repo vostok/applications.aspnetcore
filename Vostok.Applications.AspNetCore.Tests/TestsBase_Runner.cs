@@ -1,10 +1,15 @@
 using System;
+using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Tests.Applications;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Setup;
 
 namespace Vostok.Applications.AspNetCore.Tests
 {
+    [TestFixture(false)]
+#if NET6_0_OR_GREATER
+    [TestFixture(true)]
+#endif
     public abstract partial class TestsBase
     {
         private void CreateRunner(VostokHostingEnvironmentSetup setup) =>
