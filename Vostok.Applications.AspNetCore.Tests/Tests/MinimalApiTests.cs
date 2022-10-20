@@ -13,11 +13,6 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests;
 [TestFixture]
 public class MinimalApiTests : TestsBase
 {
-    public MinimalApiTests()
-        : base(false)
-    {
-    }
-
     [Test]
     public async Task Get_should_work()
     {
@@ -27,9 +22,9 @@ public class MinimalApiTests : TestsBase
         response.Response.Content.ToString().Should().Be("Hello World!");
     }
 
-    protected override IApplicationRunner CreateRunner(VostokHostingEnvironmentSetup setup) 
-        => new TestVostokApplicationRunner(new MinimalApiApplication(), setup);
-
+    protected override IVostokApplication CreateVostokApplication()
+        => new MinimalApiApplication();
+    
     internal class MinimalApiApplication : VostokAspNetCoreWebApplication
     {
         public override Task SetupAsync(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
