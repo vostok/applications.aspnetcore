@@ -13,17 +13,18 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
 {
     public class TracingMiddlewareTests : TestsBase
     {
-        private readonly Uri customUri;
+        private Uri CustomUri => new UriBuilder
+        {
+            Port = Port,
+            Host = "localhost"
+        }.Uri;
+        
         private readonly StubSpanSender spanSender = new();
 
         public TracingMiddlewareTests(bool webApplication)
             : base(webApplication)
         {
-            customUri = new UriBuilder
-            {
-                Port = GetPort(),
-                Host = "localhost"
-            }.Uri;
+            
         }
 
         [Test]
@@ -36,16 +37,16 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             spanSender.CaughtSpans
                .Where(x =>
                     x.Annotations.ContainsKey(WellKnownAnnotations.Http.Request.Url) &&
-                    x.Annotations[WellKnownAnnotations.Http.Request.Url].ToString()!.StartsWith(customUri.AbsoluteUri) &&
+                    x.Annotations[WellKnownAnnotations.Http.Request.Url].ToString()!.StartsWith(CustomUri.AbsoluteUri) &&
                     x.Annotations[WellKnownAnnotations.Http.Request.Url].ToString()!.EndsWith("/_status/ping")
                 )
                .Should()
                .NotBeEmpty();
         }
 
-        protected override void SetupVostokEnvironment(IVostokHostingEnvironmentBuilder builder)
+        protected override void SetupGlobal(IVostokHostingEnvironmentBuilder builder)
         {
-            builder.SetupServiceBeacon(beaconBuilder => beaconBuilder.SetupReplicaInfo(infoBuilder => infoBuilder.SetUrl(customUri)));
+            builder.SetupServiceBeacon(beaconBuilder => beaconBuilder.SetupReplicaInfo(infoBuilder => infoBuilder.SetUrl(CustomUri)));
             builder.SetupTracer(tracerBuilder => tracerBuilder.AddSpanSender(spanSender));
         }
 
