@@ -17,9 +17,9 @@ namespace Vostok.Applications.AspNetCore.Tests
 {
     public abstract partial class TestsBase
     {
-        private int serverPort;
-        private ITestHostRunner runner;
+        protected int Port;
         private readonly bool webApplication;
+        private ITestHostRunner runner;
 
         protected TestsBase()
         {
@@ -30,8 +30,8 @@ namespace Vostok.Applications.AspNetCore.Tests
             this.webApplication = webApplication;
         }
 
-        [OneTimeSetUp]
-        public async Task OneTimeSetup()
+        [SetUp]
+        public async Task SetUp()
         {
             Log = new CompositeLog(
                 new SynchronousConsoleLog(),
@@ -40,14 +40,15 @@ namespace Vostok.Applications.AspNetCore.Tests
                     FileOpenMode = FileOpenMode.Rewrite
                 }));
 
-            Client = CreateClusterClient(GetPort());
-            CreateRunner(b => SetupEnvironment(b, GetPort()));
+            Port = FreeTcpPortFinder.GetFreePort();
+            Client = CreateClusterClient();
+            CreateRunner(SetupEnvironment);
 
             await runner.StartAsync();
         }
 
-        [OneTimeTearDown]
-        public Task OneTimeTearDown()
+        [TearDown]
+        public Task TearDown()
             => runner.StopAsync();
 
         protected IClusterClient Client { get; private set; }
@@ -57,25 +58,30 @@ namespace Vostok.Applications.AspNetCore.Tests
         {
             // use this method to override host configuration in each test fixture
         }
-
+        
 #if NET6_0_OR_GREATER
         protected virtual void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             // use this method to override host configuration in each test fixture
         }
-        
+
         protected virtual void SetupGlobal(WebApplicationBuilder builder)
         {
             // use this method to override host configuration in each test fixture
         }
-        
+
         protected virtual void SetupGlobal(WebApplication builder)
         {
             // use this method to override host configuration in each test fixture
         }
 #endif
 
-        private void SetupEnvironment(IVostokHostingEnvironmentBuilder builder, int port)
+        protected virtual void SetupGlobal(IVostokHostingEnvironmentBuilder builder)
+        {
+            // use this method to override vostok configuration in each test fixture
+        }
+
+        private void SetupEnvironment(IVostokHostingEnvironmentBuilder builder)
         {
             builder.SetupApplicationIdentity(
                     s => s.SetProject("Project")
@@ -83,26 +89,15 @@ namespace Vostok.Applications.AspNetCore.Tests
                         .SetEnvironment("Env")
                         .SetApplication("App")
                         .SetInstance("Instance"))
-                .SetPort(port)
+                .SetPort(Port)
                 .SetupLog(s => s.AddLog(Log));
 
             builder.DisableClusterConfig();
 
-            SetupVostokEnvironment(builder);
+            SetupGlobal(builder);
         }
 
-        protected virtual void SetupVostokEnvironment(IVostokHostingEnvironmentBuilder builder)
-        {
-        }
-
-        protected int GetPort()
-        {
-            return serverPort == 0
-                ? serverPort = FreeTcpPortFinder.GetFreePort()
-                : serverPort;
-        }
-
-        private IClusterClient CreateClusterClient(int port)
+        private IClusterClient CreateClusterClient()
         {
             // ReSharper disable once RedundantNameQualifier
             // full type name currently required due to https://github.com/vostok/clusterclient.datacenters/issues/1
@@ -110,7 +105,7 @@ namespace Vostok.Applications.AspNetCore.Tests
                 Log,
                 s =>
                 {
-                    s.ClusterProvider = new FixedClusterProvider($"http://localhost:{port}");
+                    s.ClusterProvider = new FixedClusterProvider($"http://localhost:{Port}");
                     s.SetupUniversalTransport();
                 });
         }
