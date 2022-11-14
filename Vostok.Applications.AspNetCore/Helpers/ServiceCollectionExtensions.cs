@@ -45,27 +45,28 @@ namespace Vostok.Applications.AspNetCore.Helpers
             }
         }
 
-        public static IServiceCollection AddVostokEnvironmentComponents(this IServiceCollection services)
+        public static IServiceCollection AddVostokEnvironmentComponents(this IServiceCollection services, Func<IServiceProvider, IVostokHostingEnvironment> environmentProvider = null)
         {
+            environmentProvider ??= provider => provider.GetRequiredService<IVostokHostingEnvironment>();
+            
             services
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().ApplicationIdentity)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().ApplicationIdentity)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().ApplicationLimits)
-                .AddTransient(provider => provider.GetRequiredService<IVostokHostingEnvironment>().ApplicationReplicationInfo)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().Metrics)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().Log)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().Tracer)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().HerculesSink)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().ConfigurationSource)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().ConfigurationProvider)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().ClusterConfigClient)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().ServiceBeacon)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().ServiceLocator)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().ContextGlobals)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().ContextProperties)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().ContextConfiguration)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().Datacenters)
-                .AddSingleton(provider => provider.GetRequiredService<IVostokHostingEnvironment>().HostExtensions);
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).ApplicationIdentity)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).ApplicationLimits)
+                .AddTransient(serviceProvider => environmentProvider(serviceProvider).ApplicationReplicationInfo)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).Metrics)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).Log)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).Tracer)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).HerculesSink)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).ConfigurationSource)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).ConfigurationProvider)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).ClusterConfigClient)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).ServiceBeacon)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).ServiceLocator)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).ContextGlobals)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).ContextProperties)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).ContextConfiguration)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).Datacenters)
+                .AddSingleton(serviceProvider => environmentProvider(serviceProvider).HostExtensions);
 
             return services;
         }
