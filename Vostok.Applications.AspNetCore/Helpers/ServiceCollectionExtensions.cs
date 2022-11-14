@@ -21,34 +21,21 @@ namespace Vostok.Applications.AspNetCore.Helpers
 
             services.AddVostokEnvironmentComponents();
 
-            AddVostokEnvironmentHostExtensions(services, environment);
+            services.AddVostokEnvironmentHostExtensions(environment);
 
-            AddSettingsProviders(services, RequirementDetector.GetRequiredConfigurations(application).Select(r => r.Type), environment.ConfigurationProvider);
-            AddSettingsProviders(services, RequirementDetector.GetRequiredSecretConfigurations(application).Select(r => r.Type), environment.SecretConfigurationProvider);
-            AddSettingsProviders(services, RequirementDetector.GetRequiredMergedConfigurations(application).Select(r => r.Type), environment.ConfigurationProvider);
+            services.AddSettingsProviders(RequirementDetector.GetRequiredConfigurations(application).Select(r => r.Type), environment.ConfigurationProvider);
+            services.AddSettingsProviders(RequirementDetector.GetRequiredSecretConfigurations(application).Select(r => r.Type), environment.SecretConfigurationProvider);
+            services.AddSettingsProviders(RequirementDetector.GetRequiredMergedConfigurations(application).Select(r => r.Type), environment.ConfigurationProvider);
 
             services.AddScoped(_ => FlowingContext.Globals.Get<IRequestInfo>());
 
             return services;
         }
 
-        public static void AddVostokEnvironmentHostExtensions(this IServiceCollection services, IVostokHostingEnvironment environment)
-        {
-            foreach (var (type, obj) in environment.HostExtensions.GetAll())
-                services.AddSingleton(type, obj);
-
-            if (environment.HostExtensions.TryGet<IVostokApplicationDiagnostics>(out var diagnostics))
-            {
-                services
-                    .AddSingleton(diagnostics.Info)
-                    .AddSingleton(diagnostics.HealthTracker);
-            }
-        }
-
         public static IServiceCollection AddVostokEnvironmentComponents(this IServiceCollection services, Func<IServiceProvider, IVostokHostingEnvironment> environmentProvider = null)
         {
             environmentProvider ??= provider => provider.GetRequiredService<IVostokHostingEnvironment>();
-            
+
             services
                 .AddSingleton(serviceProvider => environmentProvider(serviceProvider).ApplicationIdentity)
                 .AddSingleton(serviceProvider => environmentProvider(serviceProvider).ApplicationLimits)
@@ -71,7 +58,20 @@ namespace Vostok.Applications.AspNetCore.Helpers
             return services;
         }
 
-        private static void AddSettingsProviders(IServiceCollection services, IEnumerable<Type> types, IConfigurationProvider provider)
+        private static void AddVostokEnvironmentHostExtensions(this IServiceCollection services, IVostokHostingEnvironment environment)
+        {
+            foreach (var (type, obj) in environment.HostExtensions.GetAll())
+                services.AddSingleton(type, obj);
+
+            if (environment.HostExtensions.TryGet<IVostokApplicationDiagnostics>(out var diagnostics))
+            {
+                services
+                    .AddSingleton(diagnostics.Info)
+                    .AddSingleton(diagnostics.HealthTracker);
+            }
+        }
+
+        private static void AddSettingsProviders(this IServiceCollection services, IEnumerable<Type> types, IConfigurationProvider provider)
         {
             foreach (var type in types)
             {
@@ -81,7 +81,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
             }
         }
 
-        private static void AddSettingsProvider<TSettings>(IServiceCollection services, IConfigurationProvider provider) =>
+        private static void AddSettingsProvider<TSettings>(this IServiceCollection services, IConfigurationProvider provider) =>
             services.AddSingleton<Func<TSettings>>(provider.Get<TSettings>);
     }
 }
