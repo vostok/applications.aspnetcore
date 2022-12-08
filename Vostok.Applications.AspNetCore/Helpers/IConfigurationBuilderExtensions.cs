@@ -5,7 +5,7 @@ using IConfigurationSource = Vostok.Configuration.Abstractions.IConfigurationSou
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {
-    internal static class MicrosoftConfigurationBuilderExtensions
+    public static class IConfigurationBuilderExtensions
     {
         public static void AddVostokSources(this IConfigurationBuilder builder, IVostokHostingEnvironment environment)
         {
