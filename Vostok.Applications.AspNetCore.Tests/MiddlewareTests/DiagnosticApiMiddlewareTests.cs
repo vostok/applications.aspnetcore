@@ -86,5 +86,12 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
             builder.SetupDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
         }
 #endif
+        
+#if ASPNTCORE_HOSTING
+        protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
+        {
+            builder.Services.AddVostokDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
+        }
+#endif
     }
 }

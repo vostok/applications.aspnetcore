@@ -36,5 +36,12 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
             builder.SetupUnhandledExceptions(s => s.ErrorResponseCode = ResponseCode);
         }
 #endif
+        
+#if ASPNTCORE_HOSTING
+        protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
+        {
+            builder.Services.AddVostokUnhandledExceptions(s => s.ErrorResponseCode = ResponseCode);
+        }
+#endif
     }
 }

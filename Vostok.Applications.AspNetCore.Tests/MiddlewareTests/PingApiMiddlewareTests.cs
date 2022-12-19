@@ -66,6 +66,13 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
             builder.SetupPingApi(ConfigurePingApi);
         }
 #endif
+        
+#if ASPNTCORE_HOSTING
+        protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
+        {
+            builder.Services.AddVostokPingApi(ConfigurePingApi);
+        }
+#endif
 
         private void ConfigurePingApi(PingApiSettings obj)
         {

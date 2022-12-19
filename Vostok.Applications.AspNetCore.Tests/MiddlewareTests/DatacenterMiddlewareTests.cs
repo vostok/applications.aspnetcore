@@ -71,6 +71,14 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
         }
 #endif
 
+#if ASPNTCORE_HOSTING
+        protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
+        {
+            builder.Services.AddVostokDatacenterAwareness(ConfigureDatacenter);
+            builder.Services.OverrideSingleton(CreateDataCentersMock());
+        }
+#endif
+
         private void ConfigureDatacenter(DatacenterAwarenessSettings settings)
         {
             settings.RejectRequestsWhenDatacenterIsInactive = rejectResponses;
