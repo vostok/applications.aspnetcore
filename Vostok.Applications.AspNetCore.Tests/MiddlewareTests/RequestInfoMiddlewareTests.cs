@@ -9,7 +9,7 @@ using Vostok.Clusterclient.Core.Model;
 
 namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
-    public class RequestInfoMiddlewareTests : TestsBase
+    public class RequestInfoMiddlewareTests : MiddlewareTestsBase
     {
         public RequestInfoMiddlewareTests(bool webApplication)
             : base(webApplication)

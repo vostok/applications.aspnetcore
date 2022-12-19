@@ -19,7 +19,7 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
     [TestFixture(true, false)]
     [TestFixture(true, true)]
 #endif
-    public class DatacenterMiddlewareTests : TestsBase
+    public class DatacenterMiddlewareTests : MiddlewareTestsBase
     {
         private const int RejectionCode = 503;
 

@@ -12,7 +12,7 @@ using Vostok.Tracing.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
-    public class TracingMiddlewareTests : TestsBase
+    public class TracingMiddlewareTests : MiddlewareTestsBase
     {
         private Uri CustomUri => new UriBuilder
         {

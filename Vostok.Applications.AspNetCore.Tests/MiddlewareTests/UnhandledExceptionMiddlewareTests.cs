@@ -8,7 +8,7 @@ using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
-    public class UnhandledExceptionMiddlewareTests : TestsBase
+    public class UnhandledExceptionMiddlewareTests : MiddlewareTestsBase
     {
         private const int ResponseCode = 418;
 

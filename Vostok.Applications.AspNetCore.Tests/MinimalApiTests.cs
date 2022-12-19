@@ -11,7 +11,7 @@ using Vostok.Hosting.Abstractions;
 namespace Vostok.Applications.AspNetCore.Tests;
 
 [TestFixture]
-public class MinimalApiTests : TestsBase
+public class MinimalApiTests : MiddlewareTestsBase
 {
     [Test]
     public async Task Get_should_work()
