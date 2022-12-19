@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Clusterclient.Core;
@@ -13,7 +12,7 @@ using Vostok.Logging.Console;
 using Vostok.Logging.File;
 using Vostok.Logging.File.Configuration;
 
-namespace Vostok.Applications.AspNetCore.Tests
+namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
 {
     public abstract partial class TestsBase
     {
@@ -61,16 +60,6 @@ namespace Vostok.Applications.AspNetCore.Tests
         
 #if NET6_0_OR_GREATER
         protected virtual void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
-        {
-            // use this method to override host configuration in each test fixture
-        }
-
-        protected virtual void SetupGlobal(WebApplicationBuilder builder)
-        {
-            // use this method to override host configuration in each test fixture
-        }
-
-        protected virtual void SetupGlobal(WebApplication builder)
         {
             // use this method to override host configuration in each test fixture
         }

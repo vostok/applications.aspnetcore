@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
+using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Context;
 using Vostok.Hosting.Abstractions;
 
-namespace Vostok.Applications.AspNetCore.Tests.Tests
+namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
     public class DistributedContextMiddlewareTests : TestsBase
     {

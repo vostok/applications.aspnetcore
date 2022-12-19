@@ -4,7 +4,7 @@ using Vostok.Applications.AspNetCore.Tests.Applications;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Setup;
 
-namespace Vostok.Applications.AspNetCore.Tests
+namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
 {
     [TestFixture(false)]
 #if NET6_0_OR_GREATER

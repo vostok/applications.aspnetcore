@@ -3,7 +3,7 @@ using Vostok.Hosting;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Setup;
 
-namespace Vostok.Applications.AspNetCore.Tests
+namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
 {
     public class TestVostokHostRunner : ITestHostRunner
     {

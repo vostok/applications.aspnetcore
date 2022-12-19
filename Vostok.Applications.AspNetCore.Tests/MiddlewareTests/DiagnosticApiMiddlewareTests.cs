@@ -4,12 +4,13 @@ using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Diagnostics;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
+using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Abstractions;
 using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 
-namespace Vostok.Applications.AspNetCore.Tests.Tests
+namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
     public class DiagnosticApiMiddlewareTests : TestsBase
     {

@@ -3,9 +3,10 @@ using FluentAssertions;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
+using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Hosting.Abstractions;
 
-namespace Vostok.Applications.AspNetCore.Tests.Tests
+namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
     public class UnhandledExceptionMiddlewareTests : TestsBase
     {
