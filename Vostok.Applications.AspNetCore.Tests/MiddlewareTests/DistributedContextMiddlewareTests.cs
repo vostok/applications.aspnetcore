@@ -13,7 +13,7 @@ using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
-    public class DistributedContextMiddlewareTests : TestsBase
+    public class DistributedContextMiddlewareTests : MiddlewareTestsBase
     {
         public DistributedContextMiddlewareTests(bool webApplication)
             : base(webApplication)

@@ -10,7 +10,7 @@ namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
 #if NET6_0_OR_GREATER
     [TestFixture(true)]
 #endif
-    public abstract partial class TestsBase
+    public abstract partial class MiddlewareTestsBase
     {
         private void CreateRunner(VostokHostingEnvironmentSetup setup) =>
             runner = new TestVostokHostRunner(CreateVostokApplication(), setup);

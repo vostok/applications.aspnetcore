@@ -15,7 +15,7 @@ using IHealthCheck = Vostok.Hosting.Abstractions.Diagnostics.IHealthCheck;
 
 namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
-    public class HealthCheckIntegrationTests : TestsBase
+    public class HealthCheckIntegrationTests : MiddlewareTestsBase
     {
         private volatile IVostokHostingEnvironment environment;
         private IVostokApplicationDiagnostics diagnostics;

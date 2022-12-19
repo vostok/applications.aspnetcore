@@ -14,17 +14,17 @@ using Vostok.Logging.File.Configuration;
 
 namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
 {
-    public abstract partial class TestsBase
+    public abstract partial class MiddlewareTestsBase
     {
         protected int Port;
         private readonly bool webApplication;
         private ITestHostRunner runner;
 
-        protected TestsBase()
+        protected MiddlewareTestsBase()
         {
         }
 
-        protected TestsBase(bool webApplication)
+        protected MiddlewareTestsBase(bool webApplication)
         {
             this.webApplication = webApplication;
         }

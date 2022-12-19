@@ -11,7 +11,7 @@ using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
-    public class PingApiMiddlewareTests : TestsBase
+    public class PingApiMiddlewareTests : MiddlewareTestsBase
     {
         private bool isHealthy = true;
         private string commitHash;

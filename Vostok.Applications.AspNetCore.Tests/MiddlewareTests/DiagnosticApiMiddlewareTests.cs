@@ -12,7 +12,7 @@ using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 
 namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
-    public class DiagnosticApiMiddlewareTests : TestsBase
+    public class DiagnosticApiMiddlewareTests : MiddlewareTestsBase
     {
         public DiagnosticApiMiddlewareTests(bool webApplication)
             : base(webApplication)
