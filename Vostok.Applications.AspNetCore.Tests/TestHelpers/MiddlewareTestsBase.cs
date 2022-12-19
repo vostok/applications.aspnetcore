@@ -40,7 +40,7 @@ namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
                 }));
 
             Port = FreeTcpPortFinder.GetFreePort();
-            Client = CreateClusterClient();
+            Client = ClusterClientHelper.Create(Port, Log);
             CreateRunner(SetupEnvironment);
 
             await runner.StartAsync();
@@ -84,19 +84,6 @@ namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
             builder.DisableClusterConfig();
 
             SetupGlobal(builder);
-        }
-
-        private IClusterClient CreateClusterClient()
-        {
-            // ReSharper disable once RedundantNameQualifier
-            // full type name currently required due to https://github.com/vostok/clusterclient.datacenters/issues/1
-            return new Clusterclient.Core.ClusterClient(
-                Log,
-                s =>
-                {
-                    s.ClusterProvider = new FixedClusterProvider($"http://localhost:{Port}");
-                    s.SetupUniversalTransport();
-                });
         }
     }
 }

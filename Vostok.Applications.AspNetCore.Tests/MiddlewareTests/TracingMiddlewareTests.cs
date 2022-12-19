@@ -14,12 +14,6 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
     public class TracingMiddlewareTests : MiddlewareTestsBase
     {
-        private Uri CustomUri => new UriBuilder
-        {
-            Port = Port,
-            Host = "localhost"
-        }.Uri;
-        
         private readonly StubSpanSender spanSender = new();
 
         public TracingMiddlewareTests(bool webApplication)
@@ -38,7 +32,7 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
             spanSender.CaughtSpans
                .Where(x =>
                     x.Annotations.ContainsKey(WellKnownAnnotations.Http.Request.Url) &&
-                    x.Annotations[WellKnownAnnotations.Http.Request.Url].ToString()!.StartsWith(CustomUri.AbsoluteUri) &&
+                    x.Annotations[WellKnownAnnotations.Http.Client.Name].ToString() == "" &&
                     x.Annotations[WellKnownAnnotations.Http.Request.Url].ToString()!.EndsWith("/_status/ping")
                 )
                .Should()
@@ -47,7 +41,6 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 
         protected override void SetupGlobal(IVostokHostingEnvironmentBuilder builder)
         {
-            builder.SetupServiceBeacon(beaconBuilder => beaconBuilder.SetupReplicaInfo(infoBuilder => infoBuilder.SetUrl(CustomUri)));
             builder.SetupTracer(tracerBuilder => tracerBuilder.AddSpanSender(spanSender));
         }
 
