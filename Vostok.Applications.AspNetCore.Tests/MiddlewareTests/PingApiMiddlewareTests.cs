@@ -21,6 +21,10 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
         {
         }
 
+        public PingApiMiddlewareTests()
+        {
+        }
+
         [SetUp]
         public void Setup()
         {

@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Clusterclient.Core;
-using Vostok.Clusterclient.Core.Topology;
-using Vostok.Clusterclient.Transport;
 using Vostok.Commons.Helpers.Network;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Setup;
@@ -12,11 +11,26 @@ using Vostok.Logging.Console;
 using Vostok.Logging.File;
 using Vostok.Logging.File.Configuration;
 
+#if !ASPNTCORE_HOSTING
+using Vostok.Applications.AspNetCore.Tests.Applications;
+#else
+using Vostok.Hosting.AspNetCore.Extensions;
+using Vostok.Hosting.AspNetCore.Tests.TestHelpers;
+#endif
+
 namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
 {
-    public abstract partial class MiddlewareTestsBase
+#if !ASPNTCORE_HOSTING
+    [TestFixture(false)]
+#if NET6_0_OR_GREATER
+    [TestFixture(true)]
+#endif
+#else
+    [TestFixture]
+#endif
+    public abstract class MiddlewareTestsBase
     {
-        protected int Port;
+        private int port;
         private readonly bool webApplication;
         private ITestHostRunner runner;
 
@@ -39,8 +53,8 @@ namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
                     FileOpenMode = FileOpenMode.Rewrite
                 }));
 
-            Port = FreeTcpPortFinder.GetFreePort();
-            Client = ClusterClientHelper.Create(Port, Log);
+            port = FreeTcpPortFinder.GetFreePort();
+            Client = ClusterClientHelper.Create(port, Log);
             CreateRunner(SetupEnvironment);
 
             await runner.StartAsync();
@@ -70,6 +84,43 @@ namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
             // use this method to override vostok configuration in each test fixture
         }
 
+#if ASPNTCORE_HOSTING
+        protected virtual void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
+        {
+            // use this method to override host configuration in each test fixture
+        }
+#endif
+
+#if !ASPNTCORE_HOSTING
+        private void CreateRunner(VostokHostingEnvironmentSetup setup) =>
+            runner = new TestVostokHostRunner(CreateVostokApplication(), setup);
+
+        protected virtual IVostokApplication CreateVostokApplication()
+        {
+            return webApplication
+#if NET6_0_OR_GREATER
+                ? new TestVostokAspNetCoreWebApplication(SetupGlobal)
+#else
+                ? throw new Exception("Should not be called")
+#endif
+                : new TestVostokAspNetCoreApplication(SetupGlobal);
+        }
+#else
+        private void CreateRunner(VostokHostingEnvironmentSetup setup) =>
+            runner = new TestWebApplicationHostRunner(setup, Setup, Setup);
+        
+        private void Setup(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
+        {
+            builder.Services.AddVostokMiddlewares(_ => {});
+            SetupGlobal(builder);
+        }
+
+        private void Setup(Microsoft.AspNetCore.Builder.WebApplication builder)
+        {
+            builder.UseVostokMiddlewares();
+        }
+#endif
+        
         private void SetupEnvironment(IVostokHostingEnvironmentBuilder builder)
         {
             builder.SetupApplicationIdentity(
@@ -78,7 +129,7 @@ namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
                         .SetEnvironment("Env")
                         .SetApplication("App")
                         .SetInstance("Instance"))
-                .SetPort(Port)
+                .SetPort(port)
                 .SetupLog(s => s.AddLog(Log));
 
             builder.DisableClusterConfig();

@@ -19,6 +19,10 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
         {
         }
 
+        public DiagnosticApiMiddlewareTests()
+        {
+        }
+
         [Test]
         public async Task Root_path_should_return_an_html_page_with_a_list_of_registered_info_providers()
         {

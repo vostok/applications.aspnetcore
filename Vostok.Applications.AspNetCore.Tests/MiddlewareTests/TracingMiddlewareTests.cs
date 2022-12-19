@@ -19,7 +19,10 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
         public TracingMiddlewareTests(bool webApplication)
             : base(webApplication)
         {
-            
+        }
+
+        public TracingMiddlewareTests()
+        {
         }
 
         [Test]

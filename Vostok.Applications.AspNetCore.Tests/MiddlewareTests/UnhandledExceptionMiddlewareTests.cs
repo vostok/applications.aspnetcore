@@ -17,6 +17,10 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
         {
         }
 
+        public UnhandledExceptionMiddlewareTests()
+        {
+        }
+
         [Test]
         public async Task Invoke_ShouldCatch_UnhandledExceptions()
         {

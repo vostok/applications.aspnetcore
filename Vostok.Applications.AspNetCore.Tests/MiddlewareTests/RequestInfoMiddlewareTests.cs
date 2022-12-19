@@ -16,6 +16,10 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
         {
         }
 
+        public RequestInfoMiddlewareTests()
+        {
+        }
+
         [Test]
         public async Task Invoke_ShouldFillRequestInfo()
         {
