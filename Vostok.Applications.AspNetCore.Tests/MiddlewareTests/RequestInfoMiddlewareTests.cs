@@ -4,9 +4,10 @@ using FluentAssertions;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Applications.AspNetCore.Tests.Models;
+using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Clusterclient.Core.Model;
 
-namespace Vostok.Applications.AspNetCore.Tests.Tests
+namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
     public class RequestInfoMiddlewareTests : TestsBase
     {

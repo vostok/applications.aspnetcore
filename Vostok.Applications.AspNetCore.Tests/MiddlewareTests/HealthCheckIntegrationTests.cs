@@ -5,17 +5,15 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
+using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Hosting.Abstractions;
 using HealthCheckResult = Vostok.Hosting.Abstractions.Diagnostics.HealthCheckResult;
 using IHealthCheck = Vostok.Hosting.Abstractions.Diagnostics.IHealthCheck;
-#if NETCOREAPP
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-#endif
 
 #pragma warning disable 162
 
-namespace Vostok.Applications.AspNetCore.Tests.Tests
+namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
     public class HealthCheckIntegrationTests : TestsBase
     {
@@ -104,7 +102,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
 #if NETCOREAPP
         private class MicrosoftHealthCheck : Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheck
         {
-            public Task<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken()) =>
+            public Task<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult> CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken()) =>
                 Task.FromResult(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy());
         }
 #endif

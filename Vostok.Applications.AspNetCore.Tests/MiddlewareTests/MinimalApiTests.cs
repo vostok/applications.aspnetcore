@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Builder;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
+using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Hosting.Abstractions;
-using Vostok.Hosting.Setup;
 
-namespace Vostok.Applications.AspNetCore.Tests.Tests;
+namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests;
 
 [TestFixture]
 public class MinimalApiTests : TestsBase
