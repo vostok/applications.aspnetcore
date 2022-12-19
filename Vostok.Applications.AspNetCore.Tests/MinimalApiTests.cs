@@ -8,7 +8,7 @@ using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Hosting.Abstractions;
 
-namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests;
+namespace Vostok.Applications.AspNetCore.Tests;
 
 [TestFixture]
 public class MinimalApiTests : TestsBase
