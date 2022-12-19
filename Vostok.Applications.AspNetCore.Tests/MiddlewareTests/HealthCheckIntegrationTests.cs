@@ -25,6 +25,10 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
         {
         }
 
+        public HealthCheckIntegrationTests()
+        {
+        }
+
         [Test]
         public async Task Should_include_vostok_health_checks_in_aspnetcore_middleware()
         {

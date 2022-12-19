@@ -13,11 +13,16 @@ using Vostok.Hosting.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
+#if !ASPNTCORE_HOSTING
     [TestFixture(false, false)]
     [TestFixture(false, true)]
 #if NET6_0_OR_GREATER
     [TestFixture(true, false)]
     [TestFixture(true, true)]
+#endif
+#else
+    [TestFixture(false)]
+    [TestFixture(true)]
 #endif
     public class DatacenterMiddlewareTests : MiddlewareTestsBase
     {
@@ -26,6 +31,11 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
         private readonly bool rejectResponses;
         private string[] activeDataCenters = {"local"};
 
+        public DatacenterMiddlewareTests(bool rejectResponses)
+        {
+            this.rejectResponses = rejectResponses;
+        }
+        
         public DatacenterMiddlewareTests(bool webApplication, bool rejectResponses)
             : base(webApplication)
         {

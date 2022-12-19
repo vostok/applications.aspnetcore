@@ -20,6 +20,10 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
         {
         }
 
+        public DistributedContextMiddlewareTests()
+        {
+        }
+
         [Theory]
         public async Task Invoke_ShouldRestoreRequestPriority(RequestPriority requestPriority)
         {
