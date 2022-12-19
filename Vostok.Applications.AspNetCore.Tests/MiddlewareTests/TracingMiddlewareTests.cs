@@ -32,8 +32,9 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
             spanSender.CaughtSpans
                .Where(x =>
                     x.Annotations.ContainsKey(WellKnownAnnotations.Http.Request.Url) &&
-                    x.Annotations[WellKnownAnnotations.Http.Client.Name].ToString() == "" &&
-                    x.Annotations[WellKnownAnnotations.Http.Request.Url].ToString()!.EndsWith("/_status/ping")
+                    x.Annotations[WellKnownAnnotations.Http.Request.Url].ToString()!.EndsWith("/_status/ping") &&
+                    x.Annotations.ContainsKey(WellKnownAnnotations.Http.Client.Name) &&
+                    x.Annotations[WellKnownAnnotations.Http.Client.Name].ToString() == "TestClusterClient"
                 )
                .Should()
                .NotBeEmpty();
