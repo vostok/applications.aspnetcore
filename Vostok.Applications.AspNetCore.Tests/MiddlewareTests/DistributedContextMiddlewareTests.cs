@@ -58,6 +58,13 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
         }
 #endif
 
+#if ASPNTCORE_HOSTING
+        protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
+        {
+            builder.Services.AddVostokDistributedContext(s => s.AdditionalActions.AddRange(CreateDistributedContextActions()));
+        }
+#endif
+        
         private static IEnumerable<Action<HttpRequest>> CreateDistributedContextActions()
         {
             yield return r =>
