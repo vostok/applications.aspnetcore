@@ -56,7 +56,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
             return services;
         }
 
-        private static void AddVostokEnvironmentHostExtensions(this IServiceCollection services, IVostokHostingEnvironment environment)
+        public static void AddVostokEnvironmentHostExtensions(this IServiceCollection services, IVostokHostingEnvironment environment)
         {
             foreach (var (type, obj) in environment.HostExtensions.GetAll())
                 services.AddSingleton(type, obj);
