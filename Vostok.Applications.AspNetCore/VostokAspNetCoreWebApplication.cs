@@ -30,7 +30,7 @@ namespace Vostok.Applications.AspNetCore
     [RequiresPort]
     public abstract class VostokAspNetCoreWebApplication : IVostokApplication, IDisposable
     {
-        private readonly List<IDisposable> disposables = new List<IDisposable>();
+        private readonly VostokDisposables disposables = new VostokDisposables();
         private readonly AtomicBoolean initialized = new AtomicBoolean(false);
         private volatile GenericHostManager manager;
 
@@ -92,7 +92,7 @@ namespace Vostok.Applications.AspNetCore
 
         public void Dispose()
         {
-            disposables.ForEach(disposable => disposable?.Dispose());
+            disposables.Dispose();
             DoDisposeAsync().GetAwaiter().GetResult();
         }
     }

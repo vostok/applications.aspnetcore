@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Vostok.Applications.AspNetCore.Configuration;
+using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Commons.Helpers;
 using Vostok.Hosting.Abstractions;
@@ -15,10 +15,10 @@ namespace Vostok.Applications.AspNetCore.Builders
     internal class VostokThrottlingBuilder : IVostokThrottlingBuilder
     {
         private readonly IVostokHostingEnvironment environment;
-        private readonly List<IDisposable> disposables;
+        private readonly VostokDisposables disposables;
         private readonly ThrottlingConfigurationBuilder configurationBuilder;
 
-        public VostokThrottlingBuilder(IVostokHostingEnvironment environment, List<IDisposable> disposables)
+        public VostokThrottlingBuilder(IVostokHostingEnvironment environment, VostokDisposables disposables)
         {
             this.environment = environment;
             this.disposables = disposables;

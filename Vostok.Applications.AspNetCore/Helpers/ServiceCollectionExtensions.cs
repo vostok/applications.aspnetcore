@@ -4,11 +4,17 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Vostok.Applications.AspNetCore.Diagnostics;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Configuration.Abstractions;
 using Vostok.Context;
 using Vostok.Hosting.Abstractions;
+using Vostok.Hosting.Abstractions.Diagnostics;
 using Vostok.Hosting.Abstractions.Requirements;
+#if NETCOREAPP
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+#endif
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {
@@ -68,6 +74,34 @@ namespace Vostok.Applications.AspNetCore.Helpers
                     .AddSingleton(diagnostics.HealthTracker);
             }
         }
+        
+#if NETCOREAPP
+        public static void AddVostokHealthChecks(this IServiceCollection services, IVostokHostingEnvironment environment)
+        {
+            services.AddHealthChecks();
+
+            if (!environment.HostExtensions.TryGet<IVostokApplicationDiagnostics>(out var diagnostics))
+                return;
+            
+            var descriptors = services.Where(service => service.ServiceType == typeof(HealthCheckService)).ToArray();
+            var defaultRegistration = descriptors.First();
+
+            var vostokRegistration = ServiceDescriptor.Describe(
+                typeof(HealthCheckService),
+                provider => new VostokHealthCheckService(
+                    provider.GetRequiredService<IOptions<HealthCheckServiceOptions>>(),
+                    provider,
+                    diagnostics.HealthTracker,
+                    defaultRegistration.ImplementationType,
+                    provider.GetRequiredService<VostokDisposables>()),
+                ServiceLifetime.Singleton);
+
+            foreach (var descriptor in descriptors)
+                services.Remove(descriptor);
+
+            services.Add(vostokRegistration);
+        }
+#endif
 
         private static void AddSettingsProviders(this IServiceCollection services, IEnumerable<Type> types, IConfigurationProvider provider)
         {

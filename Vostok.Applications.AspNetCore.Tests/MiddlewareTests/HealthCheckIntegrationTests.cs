@@ -1,6 +1,8 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
@@ -87,6 +89,12 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
         protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
         {
             builder.Services.AddHealthChecks().AddCheck("ms", new MicrosoftHealthCheck());
+        }
+
+        protected override void SetupGlobal(WebApplication builder)
+        {
+            environment = builder.Services.GetRequiredService<IVostokHostingEnvironment>();
+            environment.HostExtensions.TryGet(out diagnostics).Should().BeTrue();
         }
 #endif
         
