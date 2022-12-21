@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Clusterclient.Core;
@@ -89,6 +90,11 @@ namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
         {
             // use this method to override host configuration in each test fixture
         }
+        
+        protected virtual void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplication builder)
+        {
+            // use this method to override host configuration in each test fixture
+        }
 #endif
 
 #if !ASPNTCORE_HOSTING
@@ -111,13 +117,14 @@ namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
         
         private void Setup(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
         {
-            builder.Services.AddVostokMiddlewares(_ => {});
+            builder.Services.AddVostokMiddlewares();
             SetupGlobal(builder);
         }
 
         private void Setup(Microsoft.AspNetCore.Builder.WebApplication builder)
         {
             builder.UseVostokMiddlewares();
+            SetupGlobal(builder);
         }
 #endif
         

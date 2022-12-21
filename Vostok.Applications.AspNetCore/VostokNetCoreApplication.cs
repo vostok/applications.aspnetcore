@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Hosting;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.HostBuilders;
 using Vostok.Hosting.Abstractions;
 using Vostok.Hosting.Abstractions.Helpers;
@@ -19,19 +20,20 @@ namespace Vostok.Applications.AspNetCore
     [PublicAPI]
     public abstract class VostokNetCoreApplication : IVostokApplication, IDisposable
     {
+        private readonly VostokDisposables disposables = new VostokDisposables();
         private volatile GenericHostManager manager;
 
         public virtual async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
             var log = environment.Log.ForContext<VostokNetCoreApplication>();
 
-            var hostBuilder = new GenericHostFactory(environment, this);
+            var hostBuilder = new GenericHostFactory(environment, this, disposables);
 
             var applicationBuilder = new VostokNetCoreApplicationBuilder(hostBuilder);
 
             Setup(applicationBuilder, environment);
 
-            manager = new GenericHostManager(hostBuilder.CreateHost(), log);
+            disposables.Add(manager = new GenericHostManager(hostBuilder.CreateHost(), log));
 
             using (new OperationContextToken("Warmup"))
                 await WarmupServicesAsync(environment, manager.Services);
@@ -75,7 +77,7 @@ namespace Vostok.Applications.AspNetCore
 
         public void Dispose()
         {
-            manager?.Dispose();
+            disposables.Dispose();
             DoDisposeAsync().GetAwaiter().GetResult();
             DoDispose();
         }

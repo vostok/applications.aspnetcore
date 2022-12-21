@@ -14,14 +14,16 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
     {
         private readonly IVostokHostingEnvironment environment;
         private readonly IVostokApplication application;
+        private readonly VostokDisposables disposables;
 
         private readonly Customization<IHostBuilder> hostCustomization = new Customization<IHostBuilder>();
         private readonly Customization<VostokLoggerProviderSettings> loggerCustomization = new Customization<VostokLoggerProviderSettings>();
 
-        public GenericHostFactory(IVostokHostingEnvironment environment, IVostokApplication application)
+        public GenericHostFactory(IVostokHostingEnvironment environment, IVostokApplication application, VostokDisposables disposables)
         {
             this.environment = environment;
             this.application = application;
+            this.disposables = disposables;
         }
 
         public IHost CreateHost()
@@ -41,7 +43,7 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
                 services =>
                 {
                     services.AddSingleton<IHostLifetime, GenericHostEmptyLifetime>();
-
+                    services.AddSingleton(disposables);
                     services.AddVostokEnvironment(environment, application);
 
                     services.Configure<HostOptions>(options => options.ShutdownTimeout = environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));

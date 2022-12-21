@@ -1,4 +1,5 @@
 static Vostok.Applications.AspNetCore.Helpers.IConfigurationBuilderExtensions.AddVostokSources(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> void
 static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVostokEnvironmentComponents(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVostokEnvironmentHostExtensions(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> void
+static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVostokHealthChecks(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> void
 Vostok.Applications.AspNetCore.Helpers.IConfigurationBuilderExtensions
