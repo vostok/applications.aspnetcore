@@ -26,7 +26,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             where TApplication : class, IVostokApplication
             => builder.SetupGenericHost(b => b.ConfigureServices(services =>
             {
-                services.AddSingleton(application);
+                services.AddSingleton(_ => application);
                 services.AddHostedService<VostokApplicationBackgroundService<TApplication>>();
             }));
     }
