@@ -104,6 +104,39 @@ namespace Vostok.Applications.AspNetCore.Helpers
 #endif
 
         private static void AddSettingsProviders(this IServiceCollection services, IEnumerable<Type> types, IConfigurationProvider provider)
+        public static IServiceCollection AddHostedServiceFromApplication<TApplication>(this IServiceCollection services)
+            where TApplication : class, IVostokApplication
+        {
+            services.AddSingleton<TApplication>();
+            services.AddHostedService<VostokApplicationHostedService<TApplication>>();
+            return services;
+        }
+
+        public static IServiceCollection AddHostedServiceFromApplication<TApplication>(this IServiceCollection services, TApplication application)
+            where TApplication : class, IVostokApplication
+        {
+            services.AddSingleton(application);
+            services.AddHostedService<VostokApplicationHostedService<TApplication>>();
+            return services;
+        }
+        
+        public static IServiceCollection AddBackgroundServiceFromApplication<TApplication>(this IServiceCollection services)
+            where TApplication : class, IVostokApplication
+        {
+            services.AddSingleton<TApplication>();
+            services.AddHostedService<VostokApplicationBackgroundService<TApplication>>();
+            return services;
+        }
+
+        public static IServiceCollection AddBackgroundServiceFromApplication<TApplication>(this IServiceCollection services, TApplication application)
+            where TApplication : class, IVostokApplication
+        {
+            services.AddSingleton(application);
+            services.AddHostedService<VostokApplicationBackgroundService<TApplication>>();
+            return services;
+        }
+        
+        private static void AddSettingsProviders(IServiceCollection services, IEnumerable<Type> types, IConfigurationProvider provider)
         {
             foreach (var type in types)
             {
