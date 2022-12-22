@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Diagnostics;
 using Vostok.Applications.AspNetCore.Models;
@@ -103,7 +104,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
         }
 #endif
 
-        private static void AddSettingsProviders(this IServiceCollection services, IEnumerable<Type> types, IConfigurationProvider provider)
+        /// <inheritdoc cref="AddHostedServiceFromApplication{TApplication}(Microsoft.Extensions.DependencyInjection.IServiceCollection, TApplication)"/>
         public static IServiceCollection AddHostedServiceFromApplication<TApplication>(this IServiceCollection services)
             where TApplication : class, IVostokApplication
         {
@@ -112,10 +113,15 @@ namespace Vostok.Applications.AspNetCore.Helpers
             return services;
         }
 
+        /// <summary>
+        /// <para>Adds given <paramref name="application"/> as <see cref="IHostedService"/>.</para>
+        /// <para><see cref="IVostokApplication.InitializeAsync"/> and <see cref="IVostokApplication.RunAsync"/> are called during <see cref="IHostedService.StartAsync"/> phase.</para>
+        /// <para>Waits to completion of <see cref="IVostokApplication.RunAsync"/> during <see cref="IHostedService.StopAsync"/> phase.</para>
+        /// </summary>
         public static IServiceCollection AddHostedServiceFromApplication<TApplication>(this IServiceCollection services, TApplication application)
             where TApplication : class, IVostokApplication
         {
-            services.AddSingleton(application);
+            services.AddSingleton(_ => application);
             services.AddHostedService<VostokApplicationHostedService<TApplication>>();
             return services;
         }
@@ -128,15 +134,19 @@ namespace Vostok.Applications.AspNetCore.Helpers
             return services;
         }
 
+        /// <summary>
+        /// <para>Adds given <paramref name="application"/> as <see cref="BackgroundService"/>.</para>
+        /// <para>Doesn't wait completion of <see cref="IVostokApplication.InitializeAsync"/> or <see cref="IVostokApplication.RunAsync"/>.</para>
+        /// </summary>
         public static IServiceCollection AddBackgroundServiceFromApplication<TApplication>(this IServiceCollection services, TApplication application)
             where TApplication : class, IVostokApplication
         {
-            services.AddSingleton(application);
+            services.AddSingleton(_ => application);
             services.AddHostedService<VostokApplicationBackgroundService<TApplication>>();
             return services;
         }
         
-        private static void AddSettingsProviders(IServiceCollection services, IEnumerable<Type> types, IConfigurationProvider provider)
+        private static void AddSettingsProviders(this IServiceCollection services, IEnumerable<Type> types, IConfigurationProvider provider)
         {
             foreach (var type in types)
             {
