@@ -1,6 +1,5 @@
 ﻿#if NET6_0_OR_GREATER
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Builder;
@@ -30,12 +29,13 @@ namespace Vostok.Applications.AspNetCore
     [RequiresPort]
     public abstract class VostokAspNetCoreWebApplication : IVostokApplication, IDisposable
     {
-        private readonly VostokDisposables disposables = new VostokDisposables();
         private readonly AtomicBoolean initialized = new AtomicBoolean(false);
+        private volatile VostokDisposables disposables;
         private volatile GenericHostManager manager;
 
         public virtual async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
+            disposables = new VostokDisposables(environment.Log);
             var log = environment.Log.ForContext<VostokAspNetCoreWebApplication>();
 
             var builder = new VostokAspNetCoreWebApplicationBuilder(environment, this, disposables);
@@ -92,7 +92,7 @@ namespace Vostok.Applications.AspNetCore
 
         public void Dispose()
         {
-            disposables.Dispose();
+            disposables?.Dispose();
             DoDisposeAsync().GetAwaiter().GetResult();
         }
     }
