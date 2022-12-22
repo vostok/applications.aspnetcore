@@ -26,7 +26,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             where TApplication : class, IVostokApplication
             => builder.SetupWebApplication(b =>
             {
-                b.Services.AddSingleton(application);
+                b.Services.AddSingleton(_ => application);
                 b.Services.AddHostedService<VostokApplicationBackgroundService<TApplication>>();
             });
     }
