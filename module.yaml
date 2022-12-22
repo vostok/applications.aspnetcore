@@ -21,7 +21,7 @@ base:
     - vostok.commons.collections/src
     - vostok.commons.environment/src
     - vostok.commons.formatting/src
-    - vostok.commons.helpers/src
+    - vostok.commons.helpers/src@wait-task-with-token
     - vostok.commons.threading/src
     - vostok.commons.time/src
     - vostok.configuration
