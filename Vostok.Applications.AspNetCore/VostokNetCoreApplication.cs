@@ -20,11 +20,12 @@ namespace Vostok.Applications.AspNetCore
     [PublicAPI]
     public abstract class VostokNetCoreApplication : IVostokApplication, IDisposable
     {
-        private readonly VostokDisposables disposables = new VostokDisposables();
+        private volatile VostokDisposables disposables;
         private volatile GenericHostManager manager;
 
         public virtual async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
+            disposables = new VostokDisposables(environment.Log);
             var log = environment.Log.ForContext<VostokNetCoreApplication>();
 
             var hostBuilder = new GenericHostFactory(environment, this, disposables);
@@ -77,7 +78,7 @@ namespace Vostok.Applications.AspNetCore
 
         public void Dispose()
         {
-            disposables.Dispose();
+            disposables?.Dispose();
             DoDisposeAsync().GetAwaiter().GetResult();
             DoDispose();
         }
