@@ -19,7 +19,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             => builder.SetupGenericHost(b => b.ConfigureServices(services =>
             {
                 services.AddSingleton<TApplication>();
-                services.AddHostedService<VostokApplicationHostedService<TApplication>>();
+                services.AddHostedService<VostokApplicationBackgroundService<TApplication>>();
             }));
 
         public static IVostokAspNetCoreApplicationBuilder AddHostedServiceFromApplication<TApplication>([NotNull] this IVostokAspNetCoreApplicationBuilder builder, [NotNull] TApplication application)
@@ -27,7 +27,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             => builder.SetupGenericHost(b => b.ConfigureServices(services =>
             {
                 services.AddSingleton(application);
-                services.AddHostedService<VostokApplicationHostedService<TApplication>>();
+                services.AddHostedService<VostokApplicationBackgroundService<TApplication>>();
             }));
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Configuration.Abstractions;
@@ -11,6 +12,7 @@ using Vostok.Hosting.Abstractions.Requirements;
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {
+    [PublicAPI]
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddVostokEnvironment(this IServiceCollection services, IVostokHostingEnvironment environment, IVostokApplication application)
@@ -54,6 +56,38 @@ namespace Vostok.Applications.AspNetCore.Helpers
             return services;
         }
 
+        public static IServiceCollection AddHostedServiceFromApplication<TApplication>(this IServiceCollection services)
+            where TApplication : class, IVostokApplication
+        {
+            services.AddSingleton<TApplication>();
+            services.AddHostedService<VostokApplicationHostedService<TApplication>>();
+            return services;
+        }
+
+        public static IServiceCollection AddHostedServiceFromApplication<TApplication>(this IServiceCollection services, TApplication application)
+            where TApplication : class, IVostokApplication
+        {
+            services.AddSingleton(application);
+            services.AddHostedService<VostokApplicationHostedService<TApplication>>();
+            return services;
+        }
+        
+        public static IServiceCollection AddBackgroundServiceFromApplication<TApplication>(this IServiceCollection services)
+            where TApplication : class, IVostokApplication
+        {
+            services.AddSingleton<TApplication>();
+            services.AddHostedService<VostokApplicationBackgroundService<TApplication>>();
+            return services;
+        }
+
+        public static IServiceCollection AddBackgroundServiceFromApplication<TApplication>(this IServiceCollection services, TApplication application)
+            where TApplication : class, IVostokApplication
+        {
+            services.AddSingleton(application);
+            services.AddHostedService<VostokApplicationBackgroundService<TApplication>>();
+            return services;
+        }
+        
         private static void AddSettingsProviders(IServiceCollection services, IEnumerable<Type> types, IConfigurationProvider provider)
         {
             foreach (var type in types)
