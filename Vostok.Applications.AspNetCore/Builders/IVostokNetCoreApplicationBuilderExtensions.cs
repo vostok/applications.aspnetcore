@@ -14,7 +14,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             where THostedService : class, IHostedService
             => builder.SetupGenericHost(b => b.ConfigureServices(services => services.AddHostedService<THostedService>()));
 
-        /// <inheritdoc cref="ServiceCollectionExtensions.AddBackgroundServiceFromApplication{TApplication}(Microsoft.Extensions.DependencyInjection.IServiceCollection, TApplication)"/>
+        /// <inheritdoc cref="Extensions.IServiceCollectionExtensions.AddBackgroundServiceFromApplication{TApplication}(Microsoft.Extensions.DependencyInjection.IServiceCollection, TApplication)"/>
         public static IVostokNetCoreApplicationBuilder AddHostedServiceFromApplication<TApplication>([NotNull] this IVostokNetCoreApplicationBuilder builder)
             where TApplication : class, IVostokApplication
             => builder.SetupGenericHost(b => b.ConfigureServices(services =>
@@ -23,7 +23,7 @@ namespace Vostok.Applications.AspNetCore.Builders
                 services.AddHostedService<VostokApplicationBackgroundService<TApplication>>();
             }));
 
-        /// <inheritdoc cref="ServiceCollectionExtensions.AddBackgroundServiceFromApplication{TApplication}(Microsoft.Extensions.DependencyInjection.IServiceCollection, TApplication)"/>
+        /// <inheritdoc cref="Extensions.IServiceCollectionExtensions.AddBackgroundServiceFromApplication{TApplication}(Microsoft.Extensions.DependencyInjection.IServiceCollection, TApplication)"/>
         public static IVostokNetCoreApplicationBuilder AddHostedServiceFromApplication<TApplication>([NotNull] this IVostokNetCoreApplicationBuilder builder, [NotNull] TApplication application)
             where TApplication : class, IVostokApplication
             => builder.SetupGenericHost(b => b.ConfigureServices(services =>
