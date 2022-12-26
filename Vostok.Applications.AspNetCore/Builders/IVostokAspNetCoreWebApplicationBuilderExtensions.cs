@@ -14,6 +14,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             where THostedService : class, IHostedService
             => builder.SetupWebApplication(b => b.Services.AddHostedService<THostedService>());
 
+        /// <inheritdoc cref="Extensions.IServiceCollectionExtensions.AddBackgroundServiceFromApplication{TApplication}(Microsoft.Extensions.DependencyInjection.IServiceCollection, TApplication)"/>
         public static IVostokAspNetCoreWebApplicationBuilder AddHostedServiceFromApplication<TApplication>([NotNull] this IVostokAspNetCoreWebApplicationBuilder builder)
             where TApplication : class, IVostokApplication
             => builder.SetupWebApplication(b =>
@@ -22,11 +23,12 @@ namespace Vostok.Applications.AspNetCore.Builders
                 b.Services.AddHostedService<VostokApplicationBackgroundService<TApplication>>();
             });
 
+        /// <inheritdoc cref="Extensions.IServiceCollectionExtensions.AddBackgroundServiceFromApplication{TApplication}(Microsoft.Extensions.DependencyInjection.IServiceCollection, TApplication)"/>
         public static IVostokAspNetCoreWebApplicationBuilder AddHostedServiceFromApplication<TApplication>([NotNull] this IVostokAspNetCoreWebApplicationBuilder builder, [NotNull] TApplication application)
             where TApplication : class, IVostokApplication
             => builder.SetupWebApplication(b =>
             {
-                b.Services.AddSingleton(application);
+                b.Services.AddSingleton(_ => application);
                 b.Services.AddHostedService<VostokApplicationBackgroundService<TApplication>>();
             });
     }
