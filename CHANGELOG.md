@@ -1,3 +1,8 @@
+## 0.3.10 (26-12-2022):
+
+Added `AddHostedServiceFromApplication` and `AddBackgroundServiceFromApplication` extensions for `IServiceCollection`. 
+Implement `VostokApplicationHostedService` in addition to `VostokApplicationBackgroundService`.
+
 ## 0.3.9 (14-09-2022):
 
 Added a way to provide additional annotations based on HttpContext.
