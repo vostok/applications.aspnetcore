@@ -1,3 +1,5 @@
+Vostok.Applications.AspNetCore.Helpers.MiddlewaresWarmup
+static Vostok.Applications.AspNetCore.Helpers.MiddlewaresWarmup.WarmupPingApi(Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> System.Threading.Tasks.Task
 Vostok.Applications.AspNetCore.Diagnostics.DiagnosticConstants
 const Vostok.Applications.AspNetCore.Diagnostics.DiagnosticConstants.Component = "aspnetcore" -> string
 const Vostok.Applications.AspNetCore.Diagnostics.DiagnosticConstants.RequestsInProgressEntry = "requests-in-progress" -> string
