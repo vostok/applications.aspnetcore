@@ -5,6 +5,9 @@ static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVos
 Vostok.Applications.AspNetCore.Diagnostics.ThrottlingHealthCheck
 Vostok.Applications.AspNetCore.Diagnostics.ThrottlingHealthCheck.CheckAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Vostok.Hosting.Abstractions.Diagnostics.HealthCheckResult>
 Vostok.Applications.AspNetCore.Diagnostics.ThrottlingHealthCheck.ThrottlingHealthCheck(Vostok.Throttling.ThrottlingProvider throttlingProvider) -> void
+Vostok.Applications.AspNetCore.Diagnostics.ThrottlingInfoProvider
+Vostok.Applications.AspNetCore.Diagnostics.ThrottlingInfoProvider.Query() -> object
+Vostok.Applications.AspNetCore.Diagnostics.ThrottlingInfoProvider.ThrottlingInfoProvider(Vostok.Throttling.ThrottlingProvider throttlingProvider) -> void
 Vostok.Applications.AspNetCore.Helpers.ConfigurationBuilderExtensions
 Vostok.Applications.AspNetCore.Helpers.VostokDisposables
 Vostok.Applications.AspNetCore.Helpers.VostokDisposables.Add(System.IDisposable disposable) -> void

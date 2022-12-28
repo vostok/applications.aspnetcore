@@ -3,7 +3,7 @@ using Vostok.Throttling;
 
 namespace Vostok.Applications.AspNetCore.Diagnostics
 {
-    internal class ThrottlingInfoProvider : IDiagnosticInfoProvider
+    public class ThrottlingInfoProvider : IDiagnosticInfoProvider
     {
         private readonly ThrottlingProvider throttlingProvider;
 
