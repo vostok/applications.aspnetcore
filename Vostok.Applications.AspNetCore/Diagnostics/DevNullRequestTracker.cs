@@ -5,7 +5,7 @@ using Vostok.Commons.Helpers.Disposable;
 
 namespace Vostok.Applications.AspNetCore.Diagnostics
 {
-    internal class DevNullRequestTracker : IRequestTracker
+    public class DevNullRequestTracker : IRequestTracker
     {
         private readonly IDisposable result = new ActionDisposable(() => {});
 

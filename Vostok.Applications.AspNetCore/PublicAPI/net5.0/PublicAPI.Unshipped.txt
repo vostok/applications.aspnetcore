@@ -1,3 +1,12 @@
+Vostok.Applications.AspNetCore.Diagnostics.CurrentRequestsInfoProvider
+Vostok.Applications.AspNetCore.Diagnostics.CurrentRequestsInfoProvider.CurrentRequestsInfoProvider(Vostok.Applications.AspNetCore.Diagnostics.RequestTracker tracker) -> void
+Vostok.Applications.AspNetCore.Diagnostics.CurrentRequestsInfoProvider.Query() -> object
+Vostok.Applications.AspNetCore.Diagnostics.DevNullRequestTracker
+Vostok.Applications.AspNetCore.Diagnostics.DevNullRequestTracker.DevNullRequestTracker() -> void
+Vostok.Applications.AspNetCore.Diagnostics.DevNullRequestTracker.Track(Microsoft.AspNetCore.Http.HttpContext context, Vostok.Applications.AspNetCore.Models.IRequestInfo info) -> System.IDisposable
+Vostok.Applications.AspNetCore.Diagnostics.RequestTracker
+Vostok.Applications.AspNetCore.Diagnostics.RequestTracker.RequestTracker() -> void
+Vostok.Applications.AspNetCore.Diagnostics.RequestTracker.Track(Microsoft.AspNetCore.Http.HttpContext context, Vostok.Applications.AspNetCore.Models.IRequestInfo info) -> System.IDisposable
 Vostok.Applications.AspNetCore.Helpers.MiddlewaresWarmup
 static Vostok.Applications.AspNetCore.Helpers.MiddlewaresWarmup.WarmupPingApi(Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> System.Threading.Tasks.Task
 Vostok.Applications.AspNetCore.Diagnostics.DiagnosticConstants
