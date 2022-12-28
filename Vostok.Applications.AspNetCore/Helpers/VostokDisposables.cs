@@ -10,7 +10,7 @@ public class VostokDisposables : IDisposable
     private readonly List<IDisposable> disposables = new List<IDisposable>();
 
     public VostokDisposables(ILog log = null) =>
-        this.log = log;
+        this.log = log ?? LogProvider.Get();
 
     public void Add(IDisposable disposable)
     {
