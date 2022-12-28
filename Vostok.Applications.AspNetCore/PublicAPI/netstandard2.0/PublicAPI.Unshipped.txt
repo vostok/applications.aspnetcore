@@ -1,6 +1,9 @@
 static Vostok.Applications.AspNetCore.Helpers.ConfigurationBuilderExtensions.AddVostokSources(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> void
 static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVostokEnvironmentComponents(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVostokEnvironmentHostExtensions(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> void
+Vostok.Applications.AspNetCore.Diagnostics.ThrottlingHealthCheck
+Vostok.Applications.AspNetCore.Diagnostics.ThrottlingHealthCheck.CheckAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Vostok.Hosting.Abstractions.Diagnostics.HealthCheckResult>
+Vostok.Applications.AspNetCore.Diagnostics.ThrottlingHealthCheck.ThrottlingHealthCheck(Vostok.Throttling.ThrottlingProvider throttlingProvider) -> void
 Vostok.Applications.AspNetCore.Helpers.ConfigurationBuilderExtensions
 Vostok.Applications.AspNetCore.Helpers.VostokDisposables
 Vostok.Applications.AspNetCore.Helpers.VostokDisposables.Add(System.IDisposable disposable) -> void
