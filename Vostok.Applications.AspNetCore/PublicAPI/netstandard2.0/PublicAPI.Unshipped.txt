@@ -2,3 +2,7 @@ static Vostok.Applications.AspNetCore.Helpers.ConfigurationBuilderExtensions.Add
 static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVostokEnvironmentComponents(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVostokEnvironmentHostExtensions(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> void
 Vostok.Applications.AspNetCore.Helpers.ConfigurationBuilderExtensions
+Vostok.Applications.AspNetCore.Helpers.VostokDisposables
+Vostok.Applications.AspNetCore.Helpers.VostokDisposables.Add(System.IDisposable disposable) -> void
+Vostok.Applications.AspNetCore.Helpers.VostokDisposables.Dispose() -> void
+Vostok.Applications.AspNetCore.Helpers.VostokDisposables.VostokDisposables(Vostok.Logging.Abstractions.ILog log = null) -> void

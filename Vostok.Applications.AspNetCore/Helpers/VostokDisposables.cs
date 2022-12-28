@@ -4,12 +4,12 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Helpers;
 
-internal class VostokDisposables : IDisposable
+public class VostokDisposables : IDisposable
 {
     private readonly ILog log;
     private readonly List<IDisposable> disposables = new List<IDisposable>();
 
-    public VostokDisposables(ILog log) =>
+    public VostokDisposables(ILog log = null) =>
         this.log = log;
 
     public void Add(IDisposable disposable)
