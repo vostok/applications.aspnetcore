@@ -16,6 +16,7 @@ using Vostok.Logging.File.Configuration;
 using Vostok.Applications.AspNetCore.Tests.Applications;
 #else
 using Vostok.Hosting.AspNetCore.Extensions;
+using Vostok.Hosting.AspNetCore.Web;
 using Vostok.Hosting.AspNetCore.Tests.TestHelpers;
 #endif
 
