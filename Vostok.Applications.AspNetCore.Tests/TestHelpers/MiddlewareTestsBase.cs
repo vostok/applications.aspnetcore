@@ -87,7 +87,7 @@ namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
         }
 
 #if ASPNTCORE_HOSTING
-        protected virtual void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
+        protected virtual void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder, Vostok.Hosting.AspNetCore.Web.Configuration.IVostokMiddlewaresConfigurator middlewaresConfigurator)
         {
             // use this method to override host configuration in each test fixture
         }
@@ -118,8 +118,8 @@ namespace Vostok.Applications.AspNetCore.Tests.TestHelpers
         
         private void Setup(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
         {
-            builder.Services.AddVostokMiddlewares();
-            SetupGlobal(builder);
+            var middlewaresBuilder = builder.Services.AddVostokMiddlewares();
+            SetupGlobal(builder, middlewaresBuilder);
         }
 
         private void Setup(Microsoft.AspNetCore.Builder.WebApplication builder)

@@ -86,7 +86,7 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 #endif
 
 #if ASPNTCORE_HOSTING
-        protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
+        protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder, Vostok.Hosting.AspNetCore.Web.Configuration.IVostokMiddlewaresConfigurator middlewaresConfigurator)
         {
             builder.Services.AddHealthChecks().AddCheck("ms", new MicrosoftHealthCheck());
         }

@@ -68,6 +68,10 @@
             <SpecificVersion>False</SpecificVersion>
             <HintPath>..\..\vostok.configuration\Vostok.Configuration\bin\Release\$(ReferencesFramework)\Vostok.Configuration.dll</HintPath>
         </Reference>
+        <Reference Include="Vostok.Throttling">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>..\..\vostok.throttling\Vostok.Throttling\bin\Release\$(ReferencesFramework)\Vostok.Throttling.dll</HintPath>
+        </Reference>
         <Reference Include="Vostok.Configuration.Sources">
             <SpecificVersion>False</SpecificVersion>
             <HintPath>..\..\vostok.configuration.sources\Vostok.Configuration.Sources\bin\Release\$(ReferencesFramework)\Vostok.Configuration.Sources.dll</HintPath>
