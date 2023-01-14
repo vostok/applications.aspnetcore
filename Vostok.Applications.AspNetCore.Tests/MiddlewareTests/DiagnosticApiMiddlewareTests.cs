@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Diagnostics;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Applications.AspNetCore.Tests.TestHelpers;
@@ -92,9 +94,9 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 #endif
         
 #if ASPNTCORE_HOSTING
-        protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder)
+        protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder, Vostok.Hosting.AspNetCore.Web.Configuration.IVostokMiddlewaresConfigurator middlewaresConfigurator)
         {
-            builder.Services.AddVostokDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
+            middlewaresConfigurator.ConfigureDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
         }
 #endif
     }
