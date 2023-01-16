@@ -138,7 +138,7 @@ public class ThrottlingMiddlewareTests : MiddlewareTestsBase
         builder.Services.AddOptions<ThrottlingSettings>()
             .Configure<IVostokHostingEnvironment>((settings, _) =>
             {
-                settings.AdditionalProperties.Add(context => ("custom", context.Request.Headers["custom"]));
+                settings.UseCustomPropertyQuota("custom", context => context.Request.Headers["custom"]);
             });
         
         builder.Services.AddOptions<ThrottlingConfigurationBuilder>()
@@ -146,7 +146,8 @@ public class ThrottlingMiddlewareTests : MiddlewareTestsBase
             {
                 var configSource = environment.ConfigurationSource.ScopeTo("customQuota");
                 var configProvider = environment.ConfigurationProvider;
-                throttlingBuilder.SetPropertyQuota("custom", () => configProvider.Get<PropertyQuotaOptions>(configSource));
+                
+                throttlingBuilder.UseCustomPropertyQuota("custom", () => configProvider.Get<PropertyQuotaOptions>(configSource));
             });
     }
 #endif
