@@ -15,7 +15,11 @@ using Vostok.Hosting.Setup;
 using Vostok.Throttling;
 using Vostok.Throttling.Quotas;
 #if ASPNTCORE_HOSTING
+using Vostok.Applications.AspNetCore.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Vostok.Hosting.AspNetCore.Web.Configuration;
+using Vostok.Throttling.Config;
+using Vostok.Tracing.Abstractions;
 #endif
 
 namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests;
@@ -130,12 +134,20 @@ public class ThrottlingMiddlewareTests : MiddlewareTestsBase
 
         builder.Services.Configure<ThrottlingSettings>(middleware =>
             middleware.AddMethodProperty = false);
-
-        var configSource = environment.ConfigurationSource.ScopeTo("customQuota");
-        var configProvider = environment.ConfigurationProvider;
-        throttlingBuilder.UseCustomPropertyQuota("custom", 
-            context => context.Request.Headers["custom"], 
-            () => configProvider.Get<PropertyQuotaOptions>(configSource));
+        
+        builder.Services.AddOptions<ThrottlingSettings>()
+            .Configure<IVostokHostingEnvironment>((settings, _) =>
+            {
+                settings.AdditionalProperties.Add(context => ("custom", context.Request.Headers["custom"]));
+            });
+        
+        builder.Services.AddOptions<ThrottlingConfigurationBuilder>()
+            .Configure<IVostokHostingEnvironment>((throttlingBuilder, environment) =>
+            {
+                var configSource = environment.ConfigurationSource.ScopeTo("customQuota");
+                var configProvider = environment.ConfigurationProvider;
+                throttlingBuilder.SetPropertyQuota("custom", () => configProvider.Get<PropertyQuotaOptions>(configSource));
+            });
     }
 #endif
 }
