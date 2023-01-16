@@ -10,21 +10,24 @@ namespace Vostok.Applications.AspNetCore.Tests.Controllers;
 [Route("throttling-info")]
 public class ThrottlingInfoController : ControllerBase
 {
-    private readonly IOptions<ThrottlingSettings> options;
+    private readonly ThrottlingSettings options;
     private readonly ThrottlingProvider provider;
 
     public ThrottlingInfoController(IOptions<ThrottlingSettings> options, IThrottlingProvider provider)
     {
-        this.options = options;
+        this.options = options.Value;
         this.provider = (ThrottlingProvider)provider;
     }
         
     public object GetThrottlingInfo()
     {
-        return new ThrottlingInfoResponse
+        var result = new ThrottlingInfoResponse
         {
-            Settings = options.Value,
+            RejectionResponseCode = options.RejectionResponseCode,
+            AddMethodProperty = options.AddMethodProperty,
             CurrentInfo = provider.CurrentInfo
         };
+        
+        return result;
     }
 }
