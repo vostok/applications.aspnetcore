@@ -1,4 +1,4 @@
-## 0.3.11 (18-01-2023):
+## 0.3.12 (18-01-2023):
 
 Made helper classes public to be used in `hosting.aspnetcore` module.
 
