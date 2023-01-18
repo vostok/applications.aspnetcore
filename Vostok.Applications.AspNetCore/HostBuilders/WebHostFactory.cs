@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Commons.Helpers;
 using Vostok.Hosting.Abstractions;
@@ -12,13 +13,15 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
     {
         private readonly IVostokHostingEnvironment environment;
         private readonly IVostokApplication application;
+        private readonly VostokDisposables disposables;
 
         private readonly Customization<VostokLoggerProviderSettings> loggerCustomization = new Customization<VostokLoggerProviderSettings>();
 
-        public WebHostFactory(IVostokHostingEnvironment environment, IVostokApplication application)
+        public WebHostFactory(IVostokHostingEnvironment environment, IVostokApplication application, VostokDisposables disposables)
         {
             this.environment = environment;
             this.application = application;
+            this.disposables = disposables;
         }
 
         public IWebHostBuilder CreateHostBuilder()
@@ -29,7 +32,11 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
 
             hostBuilder.ConfigureAppConfiguration(config => config.AddVostokSources(environment));
 
-            hostBuilder.ConfigureServices(services => services.AddVostokEnvironment(environment, application));
+            hostBuilder.ConfigureServices(services =>
+            {
+                services.AddSingleton(disposables);
+                services.AddVostokEnvironment(environment, application);
+            });
 
             return hostBuilder;
         }

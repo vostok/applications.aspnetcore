@@ -3,16 +3,21 @@ using FluentAssertions;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
+using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Hosting.Abstractions;
 
-namespace Vostok.Applications.AspNetCore.Tests.Tests
+namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
-    public class UnhandledExceptionMiddlewareTests : TestsBase
+    public class UnhandledExceptionMiddlewareTests : MiddlewareTestsBase
     {
         private const int ResponseCode = 418;
 
         public UnhandledExceptionMiddlewareTests(bool webApplication)
             : base(webApplication)
+        {
+        }
+
+        public UnhandledExceptionMiddlewareTests()
         {
         }
 
@@ -33,6 +38,13 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
         protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             builder.SetupUnhandledExceptions(s => s.ErrorResponseCode = ResponseCode);
+        }
+#endif
+        
+#if ASPNTCORE_HOSTING
+        protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder, Vostok.Hosting.AspNetCore.Web.Configuration.IVostokMiddlewaresConfigurator middlewaresConfigurator)
+        {
+            middlewaresConfigurator.ConfigureUnhandledExceptions(s => s.ErrorResponseCode = ResponseCode);
         }
 #endif
     }

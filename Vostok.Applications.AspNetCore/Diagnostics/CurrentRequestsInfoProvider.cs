@@ -3,7 +3,7 @@ using Vostok.Hosting.Abstractions.Diagnostics;
 
 namespace Vostok.Applications.AspNetCore.Diagnostics
 {
-    internal class CurrentRequestsInfoProvider : IDiagnosticInfoProvider
+    public class CurrentRequestsInfoProvider : IDiagnosticInfoProvider
     {
         private readonly RequestTracker tracker;
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.Models;
 using Vostok.Applications.AspNetCore.StartupFilters;
 using Vostok.Commons.Helpers;
@@ -20,7 +21,7 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
         private readonly IVostokHostingEnvironment environment;
         private readonly VostokKestrelBuilder kestrelBuilder;
         private readonly VostokMiddlewaresBuilder middlewaresBuilder;
-        private readonly List<IDisposable> disposables;
+        private readonly VostokDisposables disposables;
         private readonly Type startupType;
 
         private readonly AtomicBoolean webHostEnabled;
@@ -30,7 +31,7 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
             IVostokHostingEnvironment environment,
             VostokKestrelBuilder kestrelBuilder,
             VostokMiddlewaresBuilder middlewaresBuilder,
-            List<IDisposable> disposables,
+            VostokDisposables disposables,
             Type startupType)
         {
             this.environment = environment;

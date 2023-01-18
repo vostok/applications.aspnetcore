@@ -5,7 +5,7 @@ using Vostok.Throttling;
 
 namespace Vostok.Applications.AspNetCore.Diagnostics
 {
-    internal class ThrottlingHealthCheck : IHealthCheck
+    public class ThrottlingHealthCheck : IHealthCheck
     {
         private readonly ThrottlingProvider throttlingProvider;
 

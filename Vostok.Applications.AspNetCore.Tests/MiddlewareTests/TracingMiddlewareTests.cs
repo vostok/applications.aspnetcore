@@ -6,24 +6,23 @@ using FluentAssertions;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Applications.AspNetCore.Tests.Models;
+using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Hosting.Setup;
 using Vostok.Tracing.Abstractions;
 
-namespace Vostok.Applications.AspNetCore.Tests.Tests
+namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
-    public class TracingMiddlewareTests : TestsBase
+    public class TracingMiddlewareTests : MiddlewareTestsBase
     {
-        private readonly Uri customUri;
         private readonly StubSpanSender spanSender = new();
 
         public TracingMiddlewareTests(bool webApplication)
             : base(webApplication)
         {
-            customUri = new UriBuilder
-            {
-                Port = GetPort(),
-                Host = "localhost"
-            }.Uri;
+        }
+
+        public TracingMiddlewareTests()
+        {
         }
 
         [Test]
@@ -36,16 +35,16 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
             spanSender.CaughtSpans
                .Where(x =>
                     x.Annotations.ContainsKey(WellKnownAnnotations.Http.Request.Url) &&
-                    x.Annotations[WellKnownAnnotations.Http.Request.Url].ToString()!.StartsWith(customUri.AbsoluteUri) &&
-                    x.Annotations[WellKnownAnnotations.Http.Request.Url].ToString()!.EndsWith("/_status/ping")
+                    x.Annotations[WellKnownAnnotations.Http.Request.Url].ToString()!.EndsWith("/_status/ping") &&
+                    x.Annotations.ContainsKey(WellKnownAnnotations.Http.Client.Name) &&
+                    x.Annotations[WellKnownAnnotations.Http.Client.Name].ToString() == "TestClusterClient"
                 )
                .Should()
                .NotBeEmpty();
         }
 
-        protected override void SetupVostokEnvironment(IVostokHostingEnvironmentBuilder builder)
+        protected override void SetupGlobal(IVostokHostingEnvironmentBuilder builder)
         {
-            builder.SetupServiceBeacon(beaconBuilder => beaconBuilder.SetupReplicaInfo(infoBuilder => infoBuilder.SetUrl(customUri)));
             builder.SetupTracer(tracerBuilder => tracerBuilder.AddSpanSender(spanSender));
         }
 
