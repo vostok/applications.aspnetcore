@@ -1,3 +1,7 @@
+## 0.3.11 (18-01-2023):
+
+Made helper classes public to be used in `hosting.aspnetcore` module.
+
 ## 0.3.10 (26-12-2022):
 
 Added `AddHostedServiceFromApplication` and `AddBackgroundServiceFromApplication` extensions for `IServiceCollection`. 
