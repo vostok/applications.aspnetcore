@@ -5,18 +5,14 @@ using Microsoft.AspNetCore.Builder;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
+using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Hosting.Abstractions;
 
-namespace Vostok.Applications.AspNetCore.Tests.Tests;
+namespace Vostok.Applications.AspNetCore.Tests;
 
 [TestFixture]
-public class MinimalApiTests : TestsBase
+public class MinimalApiTests : MiddlewareTestsBase
 {
-    public MinimalApiTests()
-        : base(new MinimalApiApplication())
-    {
-    }
-
     [Test]
     public async Task Get_should_work()
     {
@@ -26,6 +22,9 @@ public class MinimalApiTests : TestsBase
         response.Response.Content.ToString().Should().Be("Hello World!");
     }
 
+    protected override IVostokApplication CreateVostokApplication()
+        => new MinimalApiApplication();
+    
     internal class MinimalApiApplication : VostokAspNetCoreWebApplication
     {
         public override Task SetupAsync(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)

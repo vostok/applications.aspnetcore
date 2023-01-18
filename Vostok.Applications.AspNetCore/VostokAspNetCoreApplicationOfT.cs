@@ -35,12 +35,13 @@ namespace Vostok.Applications.AspNetCore
     public abstract class VostokAspNetCoreApplication<TStartup> : IVostokApplication, IDisposable
         where TStartup : class
     {
-        private readonly List<IDisposable> disposables = new List<IDisposable>();
         private readonly AtomicBoolean initialized = new AtomicBoolean(false);
         private volatile HostManager manager;
-
+        private volatile VostokDisposables disposables;
+        
         public virtual async Task InitializeAsync(IVostokHostingEnvironment environment)
         {
+            disposables = new VostokDisposables(environment.Log);
             var log = environment.Log.ForContext<VostokAspNetCoreApplication>();
 
             var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, this, disposables);
@@ -106,7 +107,7 @@ namespace Vostok.Applications.AspNetCore
 
         public void Dispose()
         {
-            disposables.ForEach(disposable => disposable?.Dispose());
+            disposables?.Dispose();
             DoDisposeAsync().GetAwaiter().GetResult();
             DoDispose();
         }

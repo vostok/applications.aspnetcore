@@ -29,11 +29,11 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly VostokWebHostBuilder webHostBuilder;
         private readonly HostFactory hostFactory;
 
-        public VostokAspNetCoreApplicationBuilder(IVostokHostingEnvironment environment, IVostokApplication application, List<IDisposable> disposables)
+        public VostokAspNetCoreApplicationBuilder(IVostokHostingEnvironment environment, IVostokApplication application, VostokDisposables disposables)
         {
             this.environment = environment;
 
-            hostFactory = new HostFactory(environment, application);
+            hostFactory = new HostFactory(environment, application, disposables);
             hostFactory.SetupLogger(s => s.AddDefaultLoggingSettings());
 
             kestrelBuilder = new VostokKestrelBuilder();

@@ -9,14 +9,14 @@ using Vostok.Commons.Helpers.Disposable;
 
 namespace Vostok.Applications.AspNetCore.Diagnostics
 {
-    internal class RequestTracker : IRequestTracker
+    public class RequestTracker : IRequestTracker
     {
         private readonly ConcurrentDictionary<RequestTrackerItem, byte> items;
 
         public RequestTracker()
             => items = new ConcurrentDictionary<RequestTrackerItem, byte>(64, 256, ByReferenceEqualityComparer<RequestTrackerItem>.Instance);
 
-        public IEnumerable<RequestTrackerItem> CurrentItems => items.Select(pair => pair.Key);
+        internal IEnumerable<RequestTrackerItem> CurrentItems => items.Select(pair => pair.Key);
 
         public IDisposable Track(HttpContext context, IRequestInfo info)
         {

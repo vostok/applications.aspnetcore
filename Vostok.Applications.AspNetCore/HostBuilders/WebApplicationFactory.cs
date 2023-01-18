@@ -15,16 +15,18 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
     {
         private readonly IVostokHostingEnvironment environment;
         private readonly IVostokApplication application;
+        private readonly VostokDisposables disposables;
 
         private readonly Customization<WebApplicationOptions> webApplicationOptionsCustomization = new Customization<WebApplicationOptions>();
         private readonly Customization<WebApplicationBuilder> webApplicationBuilderCustomization = new Customization<WebApplicationBuilder>();
         private readonly Customization<WebApplication> webApplicationCustomization = new Customization<WebApplication>();
         private readonly Customization<VostokLoggerProviderSettings> loggerCustomization = new Customization<VostokLoggerProviderSettings>();
 
-        public WebApplicationFactory(IVostokHostingEnvironment environment, IVostokApplication application)
+        public WebApplicationFactory(IVostokHostingEnvironment environment, IVostokApplication application, VostokDisposables disposables)
         {
             this.environment = environment;
             this.application = application;
+            this.disposables = disposables;
         }
 
         public WebApplication Create()
@@ -62,6 +64,7 @@ namespace Vostok.Applications.AspNetCore.HostBuilders
 
             builder.Services
                 .AddSingleton<IHostLifetime, GenericHostEmptyLifetime>()
+                .AddSingleton(disposables)
                 .AddVostokEnvironment(environment, application)
                 .Configure<HostOptions>(options => options.ShutdownTimeout = environment.ShutdownTimeout.Cut(100.Milliseconds(), 0.05));
 

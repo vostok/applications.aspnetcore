@@ -11,7 +11,7 @@ using Vostok.ServiceDiscovery.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.Helpers
 {
-    internal static class MiddlewaresWarmup
+    public static class MiddlewaresWarmup
     {
         public static async Task WarmupPingApi(IVostokHostingEnvironment environment)
         {

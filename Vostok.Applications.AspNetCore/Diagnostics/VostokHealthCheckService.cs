@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Hosting.Abstractions.Diagnostics;
 using HealthReport = Microsoft.Extensions.Diagnostics.HealthChecks.HealthReport;
 
@@ -18,14 +19,14 @@ namespace Vostok.Applications.AspNetCore.Diagnostics
         private readonly IServiceProvider serviceProvider;
         private readonly IHealthTracker vostokTracker;
         private readonly Type defaultServiceType;
-        private readonly List<IDisposable> disposables;
+        private readonly VostokDisposables disposables;
 
         public VostokHealthCheckService(
             [NotNull] IOptions<HealthCheckServiceOptions> options,
             [NotNull] IServiceProvider serviceProvider,
             [NotNull] IHealthTracker vostokTracker,
             [NotNull] Type defaultServiceType,
-            [NotNull] List<IDisposable> disposables)
+            [NotNull] VostokDisposables disposables)
         {
             this.defaultServiceType = defaultServiceType ?? throw new ArgumentNullException(nameof(defaultServiceType));
             this.serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Diagnostics;
+using Vostok.Applications.AspNetCore.Helpers;
 using Vostok.Applications.AspNetCore.Middlewares;
 using Vostok.Applications.AspNetCore.StartupFilters;
 using Vostok.Commons.Helpers;
@@ -19,7 +20,7 @@ namespace Vostok.Applications.AspNetCore.Builders
     {
         private readonly IVostokHostingEnvironment environment;
         private readonly VostokThrottlingBuilder throttlingBuilder;
-        private readonly List<IDisposable> disposables;
+        private readonly VostokDisposables disposables;
 
         private readonly Customization<TracingSettings> tracingCustomization = new Customization<TracingSettings>();
         private readonly Customization<LoggingSettings> loggingCustomization = new Customization<LoggingSettings>();
@@ -36,7 +37,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly Dictionary<Type, bool> middlewareDisabled = new Dictionary<Type, bool>();
         private readonly Dictionary<Type, List<Type>> preVostokMiddlewares = new Dictionary<Type, List<Type>>();
 
-        public VostokMiddlewaresBuilder(IVostokHostingEnvironment environment, List<IDisposable> disposables, VostokThrottlingBuilder throttlingBuilder)
+        public VostokMiddlewaresBuilder(IVostokHostingEnvironment environment, VostokDisposables disposables, VostokThrottlingBuilder throttlingBuilder)
         {
             this.environment = environment;
             this.disposables = disposables;
@@ -158,7 +159,7 @@ namespace Vostok.Applications.AspNetCore.Builders
             {
                 if (settings.AddThrottlingInfoProvider)
                 {
-                    var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, "request-throttling");
+                    var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, DiagnosticConstants.RequestThrottlingEntry);
                     var infoProvider = new ThrottlingInfoProvider(throttlingProvider);
 
                     disposables.Add(diagnostics.Info.RegisterProvider(infoEntry, infoProvider));
@@ -181,7 +182,7 @@ namespace Vostok.Applications.AspNetCore.Builders
 
                 services.AddSingleton<IRequestTracker>(requestTracker);
 
-                var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, "requests-in-progress");
+                var infoEntry = new DiagnosticEntry(DiagnosticConstants.Component, DiagnosticConstants.RequestsInProgressEntry);
                 var infoProvider = new CurrentRequestsInfoProvider(requestTracker);
 
                 disposables.Add(diagnostics.Info.RegisterProvider(infoEntry, infoProvider));

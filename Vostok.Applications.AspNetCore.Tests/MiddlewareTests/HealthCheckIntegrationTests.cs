@@ -1,29 +1,33 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
+using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Hosting.Abstractions;
 using HealthCheckResult = Vostok.Hosting.Abstractions.Diagnostics.HealthCheckResult;
 using IHealthCheck = Vostok.Hosting.Abstractions.Diagnostics.IHealthCheck;
-#if NETCOREAPP
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-#endif
 
 #pragma warning disable 162
 
-namespace Vostok.Applications.AspNetCore.Tests.Tests
+namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
-    public class HealthCheckIntegrationTests : TestsBase
+    public class HealthCheckIntegrationTests : MiddlewareTestsBase
     {
         private volatile IVostokHostingEnvironment environment;
         private IVostokApplicationDiagnostics diagnostics;
 
         public HealthCheckIntegrationTests(bool webApplication)
             : base(webApplication)
+        {
+        }
+
+        public HealthCheckIntegrationTests()
         {
         }
 
@@ -81,6 +85,19 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
         }
 #endif
 
+#if ASPNTCORE_HOSTING
+        protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder, Vostok.Hosting.AspNetCore.Web.Configuration.IVostokMiddlewaresConfigurator middlewaresConfigurator)
+        {
+            builder.Services.AddHealthChecks().AddCheck("ms", new MicrosoftHealthCheck());
+        }
+
+        protected override void SetupGlobal(WebApplication builder)
+        {
+            environment = builder.Services.GetRequiredService<IVostokHostingEnvironment>();
+            environment.HostExtensions.TryGet(out diagnostics).Should().BeTrue();
+        }
+#endif
+        
         private async Task CheckHealthEndpoint(ResponseCode expectedCode, string expectedStatus)
         {
             var response = (await Client.GetAsync("/health")).Response;
@@ -104,7 +121,7 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
 #if NETCOREAPP
         private class MicrosoftHealthCheck : Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheck
         {
-            public Task<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken()) =>
+            public Task<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult> CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken()) =>
                 Task.FromResult(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy());
         }
 #endif

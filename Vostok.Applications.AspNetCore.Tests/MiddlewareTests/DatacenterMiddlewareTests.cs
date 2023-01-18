@@ -7,24 +7,35 @@ using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Applications.AspNetCore.Tests.Models;
+using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Datacenters;
 using Vostok.Hosting.Abstractions;
 
-namespace Vostok.Applications.AspNetCore.Tests.Tests
+namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
+#if !ASPNTCORE_HOSTING
     [TestFixture(false, false)]
     [TestFixture(false, true)]
 #if NET6_0_OR_GREATER
     [TestFixture(true, false)]
     [TestFixture(true, true)]
 #endif
-    public class DatacenterMiddlewareTests : TestsBase
+#else
+    [TestFixture(false)]
+    [TestFixture(true)]
+#endif
+    public class DatacenterMiddlewareTests : MiddlewareTestsBase
     {
         private const int RejectionCode = 503;
 
         private readonly bool rejectResponses;
         private string[] activeDataCenters = {"local"};
 
+        public DatacenterMiddlewareTests(bool rejectResponses)
+        {
+            this.rejectResponses = rejectResponses;
+        }
+        
         public DatacenterMiddlewareTests(bool webApplication, bool rejectResponses)
             : base(webApplication)
         {
@@ -67,6 +78,14 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
         {
             builder.SetupDatacenterAwareness(ConfigureDatacenter);
             builder.OverrideSingleton(CreateDataCentersMock());
+        }
+#endif
+
+#if ASPNTCORE_HOSTING
+        protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder, Vostok.Hosting.AspNetCore.Web.Configuration.IVostokMiddlewaresConfigurator middlewaresConfigurator)
+        {
+            middlewaresConfigurator.ConfigureDatacenterAwareness(ConfigureDatacenter);
+            builder.Services.OverrideSingleton(CreateDataCentersMock());
         }
 #endif
 

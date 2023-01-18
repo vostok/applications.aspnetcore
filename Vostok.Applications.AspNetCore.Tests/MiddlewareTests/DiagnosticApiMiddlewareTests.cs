@@ -1,20 +1,27 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Diagnostics;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
+using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Hosting.Abstractions;
 using Vostok.Logging.Abstractions;
 using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 
-namespace Vostok.Applications.AspNetCore.Tests.Tests
+namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
-    public class DiagnosticApiMiddlewareTests : TestsBase
+    public class DiagnosticApiMiddlewareTests : MiddlewareTestsBase
     {
         public DiagnosticApiMiddlewareTests(bool webApplication)
             : base(webApplication)
+        {
+        }
+
+        public DiagnosticApiMiddlewareTests()
         {
         }
 
@@ -83,6 +90,13 @@ namespace Vostok.Applications.AspNetCore.Tests.Tests
         protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
             builder.SetupDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
+        }
+#endif
+        
+#if ASPNTCORE_HOSTING
+        protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder, Vostok.Hosting.AspNetCore.Web.Configuration.IVostokMiddlewaresConfigurator middlewaresConfigurator)
+        {
+            middlewaresConfigurator.ConfigureDiagnosticApi(settings => settings.ProhibitedHeaders.Add("Prohibited"));
         }
 #endif
     }
