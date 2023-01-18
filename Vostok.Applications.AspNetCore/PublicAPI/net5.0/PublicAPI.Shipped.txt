@@ -1,4 +1,7 @@
 ﻿abstract Vostok.Applications.AspNetCore.VostokNetCoreApplication.Setup(Vostok.Applications.AspNetCore.Builders.IVostokNetCoreApplicationBuilder builder, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> void
+const Vostok.Applications.AspNetCore.Diagnostics.DiagnosticConstants.Component = "aspnetcore" -> string
+const Vostok.Applications.AspNetCore.Diagnostics.DiagnosticConstants.RequestsInProgressEntry = "requests-in-progress" -> string
+const Vostok.Applications.AspNetCore.Diagnostics.DiagnosticConstants.RequestThrottlingEntry = "request-throttling" -> string
 static Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilderExtensionsCore.AddHostedService<THostedService>(this Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder builder) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 static Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilderExtensionsCore.AddHostedServiceFromApplication<TApplication>(this Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder builder) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 static Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilderExtensionsCore.AddHostedServiceFromApplication<TApplication>(this Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder builder, TApplication application) -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
@@ -17,7 +20,12 @@ static Vostok.Applications.AspNetCore.Extensions.IServiceCollectionExtensions.Ad
 static Vostok.Applications.AspNetCore.Extensions.IServiceCollectionExtensions.AddBackgroundServiceFromApplication<TApplication>(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, TApplication application) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 static Vostok.Applications.AspNetCore.Extensions.IServiceCollectionExtensions.AddHostedServiceFromApplication<TApplication>(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 static Vostok.Applications.AspNetCore.Extensions.IServiceCollectionExtensions.AddHostedServiceFromApplication<TApplication>(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, TApplication application) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
+static Vostok.Applications.AspNetCore.Helpers.ConfigurationBuilderExtensions.AddVostokSources(this Microsoft.Extensions.Configuration.IConfigurationBuilder builder, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> void
+static Vostok.Applications.AspNetCore.Helpers.MiddlewaresWarmup.WarmupPingApi(Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> System.Threading.Tasks.Task
 static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVostokEnvironment(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment, Vostok.Hosting.Abstractions.IVostokApplication application) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
+static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVostokEnvironmentComponents(this Microsoft.Extensions.DependencyInjection.IServiceCollection services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
+static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVostokEnvironmentHostExtensions(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> void
+static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVostokHealthChecks(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> void
 static Vostok.Applications.AspNetCore.IApplicationBuilderExtensions.UseVostokDatacenterAwareness(this Microsoft.AspNetCore.Builder.IApplicationBuilder builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder
 static Vostok.Applications.AspNetCore.IApplicationBuilderExtensions.UseVostokDiagnosticApi(this Microsoft.AspNetCore.Builder.IApplicationBuilder builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder
 static Vostok.Applications.AspNetCore.IApplicationBuilderExtensions.UseVostokDistributedContext(this Microsoft.AspNetCore.Builder.IApplicationBuilder builder) -> Microsoft.AspNetCore.Builder.IApplicationBuilder
@@ -209,10 +217,32 @@ Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings
 Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings.ErrorResponseCode.get -> int
 Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings.ErrorResponseCode.set -> void
 Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings.UnhandledExceptionSettings() -> void
+Vostok.Applications.AspNetCore.Diagnostics.CurrentRequestsInfoProvider
+Vostok.Applications.AspNetCore.Diagnostics.CurrentRequestsInfoProvider.CurrentRequestsInfoProvider(Vostok.Applications.AspNetCore.Diagnostics.RequestTracker tracker) -> void
+Vostok.Applications.AspNetCore.Diagnostics.CurrentRequestsInfoProvider.Query() -> object
+Vostok.Applications.AspNetCore.Diagnostics.DevNullRequestTracker
+Vostok.Applications.AspNetCore.Diagnostics.DevNullRequestTracker.DevNullRequestTracker() -> void
+Vostok.Applications.AspNetCore.Diagnostics.DevNullRequestTracker.Track(Microsoft.AspNetCore.Http.HttpContext context, Vostok.Applications.AspNetCore.Models.IRequestInfo info) -> System.IDisposable
+Vostok.Applications.AspNetCore.Diagnostics.DiagnosticConstants
 Vostok.Applications.AspNetCore.Diagnostics.IRequestTracker
 Vostok.Applications.AspNetCore.Diagnostics.IRequestTracker.Track(Microsoft.AspNetCore.Http.HttpContext context, Vostok.Applications.AspNetCore.Models.IRequestInfo info) -> System.IDisposable
+Vostok.Applications.AspNetCore.Diagnostics.RequestTracker
+Vostok.Applications.AspNetCore.Diagnostics.RequestTracker.RequestTracker() -> void
+Vostok.Applications.AspNetCore.Diagnostics.RequestTracker.Track(Microsoft.AspNetCore.Http.HttpContext context, Vostok.Applications.AspNetCore.Models.IRequestInfo info) -> System.IDisposable
+Vostok.Applications.AspNetCore.Diagnostics.ThrottlingHealthCheck
+Vostok.Applications.AspNetCore.Diagnostics.ThrottlingHealthCheck.CheckAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Vostok.Hosting.Abstractions.Diagnostics.HealthCheckResult>
+Vostok.Applications.AspNetCore.Diagnostics.ThrottlingHealthCheck.ThrottlingHealthCheck(Vostok.Throttling.ThrottlingProvider throttlingProvider) -> void
+Vostok.Applications.AspNetCore.Diagnostics.ThrottlingInfoProvider
+Vostok.Applications.AspNetCore.Diagnostics.ThrottlingInfoProvider.Query() -> object
+Vostok.Applications.AspNetCore.Diagnostics.ThrottlingInfoProvider.ThrottlingInfoProvider(Vostok.Throttling.ThrottlingProvider throttlingProvider) -> void
 Vostok.Applications.AspNetCore.Extensions.IServiceCollectionExtensions
+Vostok.Applications.AspNetCore.Helpers.ConfigurationBuilderExtensions
+Vostok.Applications.AspNetCore.Helpers.MiddlewaresWarmup
 Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions
+Vostok.Applications.AspNetCore.Helpers.VostokDisposables
+Vostok.Applications.AspNetCore.Helpers.VostokDisposables.Add(System.IDisposable disposable) -> void
+Vostok.Applications.AspNetCore.Helpers.VostokDisposables.Dispose() -> void
+Vostok.Applications.AspNetCore.Helpers.VostokDisposables.VostokDisposables(Vostok.Logging.Abstractions.ILog log = null) -> void
 Vostok.Applications.AspNetCore.IApplicationBuilderExtensions
 Vostok.Applications.AspNetCore.ICompositeApplicationBuilderExtensions
 Vostok.Applications.AspNetCore.ICompositeApplicationBuilderExtensionsCore
