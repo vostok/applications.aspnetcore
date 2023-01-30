@@ -227,8 +227,12 @@ Vostok.Applications.AspNetCore.Diagnostics.DiagnosticConstants
 Vostok.Applications.AspNetCore.Diagnostics.IRequestTracker
 Vostok.Applications.AspNetCore.Diagnostics.IRequestTracker.Track(Microsoft.AspNetCore.Http.HttpContext context, Vostok.Applications.AspNetCore.Models.IRequestInfo info) -> System.IDisposable
 Vostok.Applications.AspNetCore.Diagnostics.RequestTracker
+Vostok.Applications.AspNetCore.Diagnostics.RequestTracker.CurrentItems.get -> System.Collections.Generic.IEnumerable<Vostok.Applications.AspNetCore.Diagnostics.RequestTrackerItem>
 Vostok.Applications.AspNetCore.Diagnostics.RequestTracker.RequestTracker() -> void
 Vostok.Applications.AspNetCore.Diagnostics.RequestTracker.Track(Microsoft.AspNetCore.Http.HttpContext context, Vostok.Applications.AspNetCore.Models.IRequestInfo info) -> System.IDisposable
+Vostok.Applications.AspNetCore.Diagnostics.RequestTrackerItem
+Vostok.Applications.AspNetCore.Diagnostics.RequestTrackerItem.Info.get -> Vostok.Applications.AspNetCore.Models.IRequestInfo
+Vostok.Applications.AspNetCore.Diagnostics.RequestTrackerItem.Path.get -> string
 Vostok.Applications.AspNetCore.Diagnostics.ThrottlingHealthCheck
 Vostok.Applications.AspNetCore.Diagnostics.ThrottlingHealthCheck.CheckAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Vostok.Hosting.Abstractions.Diagnostics.HealthCheckResult>
 Vostok.Applications.AspNetCore.Diagnostics.ThrottlingHealthCheck.ThrottlingHealthCheck(Vostok.Throttling.ThrottlingProvider throttlingProvider) -> void
