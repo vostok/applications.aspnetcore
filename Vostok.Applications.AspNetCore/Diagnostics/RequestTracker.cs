@@ -16,7 +16,7 @@ namespace Vostok.Applications.AspNetCore.Diagnostics
         public RequestTracker()
             => items = new ConcurrentDictionary<RequestTrackerItem, byte>(64, 256, ByReferenceEqualityComparer<RequestTrackerItem>.Instance);
 
-        internal IEnumerable<RequestTrackerItem> CurrentItems => items.Select(pair => pair.Key);
+        public IEnumerable<RequestTrackerItem> CurrentItems => items.Select(pair => pair.Key);
 
         public IDisposable Track(HttpContext context, IRequestInfo info)
         {
