@@ -1,3 +1,7 @@
+## 0.3.14 (02-02-2023):
+
+Allowed to warm up arbitrary url in `MiddlewaresWarmup`.
+
 ## 0.3.13 (30-01-2023):
 
 Made `RequestTracker` result public.
