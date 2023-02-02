@@ -1,1 +1,0 @@
-static Vostok.Applications.AspNetCore.Helpers.MiddlewaresWarmup.WarmupPingApi(Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment, System.Uri url) -> System.Threading.Tasks.Task
