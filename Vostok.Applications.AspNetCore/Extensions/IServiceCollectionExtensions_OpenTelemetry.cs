@@ -20,8 +20,6 @@ public static class IServiceCollectionExtensions_OpenTelemetry
     /// <para>Adds <see cref="TracingConstants.VostokTracerActivitySourceName"/> <see cref="ActivitySource"/>.</para>
     /// <para>Adds Vostok identity <see cref="Resource"/>.</para>
     /// </summary>
-    /// <param name="serviceCollection"></param>
-    /// <returns></returns>
     public static IServiceCollection ConfigureVostokOpenTelemetryTracerProvider(this IServiceCollection serviceCollection)
     {
         serviceCollection.ConfigureOpenTelemetryTracerProvider(
