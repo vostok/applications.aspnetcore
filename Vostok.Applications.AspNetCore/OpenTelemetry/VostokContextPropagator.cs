@@ -3,11 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using JetBrains.Annotations;
 using OpenTelemetry.Context.Propagation;
-using Vostok.Tracing;
-using Vostok.Tracing.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.OpenTelemetry;
 
@@ -18,14 +15,14 @@ namespace Vostok.Applications.AspNetCore.OpenTelemetry;
 public class VostokContextPropagator : TextMapPropagator
 {
     private readonly VostokContextPropagatorSettings settings;
-    private readonly TraceContextSerializer traceContextSerializer;
+    private readonly VostokContextReader vostokContextReader;
     internal const string ContextGlobalsHeader = "Context-Globals";
-    internal const string DistributedGlobalName = "vostok.tracing.context";
 
     public VostokContextPropagator(VostokContextPropagatorSettings settings = null)
     {
         this.settings = settings ?? new VostokContextPropagatorSettings();
-        traceContextSerializer = new TraceContextSerializer();
+
+        vostokContextReader = new VostokContextReader(this.settings.ErrorCallback);
 
         Fields = new HashSet<string>
         {
@@ -46,7 +43,7 @@ public class VostokContextPropagator : TextMapPropagator
         if (string.IsNullOrWhiteSpace(globals))
             return context;
 
-        var traceContext = ExtractTraceContext(globals);
+        var traceContext = vostokContextReader.Read(globals);
         if (traceContext != null)
         {
             var traceId = ActivityTraceId.CreateFromString(traceContext.TraceId.ToString("N"));
@@ -60,54 +57,5 @@ public class VostokContextPropagator : TextMapPropagator
     }
 
     public override ISet<string> Fields { get; }
-
-    [CanBeNull]
-    private unsafe TraceContext ExtractTraceContext(string input)
-    {
-        try
-        {
-            var bytes = Convert.FromBase64String(input);
-
-            fixed (byte* begin = bytes)
-            {
-                var end = begin + bytes.Length;
-
-                var ptr = begin;
-
-                string ReadString(out int size, int? expectedSize = null)
-                {
-                    size = *(int*)ptr;
-                    if (size < 0)
-                        throw new Exception("Negative size.");
-                    if (expectedSize.HasValue && size != expectedSize)
-                        return string.Empty;
-                    if (ptr + sizeof(int) + size > end)
-                        throw new Exception("Wrong sizes.");
-                    return Encoding.UTF8.GetString(ptr + sizeof(int), size);
-                }
-
-                while (ptr < end)
-                {
-                    var key = ReadString(out var size, DistributedGlobalName.Length);
-                    if (key == DistributedGlobalName)
-                    {
-                        ptr += sizeof(int) + size;
-                        var value = ReadString(out _);
-                        return traceContextSerializer.Deserialize(value);
-                    }
-
-                    ptr += sizeof(int) + size;
-                    ReadString(out size, -1);
-                    ptr += sizeof(int) + size;
-                }
-            }
-        }
-        catch (Exception error)
-        {
-            settings.ErrorCallback?.Invoke($"Failed to read property names and values from input string '{input}'.", error);
-        }
-
-        return null;
-    }
 }
 #endif

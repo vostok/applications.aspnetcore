@@ -28,7 +28,7 @@ internal class VostokContextPropagator_Tests
     { 
         FlowingContext.Globals.Use(traceContext);
         
-        FlowingContext.Configuration.RegisterDistributedGlobal(VostokContextPropagator.DistributedGlobalName, new TraceContextSerializer());
+        FlowingContext.Configuration.RegisterDistributedGlobal(VostokContextReader.DistributedGlobalName, new TraceContextSerializer());
         
         var serialized = FlowingContext.SerializeDistributedGlobals();
         
@@ -46,7 +46,7 @@ internal class VostokContextPropagator_Tests
         
         FlowingContext.Configuration.RegisterDistributedGlobal("int", new IntSerializer());
         FlowingContext.Configuration.RegisterDistributedGlobal("string", new StringSerializer());
-        FlowingContext.Configuration.RegisterDistributedGlobal(VostokContextPropagator.DistributedGlobalName, new TraceContextSerializer());
+        FlowingContext.Configuration.RegisterDistributedGlobal(VostokContextReader.DistributedGlobalName, new TraceContextSerializer());
         
         var serialized = FlowingContext.SerializeDistributedGlobals();
         
