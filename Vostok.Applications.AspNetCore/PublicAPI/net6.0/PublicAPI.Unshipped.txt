@@ -2,6 +2,7 @@ override Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.Ex
 override Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.Fields.get -> System.Collections.Generic.ISet<string>
 override Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.Inject<T>(OpenTelemetry.Context.Propagation.PropagationContext context, T carrier, System.Action<T, string, string> setter) -> void
 static Vostok.Applications.AspNetCore.OpenTelemetry.IServiceCollectionExtensions.ConfigureVostokOpenTelemetryTracerProvider(this Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
+static Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.Use() -> void
 Vostok.Applications.AspNetCore.OpenTelemetry.IServiceCollectionExtensions
 Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator
 Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.VostokContextPropagator(Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagatorSettings settings = null) -> void
