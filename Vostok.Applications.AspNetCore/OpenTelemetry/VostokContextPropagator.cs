@@ -23,8 +23,8 @@ public class VostokContextPropagator : TextMapPropagator
     {
         Sdk.SetDefaultTextMapPropagator(new CompositeTextMapPropagator(new[]
         {
-            new VostokContextPropagator(),
-            Propagators.DefaultTextMapPropagator
+            Propagators.DefaultTextMapPropagator,
+            new VostokContextPropagator()
         }));
     }
 
