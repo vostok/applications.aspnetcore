@@ -5,6 +5,7 @@
     <PropertyGroup>
         <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.0</TargetFrameworks>
         <Configurations>Debug;Release</Configurations>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <PropertyGroup>
         <VersionPrefix>0.3.15</VersionPrefix>
@@ -59,6 +60,9 @@
         <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanConversions.cs" Link="Commons\TimeSpanConversions.cs" />
         <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanFormatting.cs" Link="Commons\TimeSpanFormatting.cs" />
         <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanArithmetics.cs" Link="Commons\TimeSpanArithmetics.cs" />
+        <Compile Include="..\..\vostok.tracing\Vostok.Tracing\TraceContextSerializer.cs">
+          <Link>Helpers\TraceContextSerializer.cs</Link>
+        </Compile>
     </ItemGroup>
     <ItemGroup>
         <Reference Include="Vostok.Hosting.Abstractions">

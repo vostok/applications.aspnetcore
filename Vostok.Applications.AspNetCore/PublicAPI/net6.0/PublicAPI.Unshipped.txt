@@ -1,2 +1,11 @@
-static Vostok.Applications.AspNetCore.Extensions.IServiceCollectionExtensions_OpenTelemetry.ConfigureVostokOpenTelemetryTracerProvider(this Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
-Vostok.Applications.AspNetCore.Extensions.IServiceCollectionExtensions_OpenTelemetry
+override Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.Extract<T>(OpenTelemetry.Context.Propagation.PropagationContext context, T carrier, System.Func<T, string, System.Collections.Generic.IEnumerable<string>> getter) -> OpenTelemetry.Context.Propagation.PropagationContext
+override Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.Fields.get -> System.Collections.Generic.ISet<string>
+override Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.Inject<T>(OpenTelemetry.Context.Propagation.PropagationContext context, T carrier, System.Action<T, string, string> setter) -> void
+static Vostok.Applications.AspNetCore.OpenTelemetry.IServiceCollectionExtensions.ConfigureVostokOpenTelemetryTracerProvider(this Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
+Vostok.Applications.AspNetCore.OpenTelemetry.IServiceCollectionExtensions
+Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator
+Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.VostokContextPropagator(Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagatorSettings settings = null) -> void
+Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagatorSettings
+Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagatorSettings.ErrorCallback.get -> System.Action<string, System.Exception>
+Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagatorSettings.ErrorCallback.set -> void
+Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagatorSettings.VostokContextPropagatorSettings() -> void

@@ -11,10 +11,10 @@ using Vostok.ServiceDiscovery.Abstractions;
 using Vostok.Tracing.Diagnostics;
 using EnvironmentInfo = Vostok.Commons.Environment.EnvironmentInfo;
 
-namespace Vostok.Applications.AspNetCore.Extensions;
+namespace Vostok.Applications.AspNetCore.OpenTelemetry;
 
 [PublicAPI]
-public static class IServiceCollectionExtensions_OpenTelemetry
+public static class IServiceCollectionExtensions
 {
     /// <summary>
     /// <para>Adds <see cref="TracingConstants.VostokTracerActivitySourceName"/> <see cref="ActivitySource"/>.</para>
