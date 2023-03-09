@@ -59,7 +59,7 @@ public class VostokContextPropagator : TextMapPropagator
             var traceId = ActivityTraceId.CreateFromString(traceContext.TraceId.ToString("N"));
             var spanId = ActivitySpanId.CreateFromString(traceContext.SpanId.ToString("N").AsSpan()[..16]);
             return new PropagationContext(
-                new ActivityContext(traceId, spanId, ActivityTraceFlags.None, isRemote: true),
+                new ActivityContext(traceId, spanId, ActivityTraceFlags.Recorded, isRemote: true),
                 context.Baggage);
         }
 
