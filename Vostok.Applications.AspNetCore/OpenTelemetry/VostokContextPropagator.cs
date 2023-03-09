@@ -81,9 +81,9 @@ public class VostokContextPropagator : TextMapPropagator
                         throw new Exception("Negative size.");
                     if (expectedSize.HasValue && size != expectedSize)
                         return string.Empty;
-                    if (ptr + sizeof(int) + size <= end)
-                        return Encoding.UTF8.GetString(ptr + sizeof(int), size);
-                    throw new Exception("Wrong sizes.");
+                    if (ptr + sizeof(int) + size > end)
+                        throw new Exception("Wrong sizes.");
+                    return Encoding.UTF8.GetString(ptr + sizeof(int), size);
                 }
 
                 while (ptr < end)
