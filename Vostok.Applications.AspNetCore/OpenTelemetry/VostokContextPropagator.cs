@@ -73,23 +73,32 @@ public class VostokContextPropagator : TextMapPropagator
                 var end = begin + bytes.Length;
 
                 var ptr = begin;
+
+                string ReadString(out int size, int? expectedSize = null)
+                {
+                    size = *(int*)ptr;
+                    if (size < 0)
+                        throw new Exception("Negative size.");
+                    if (expectedSize.HasValue && size != expectedSize)
+                        return string.Empty;
+                    if (ptr + sizeof(int) + size <= end)
+                        return Encoding.UTF8.GetString(ptr + sizeof(int), size);
+                    throw new Exception("Wrong sizes.");
+                }
+
                 while (ptr < end)
                 {
-                    var size = *(int*)ptr;
-                    if (size == DistributedGlobalName.Length)
+                    var key = ReadString(out var size, DistributedGlobalName.Length);
+                    if (key == DistributedGlobalName)
                     {
-                        var key = Encoding.UTF8.GetString(ptr + sizeof(int), size);
-                        if (key == DistributedGlobalName)
-                        {
-                            ptr += sizeof(int) + size;
-                            size = *(int*)ptr;
-                            var value = Encoding.UTF8.GetString(ptr + sizeof(int), size);
-                            return traceContextSerializer.Deserialize(value);
-                        }
+                        ptr += sizeof(int) + size;
+                        var value = ReadString(out _);
+                        return traceContextSerializer.Deserialize(value);
                     }
 
                     ptr += sizeof(int) + size;
-                    ptr += sizeof(int) + *(int*)ptr;
+                    ReadString(out size, -1);
+                    ptr += sizeof(int) + size;
                 }
             }
         }
