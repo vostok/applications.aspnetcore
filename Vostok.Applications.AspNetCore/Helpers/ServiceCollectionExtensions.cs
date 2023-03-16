@@ -25,7 +25,7 @@ namespace Vostok.Applications.AspNetCore.Helpers
         {
             services.AddSingleton(environment);
 
-            services.AddVostokEnvironmentComponents();
+            services.AddVostokEnvironmentComponents(environment);
 
             services.AddVostokEnvironmentHostExtensions(environment);
 
@@ -38,6 +38,31 @@ namespace Vostok.Applications.AspNetCore.Helpers
             return services;
         }
 
+        public static IServiceCollection AddVostokEnvironmentComponents(this IServiceCollection services, IVostokHostingEnvironment environment)
+        {
+            services
+                .AddSingleton(environment.ApplicationIdentity)
+                .AddSingleton(environment.ApplicationLimits)
+                .AddTransient(_ => environment.ApplicationReplicationInfo)
+                .AddSingleton(environment.Metrics)
+                .AddSingleton(environment.Log)
+                .AddSingleton(environment.Tracer)
+                .AddSingleton(environment.HerculesSink)
+                .AddSingleton(environment.ConfigurationSource)
+                .AddSingleton(environment.ConfigurationProvider)
+                .AddSingleton(environment.ClusterConfigClient)
+                .AddSingleton(environment.ServiceBeacon)
+                .AddSingleton(environment.ServiceLocator)
+                .AddSingleton(environment.ContextGlobals)
+                .AddSingleton(environment.ContextProperties)
+                .AddSingleton(environment.ContextConfiguration)
+                .AddSingleton(environment.Datacenters)
+                .AddSingleton(environment.HostExtensions);
+
+            return services;
+        }
+        
+        [Obsolete("Doesn't work due to https://github.com/dotnet/runtime/issues/36049. Use overload which takes environment.")]
         public static IServiceCollection AddVostokEnvironmentComponents(this IServiceCollection services)
         {
             services

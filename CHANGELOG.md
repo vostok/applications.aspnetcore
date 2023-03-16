@@ -1,3 +1,7 @@
+## 0.3.15 (16-03-2023):
+
+Fixed `AddVostokEnvironmentComponents`: not dispose components by DI.
+
 ## 0.3.14 (02-02-2023):
 
 Allowed to warm up arbitrary url in `MiddlewaresWarmup`.
