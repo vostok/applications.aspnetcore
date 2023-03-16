@@ -1,0 +1,1 @@
+static Vostok.Applications.AspNetCore.Helpers.ServiceCollectionExtensions.AddVostokEnvironmentComponents(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
