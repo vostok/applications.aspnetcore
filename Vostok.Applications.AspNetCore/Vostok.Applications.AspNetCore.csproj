@@ -5,6 +5,7 @@
     <PropertyGroup>
         <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.0</TargetFrameworks>
         <Configurations>Debug;Release</Configurations>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <PropertyGroup>
         <VersionPrefix>0.3.16</VersionPrefix>
@@ -30,10 +31,21 @@
         <FrameworkReference Include="Microsoft.AspNetCore.App" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
         <PackageReference Include="Microsoft.AspNetCore" Version="2.1.7" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+        <PackageReference Include="OpenTelemetry" Version="1.4.0" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9.14" />
+        <PackageReference Include="OpenTelemetry.SemanticConventions" Version="1.0.0-rc9.9" />
+        <Reference Include="Vostok.Tracing.Diagnostics">
+            <SpecificVersion>False</SpecificVersion>
+            <HintPath>..\..\vostok.tracing.diagnostics\Vostok.Tracing.Diagnostics\bin\Release\$(ReferencesFramework)\Vostok.Tracing.Diagnostics.dll</HintPath>
+        </Reference>
+    </ItemGroup>
     <ItemGroup>
         <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ByReferenceEqualityComparer.cs" Link="Commons\ByReferenceEqualityComparer.cs" />
         <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\AssemblyCommitHashExtractor.cs" Link="Commons\AssemblyCommitHashExtractor.cs" />
         <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\AssemblyTitleParser.cs" Link="Commons\AssemblyTitleParser.cs" />
+        <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\EnvironmentInfo.cs" Link="Commons\EnvironmentInfo.cs" />
+        <Compile Include="..\..\vostok.commons.environment\Vostok.Commons.Environment\RuntimeDetector.cs" Link="Commons\RuntimeDetector.cs" />
         <Compile Include="..\..\vostok.commons.formatting\Vostok.Commons.Formatting\StringBuilderCache.cs" Link="Commons\StringBuilderCache.cs" />
         <Compile Include="..\..\vostok.commons.helpers\Vostok.Commons.Helpers\Extensions\TaskExtensions.cs">
           <Link>Commons\TaskExtensions.cs</Link>
@@ -50,6 +62,9 @@
         <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanConversions.cs" Link="Commons\TimeSpanConversions.cs" />
         <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanFormatting.cs" Link="Commons\TimeSpanFormatting.cs" />
         <Compile Include="..\..\vostok.commons.time\Vostok.Commons.Time\TimeSpanArithmetics.cs" Link="Commons\TimeSpanArithmetics.cs" />
+        <Compile Include="..\..\vostok.tracing\Vostok.Tracing\TraceContextSerializer.cs">
+          <Link>Helpers\TraceContextSerializer.cs</Link>
+        </Compile>
     </ItemGroup>
     <ItemGroup>
         <Reference Include="Vostok.Hosting.Abstractions">
