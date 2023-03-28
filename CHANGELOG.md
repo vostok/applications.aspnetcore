@@ -1,3 +1,7 @@
+## 0.3.16 (28-03-2023):
+
+Added OpenTelemetry extensions and context propagator.
+
 ## 0.3.15 (16-03-2023):
 
 Fixed `AddVostokEnvironmentComponents`: not dispose components by DI.
