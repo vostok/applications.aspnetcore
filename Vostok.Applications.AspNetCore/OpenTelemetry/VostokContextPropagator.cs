@@ -6,6 +6,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
+using Vostok.Logging.Abstractions;
 
 namespace Vostok.Applications.AspNetCore.OpenTelemetry;
 
@@ -19,16 +20,25 @@ public class VostokContextPropagator : TextMapPropagator
     private readonly VostokContextReader vostokContextReader;
     internal const string ContextGlobalsHeader = "Context-Globals";
 
-    public static void Use()
+    public static void Use() =>
+        Use(new VostokContextPropagatorSettings());    
+    
+    public static void Use(ILog log) =>
+        Use(new VostokContextPropagatorSettings
+        {
+            ErrorCallback = (message, error) => log.Warn(error, message)
+        });
+
+    public static void Use(VostokContextPropagatorSettings settings)
     {
         Sdk.SetDefaultTextMapPropagator(new CompositeTextMapPropagator(new[]
         {
             Propagators.DefaultTextMapPropagator,
-            new VostokContextPropagator()
+            new VostokContextPropagator(settings)
         }));
     }
 
-    public VostokContextPropagator(VostokContextPropagatorSettings settings = null)
+    public VostokContextPropagator(VostokContextPropagatorSettings settings)
     {
         this.settings = settings ?? new VostokContextPropagatorSettings();
 

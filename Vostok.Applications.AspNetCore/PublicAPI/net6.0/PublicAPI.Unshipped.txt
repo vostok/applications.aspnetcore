@@ -4,9 +4,11 @@ override Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.In
 static Vostok.Applications.AspNetCore.OpenTelemetry.IServiceCollectionExtensions.ConfigureVostokAspNetCoreInstrumentation(this Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection, string name = null) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 static Vostok.Applications.AspNetCore.OpenTelemetry.IServiceCollectionExtensions.ConfigureVostokOpenTelemetryTracerProvider(this Microsoft.Extensions.DependencyInjection.IServiceCollection serviceCollection) -> Microsoft.Extensions.DependencyInjection.IServiceCollection
 static Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.Use() -> void
+static Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.Use(Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagatorSettings settings) -> void
+static Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.Use(Vostok.Logging.Abstractions.ILog log) -> void
 Vostok.Applications.AspNetCore.OpenTelemetry.IServiceCollectionExtensions
 Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator
-Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.VostokContextPropagator(Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagatorSettings settings = null) -> void
+Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagator.VostokContextPropagator(Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagatorSettings settings) -> void
 Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagatorSettings
 Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagatorSettings.ErrorCallback.get -> System.Action<string, System.Exception>
 Vostok.Applications.AspNetCore.OpenTelemetry.VostokContextPropagatorSettings.ErrorCallback.set -> void
