@@ -43,6 +43,7 @@ base:
     - vostok.throttling.metrics
     - vostok.tracing.abstractions
     - vostok.tracing.extensions
+    - vostok.tracing.diagnostics
 
 notests > base:
   build:
