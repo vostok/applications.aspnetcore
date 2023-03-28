@@ -19,7 +19,7 @@ internal class VostokContextPropagator_Tests
     public void SetUp()
     {
         FlowingContext.Configuration.ClearDistributedGlobals();
-        vostokContextPropagator = new VostokContextPropagator();
+        vostokContextPropagator = new VostokContextPropagator(new VostokContextPropagatorSettings());
         traceContext = new TraceContext(Guid.NewGuid(), Guid.NewGuid());
     }
 
