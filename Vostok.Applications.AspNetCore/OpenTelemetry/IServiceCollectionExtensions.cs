@@ -6,10 +6,12 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Instrumentation.AspNetCore;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Vostok.Clusterclient.Core;
 using Vostok.Clusterclient.Core.Model;
+using Vostok.Hosting.Abstractions;
 using Vostok.ServiceDiscovery.Abstractions;
 using Vostok.Tracing.Abstractions;
 using Vostok.Tracing.Diagnostics;
@@ -67,13 +69,28 @@ public static class IServiceCollectionExtensions
     {
         serviceCollection.ConfigureOpenTelemetryTracerProvider(
             (services, tracerProviderBuilder) => tracerProviderBuilder
-                .ConfigureResource(resourceBuilder => ConfigureResource(resourceBuilder, services))
+                .ConfigureResource(resourceBuilder => ConfigureTracerResource(resourceBuilder, services))
                 .AddSource(TracingConstants.VostokTracerActivitySourceName));
 
         return serviceCollection;
     }
+    
+    /// <summary>
+    /// <para>Adds Vostok identity <see cref="Resource"/>.</para>
+    /// </summary>
+    public static IServiceCollection ConfigureVostokOpenTelemetryMeterProvider(this IServiceCollection serviceCollection)
+    {
+        var name = Options.DefaultName;
+        
+        serviceCollection.ConfigureOpenTelemetryMeterProvider(
+            (services, tracerProviderBuilder) => tracerProviderBuilder
+                .SetResourceBuilder(ResourceBuilder.CreateEmpty())
+                .ConfigureResource(resourceBuilder => ConfigureMeterResource(resourceBuilder, services, name)));
 
-    private static void ConfigureResource(ResourceBuilder resourceBuilder, IServiceProvider services)
+        return serviceCollection;
+    }
+
+    private static void ConfigureTracerResource(ResourceBuilder resourceBuilder, IServiceProvider services)
     {
         var host = EnvironmentInfo.Host;
         var application = ClusterClientDefaults.ClientApplicationName;
@@ -93,6 +110,44 @@ public static class IServiceCollectionExtensions
         };
         if (environment != null)
             vostokTags.Add(new("deployment.environment", environment));
+
+        resourceBuilder.AddAttributes(vostokTags);
+    }
+    
+    private static void ConfigureMeterResource(ResourceBuilder resourceBuilder, IServiceProvider services, string name)
+    {
+        var options = services.GetRequiredService<IOptionsMonitor<VostokOpenTelemetryMeterProviderOptions>>().Get(name);
+
+        if (options.AddService)
+        {
+            var application = ClusterClientDefaults.ClientApplicationName;
+            var serviceBeacon = services.GetService<IServiceBeacon>();
+            if (serviceBeacon != null)
+            {
+                application = serviceBeacon.ReplicaInfo.Application;
+            }
+
+            resourceBuilder.AddService(serviceName: application, autoGenerateServiceInstanceId: false);
+        }
+
+        var identity = services.GetService<IVostokApplicationIdentity>();
+        var vostokTags = new List<KeyValuePair<string, object>>();
+        if (options.AddProject)
+            vostokTags.Add(new(WellKnownApplicationIdentityProperties.Project, identity.Project));
+        if (options.AddSubproject && identity.Subproject != null)
+            vostokTags.Add(new (WellKnownApplicationIdentityProperties.Subproject, identity.Subproject));
+        if (options.AddEnvironment)
+            vostokTags.Add(new (WellKnownApplicationIdentityProperties.Environment, identity.Environment));
+        if (options.AddApplication)
+            vostokTags.Add(new (WellKnownApplicationIdentityProperties.Application, identity.Application));
+
+        if (options.AddInstance)
+        {
+            var instance = identity.Instance;
+            if (string.Equals(instance, EnvironmentInfo.Host, StringComparison.InvariantCultureIgnoreCase))
+                instance = instance.ToLowerInvariant();
+            vostokTags.Add(new(WellKnownApplicationIdentityProperties.Instance, instance));
+        }
 
         resourceBuilder.AddAttributes(vostokTags);
     }
