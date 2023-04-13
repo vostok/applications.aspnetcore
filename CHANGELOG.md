@@ -1,3 +1,7 @@
+## 0.3.17 (13-04-2023):
+
+Added OpenTelemetry metrics resources setup extension `ConfigureVostokOpenTelemetryMeterProvider`.
+
 ## 0.3.16 (28-03-2023):
 
 Added OpenTelemetry extensions and context propagator.
