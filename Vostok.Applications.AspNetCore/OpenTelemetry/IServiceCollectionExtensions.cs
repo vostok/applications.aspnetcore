@@ -36,7 +36,7 @@ public static class IServiceCollectionExtensions
         name ??= Options.DefaultName;
         serviceCollection.Configure<AspNetCoreInstrumentationOptions>(name, Enrich);
         return serviceCollection;
-        
+
         static void Enrich(AspNetCoreInstrumentationOptions options)
         {
             var enrichWithHttpRequest = options.EnrichWithHttpRequest;
@@ -50,7 +50,7 @@ public static class IServiceCollectionExtensions
                 if (request.ContentLength.HasValue)
                     activity.SetTag(TraceSemanticConventions.AttributeHttpRequestContentLength, request.ContentLength.Value);
             };
-            
+
             var enrichWithHttpResponse = options.EnrichWithHttpResponse;
             options.EnrichWithHttpResponse = (activity, response) =>
             {
@@ -74,14 +74,14 @@ public static class IServiceCollectionExtensions
 
         return serviceCollection;
     }
-    
+
     /// <summary>
     /// <para>Adds Vostok identity <see cref="Resource"/>.</para>
     /// </summary>
     public static IServiceCollection ConfigureVostokOpenTelemetryMeterProvider(this IServiceCollection serviceCollection)
     {
         var name = Options.DefaultName;
-        
+
         serviceCollection.ConfigureOpenTelemetryMeterProvider(
             (services, tracerProviderBuilder) => tracerProviderBuilder
                 .SetResourceBuilder(ResourceBuilder.CreateEmpty())
@@ -95,14 +95,14 @@ public static class IServiceCollectionExtensions
         var host = EnvironmentInfo.Host;
         var application = ClusterClientDefaults.ClientApplicationName;
         string environment = null;
-        
+
         var serviceBeacon = services.GetService<IServiceBeacon>();
         if (serviceBeacon != null)
         {
             application = serviceBeacon.ReplicaInfo.Application;
             environment = serviceBeacon.ReplicaInfo.Environment;
         }
-        
+
         resourceBuilder.AddService(serviceName: application, autoGenerateServiceInstanceId: false);
         var vostokTags = new List<KeyValuePair<string, object>>
         {
@@ -113,7 +113,7 @@ public static class IServiceCollectionExtensions
 
         resourceBuilder.AddAttributes(vostokTags);
     }
-    
+
     private static void ConfigureMeterResource(ResourceBuilder resourceBuilder, IServiceProvider services, string name)
     {
         var options = services.GetRequiredService<IOptionsMonitor<VostokOpenTelemetryMeterProviderOptions>>().Get(name);
@@ -135,11 +135,11 @@ public static class IServiceCollectionExtensions
         if (options.AddProject)
             vostokTags.Add(new(WellKnownApplicationIdentityProperties.Project, identity.Project));
         if (options.AddSubproject && identity.Subproject != null)
-            vostokTags.Add(new (WellKnownApplicationIdentityProperties.Subproject, identity.Subproject));
+            vostokTags.Add(new(WellKnownApplicationIdentityProperties.Subproject, identity.Subproject));
         if (options.AddEnvironment)
-            vostokTags.Add(new (WellKnownApplicationIdentityProperties.Environment, identity.Environment));
+            vostokTags.Add(new(WellKnownApplicationIdentityProperties.Environment, identity.Environment));
         if (options.AddApplication)
-            vostokTags.Add(new (WellKnownApplicationIdentityProperties.Application, identity.Application));
+            vostokTags.Add(new(WellKnownApplicationIdentityProperties.Application, identity.Application));
 
         if (options.AddInstance)
         {
