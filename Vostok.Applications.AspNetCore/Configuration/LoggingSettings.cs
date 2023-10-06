@@ -30,6 +30,11 @@ namespace Vostok.Applications.AspNetCore.Configuration
         public bool LogResponseCompletion { get; set; }
 
         /// <summary>
+        /// Determines whether to response codes of outbound responses for log.
+        /// </summary>
+        public int[] LogResponseStatusCodes { get; set; } = Array.Empty<int>();
+
+        /// <summary>
         /// <para>Request query parameters logging options.</para>
         /// <para>By default, query parameters are not logged at all.</para>
         /// </summary>
