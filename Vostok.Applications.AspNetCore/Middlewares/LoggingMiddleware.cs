@@ -65,7 +65,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
 
             await next(context);
 
-            if (options.LogResponses)
+            if (options.LogResponses && IsLoggingStatusCode(context.Response))
                 LogResponse(context.Request, context.Response, watch.Elapsed);
         }
 
@@ -133,6 +133,14 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             log.Log(logEvent);
 
             StringBuilderCache.Release(builder);
+        }
+
+        private bool IsLoggingStatusCode(HttpResponse response)
+        {
+            if (options.LogResponseStatusCodes == null || options.LogResponseStatusCodes.Length == 0)
+                return true;
+
+            return options.LogResponseStatusCodes.Contains(response.StatusCode);
         }
 
         private void LogResponseCompleted(TimeSpan elapsed)
