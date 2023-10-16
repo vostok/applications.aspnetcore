@@ -159,6 +159,8 @@ Vostok.Applications.AspNetCore.Configuration.LoggingSettings.LogResponseHeaders.
 Vostok.Applications.AspNetCore.Configuration.LoggingSettings.LogResponseHeaders.set -> void
 Vostok.Applications.AspNetCore.Configuration.LoggingSettings.LogResponses.get -> bool
 Vostok.Applications.AspNetCore.Configuration.LoggingSettings.LogResponses.set -> void
+Vostok.Applications.AspNetCore.Configuration.LoggingSettings.LogResponseStatusCodes.get -> int[]
+Vostok.Applications.AspNetCore.Configuration.LoggingSettings.LogResponseStatusCodes.set -> void
 Vostok.Applications.AspNetCore.Configuration.PingApiSettings
 Vostok.Applications.AspNetCore.Configuration.PingApiSettings.CommitHashProvider.get -> System.Func<string>
 Vostok.Applications.AspNetCore.Configuration.PingApiSettings.CommitHashProvider.set -> void

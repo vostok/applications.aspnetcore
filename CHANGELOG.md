@@ -1,3 +1,7 @@
+## 0.3.18 (16-10-2023):
+
+Add logging responses by list of status code.
+
 ## 0.3.17 (13-04-2023):
 
 Added OpenTelemetry metrics resources setup extension `ConfigureVostokOpenTelemetryMeterProvider`.
