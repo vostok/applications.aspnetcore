@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Vostok.Applications.AspNetCore.Configuration;
@@ -38,7 +38,7 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             }
             catch (Exception error)
             {
-                if (IsCancellationError(error) && context.RequestAborted.IsCancellationRequested)
+                if (ShouldIgnoreError(error) && context.RequestAborted.IsCancellationRequested)
                 {
                     log.Warn("Request has been canceled. This is likely due to connection close from client side.");
                     context.Response.StatusCode = (int)ResponseCode.Canceled;
@@ -61,7 +61,10 @@ namespace Vostok.Applications.AspNetCore.Middlewares
             }
         }
 
-        private static bool IsCancellationError(Exception error)
-            => error is TaskCanceledException || error is OperationCanceledException || error is ConnectionResetException;
+        private bool ShouldIgnoreError(Exception error)
+        {
+            var errorType = error.GetType();
+            return options.ExceptionsToIgnore.Any(x => x.IsAssignableFrom(errorType));
+        }
     }
 }
