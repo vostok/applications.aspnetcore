@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
@@ -11,6 +12,7 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
     public class UnhandledExceptionMiddlewareTests : MiddlewareTestsBase
     {
         private const int ResponseCode = 418;
+        private const int CanceledResponseCode = (int)Clusterclient.Core.Model.ResponseCode.Canceled;
 
         public UnhandledExceptionMiddlewareTests(bool webApplication)
             : base(webApplication)
@@ -29,15 +31,31 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
             result.Response.Code.Should().Be(ResponseCode);
         }
 
+        [Test]
+        public async Task Invoke_ShouldNotCatch_IgnoredUnhandledExceptions()
+        {
+            var result = await Client.GetAsync("canceled-bad-http-exception");
+            
+            result.Response.Code.Should().Be(CanceledResponseCode);
+        }
+
         protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
-            builder.SetupUnhandledExceptions(s => s.ErrorResponseCode = ResponseCode);
+            builder.SetupUnhandledExceptions(s =>
+            {
+                s.ErrorResponseCode = ResponseCode;
+                s.ExceptionsToIgnore.Add(typeof(BadHttpRequestException));
+            });
         }
 
 #if NET6_0_OR_GREATER
         protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
-            builder.SetupUnhandledExceptions(s => s.ErrorResponseCode = ResponseCode);
+            builder.SetupUnhandledExceptions(s =>
+            {
+                s.ErrorResponseCode = ResponseCode;
+                s.ExceptionsToIgnore.Add(typeof(BadHttpRequestException));
+            });
         }
 #endif
         
