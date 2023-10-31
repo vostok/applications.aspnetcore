@@ -62,6 +62,9 @@ namespace Vostok.Applications.AspNetCore.Middlewares
         }
 
         private static bool IsCancellationError(Exception error)
-            => error is TaskCanceledException || error is OperationCanceledException || error is ConnectionResetException;
+            => error is TaskCanceledException
+               || error is OperationCanceledException 
+               || error is ConnectionResetException
+               || error is BadHttpRequestException;
     }
 }
