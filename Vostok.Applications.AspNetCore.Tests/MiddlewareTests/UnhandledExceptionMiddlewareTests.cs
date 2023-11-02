@@ -1,11 +1,14 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using Vostok.Applications.AspNetCore.Builders;
+using Vostok.Applications.AspNetCore.Configuration;
 using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Hosting.Abstractions;
+#if NET5_0_OR_GREATER
+using Microsoft.AspNetCore.Http;
+#endif
 
 namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 {
@@ -41,21 +44,13 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
 
         protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
-            builder.SetupUnhandledExceptions(s =>
-            {
-                s.ErrorResponseCode = ResponseCode;
-                s.ExceptionsToIgnore.Add(typeof(BadHttpRequestException));
-            });
+            builder.SetupUnhandledExceptions(SetupUnhandledExceptions);
         }
 
 #if NET6_0_OR_GREATER
         protected override void SetupGlobal(IVostokAspNetCoreWebApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
-            builder.SetupUnhandledExceptions(s =>
-            {
-                s.ErrorResponseCode = ResponseCode;
-                s.ExceptionsToIgnore.Add(typeof(BadHttpRequestException));
-            });
+            builder.SetupUnhandledExceptions(SetupUnhandledExceptions);
         }
 #endif
         
@@ -65,5 +60,13 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
             middlewaresConfigurator.ConfigureUnhandledExceptions(s => s.ErrorResponseCode = ResponseCode);
         }
 #endif
+
+        private static void SetupUnhandledExceptions(UnhandledExceptionSettings settings)
+        {
+            settings.ErrorResponseCode = ResponseCode;
+#if NET5_0_OR_GREATER
+            settings.ExceptionsToIgnore.Add(typeof(BadHttpRequestException));
+#endif
+        }
     }
 }
