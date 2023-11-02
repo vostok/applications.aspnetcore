@@ -263,6 +263,7 @@ Vostok.Applications.AspNetCore.Configuration.TracingSettings.TracingSettings() -
 Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings
 Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings.ErrorResponseCode.get -> int
 Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings.ErrorResponseCode.set -> void
+Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings.ExceptionsToIgnore -> System.Collections.Generic.List<System.Type>
 Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings.UnhandledExceptionSettings() -> void
 Vostok.Applications.AspNetCore.Diagnostics.CurrentRequestsInfoProvider
 Vostok.Applications.AspNetCore.Diagnostics.CurrentRequestsInfoProvider.CurrentRequestsInfoProvider(Vostok.Applications.AspNetCore.Diagnostics.RequestTracker tracker) -> void
