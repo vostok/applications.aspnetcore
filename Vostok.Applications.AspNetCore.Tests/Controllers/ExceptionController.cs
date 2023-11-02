@@ -1,7 +1,9 @@
 ﻿using System;
+using Microsoft.AspNetCore.Mvc;
+#if NET5_0_OR_GREATER
 using System.Threading;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+#endif
 
 namespace Vostok.Applications.AspNetCore.Tests.Controllers
 {
@@ -11,17 +13,14 @@ namespace Vostok.Applications.AspNetCore.Tests.Controllers
     {
         [HttpGet]
         public void Throw() => throw new NotImplementedException();
-    }
-    
-    [ApiController]
-    [Route("canceled-bad-http-exception")]
-    public class BadHttpExceptionController : ControllerBase
-    {
-        [HttpGet]
-        public void Throw()
+        
+#if NET5_0_OR_GREATER
+        [HttpGet("/canceled-bad-http-exception")]
+        public void ThrowBadRequestException()
         {
             Request.HttpContext.RequestAborted = new CancellationToken(true);
             throw new BadHttpRequestException("");
         }
+#endif
     }
 }

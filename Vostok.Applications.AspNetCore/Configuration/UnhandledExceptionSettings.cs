@@ -21,9 +21,11 @@ namespace Vostok.Applications.AspNetCore.Configuration
         /// <summary>
         /// List of exceptions to be ignored
         /// </summary>
-        public List<Type> ExceptionsToIgnore = new() {
+        public List<Type> ExceptionsToIgnore = new() 
+        {
             typeof(TaskCanceledException), 
             typeof(OperationCanceledException), 
-            typeof(ConnectionResetException)};
+            typeof(ConnectionResetException)
+        };
     }
 }
