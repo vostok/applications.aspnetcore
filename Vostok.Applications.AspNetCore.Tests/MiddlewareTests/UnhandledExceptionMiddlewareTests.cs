@@ -34,6 +34,7 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
             result.Response.Code.Should().Be(ResponseCode);
         }
 
+#if NET5_0_OR_GREATER
         [Test]
         public async Task Invoke_ShouldNotCatch_IgnoredUnhandledExceptions()
         {
@@ -41,6 +42,7 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
             
             result.Response.Code.Should().Be(CanceledResponseCode);
         }
+#endif
 
         protected override void SetupGlobal(IVostokAspNetCoreApplicationBuilder builder, IVostokHostingEnvironment environment)
         {
