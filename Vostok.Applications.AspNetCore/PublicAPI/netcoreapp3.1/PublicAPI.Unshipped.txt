@@ -1,1 +1,0 @@
-Vostok.Applications.AspNetCore.Configuration.UnhandledExceptionSettings.ExceptionsToIgnore -> System.Collections.Generic.List<System.Type>
