@@ -1,4 +1,8 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
+using Microsoft.AspNetCore.Connections;
 using Vostok.Applications.AspNetCore.Middlewares;
 
 namespace Vostok.Applications.AspNetCore.Configuration
@@ -13,5 +17,13 @@ namespace Vostok.Applications.AspNetCore.Configuration
         /// Error response code to be used when an unhandled exception is observed.
         /// </summary>
         public int ErrorResponseCode { get; set; } = 500;
+
+        /// <summary>
+        /// List of exceptions to be ignored
+        /// </summary>
+        public List<Type> ExceptionsToIgnore = new() {
+            typeof(TaskCanceledException), 
+            typeof(OperationCanceledException), 
+            typeof(ConnectionResetException)};
     }
 }
