@@ -8,7 +8,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <PropertyGroup>
-        <VersionPrefix>0.3.20</VersionPrefix>
+        <VersionPrefix>0.3.21</VersionPrefix>
     </PropertyGroup>
     <PropertyGroup>
         <Title>Vostok.Applications.AspNetCore</Title>
