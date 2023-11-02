@@ -1,3 +1,7 @@
+## 0.3.20 (02-11-2023):
+
+Fix tests compability
+
 ## 0.3.19 (02-11-2023):
 
 Add ignored exception types option on request cancellation for UnhandledExceptionsMiddleware.
