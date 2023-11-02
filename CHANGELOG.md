@@ -1,3 +1,7 @@
+## 0.3.19 (02-11-2023):
+
+Add ignored exception types option on request cancellation for UnhandledExceptionsMiddleware.
+
 ## 0.3.18 (16-10-2023):
 
 Add logging responses by list of status code.
