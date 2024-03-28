@@ -1,3 +1,7 @@
+## 0.3.21 (28-03-2024):
+
+Updated dependencies.
+
 ## 0.3.20 (02-11-2023):
 
 Fix tests compability
