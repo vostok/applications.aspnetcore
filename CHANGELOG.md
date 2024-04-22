@@ -1,3 +1,7 @@
+## 0.3.23 (22-04-2024):
+
+Downgrade OpenTelemetry.Instrumentation.AspNetCore version due to build issues.
+
 ## 0.3.22 (22-04-2024):
 
 Updated OpenTelemetry.Instrumentation.AspNetCore version.
