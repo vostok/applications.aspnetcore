@@ -1,3 +1,7 @@
+## 0.3.22 (22-04-2024):
+
+Updated OpenTelemetry.Instrumentation.AspNetCore version.
+
 ## 0.3.21 (28-03-2024):
 
 Updated dependencies.
