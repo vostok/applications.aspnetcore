@@ -17,5 +17,5 @@ namespace Vostok.Applications.AspNetCore.Builders
 
         IVostokNetCoreApplicationBuilder SetupMicrosoftLog([NotNull] Action<VostokLoggerProviderSettings> setup);
     }
-}
+}r
 #endif
