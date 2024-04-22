@@ -34,10 +34,10 @@ public static class IServiceCollectionExtensions
     public static IServiceCollection ConfigureVostokAspNetCoreInstrumentation(this IServiceCollection serviceCollection, string name = null)
     {
         name ??= Options.DefaultName;
-        serviceCollection.Configure<AspNetCoreInstrumentationOptions>(name, Enrich);
+        serviceCollection.Configure<AspNetCoreTraceInstrumentationOptions>(name, Enrich);
         return serviceCollection;
 
-        static void Enrich(AspNetCoreInstrumentationOptions options)
+        static void Enrich(AspNetCoreTraceInstrumentationOptions options)
         {
             var enrichWithHttpRequest = options.EnrichWithHttpRequest;
             options.EnrichWithHttpRequest = (activity, request) =>
