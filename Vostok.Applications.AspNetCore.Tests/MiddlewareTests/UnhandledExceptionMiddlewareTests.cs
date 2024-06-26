@@ -39,7 +39,7 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
         public async Task Invoke_ShouldNotCatch_IgnoredUnhandledExceptions()
         {
             var result = await Client.GetAsync("canceled-bad-http-exception");
-            
+
             result.Response.Code.Should().Be(CanceledResponseCode);
         }
 #endif
@@ -55,11 +55,15 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
             builder.SetupUnhandledExceptions(SetupUnhandledExceptions);
         }
 #endif
-        
+
 #if ASPNTCORE_HOSTING
         protected override void SetupGlobal(Microsoft.AspNetCore.Builder.WebApplicationBuilder builder, Vostok.Hosting.AspNetCore.Web.Configuration.IVostokMiddlewaresConfigurator middlewaresConfigurator)
         {
-            middlewaresConfigurator.ConfigureUnhandledExceptions(s => s.ErrorResponseCode = ResponseCode);
+            middlewaresConfigurator.ConfigureUnhandledExceptions(s =>
+            {
+                s.ErrorResponseCode = ResponseCode;
+                s.ExceptionsToIgnore.Add(typeof(BadHttpRequestException));
+            });
         }
 #endif
 
