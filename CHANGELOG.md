@@ -1,3 +1,7 @@
+## 0.3.25 (29-10-2024):
+
+Rebuild nuget package to use new version of Hercules.Client.Abstractions
+
 ## 0.3.24 (22-04-2024):
 
 Fix build.
