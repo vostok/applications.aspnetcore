@@ -106,10 +106,10 @@ public static class IServiceCollectionExtensions
         resourceBuilder.AddService(serviceName: application, autoGenerateServiceInstanceId: false);
         var vostokTags = new List<KeyValuePair<string, object>>
         {
-            new("host.name", host)
+            new(SemanticConventions.AttributeHostName, host)
         };
         if (environment != null)
-            vostokTags.Add(new("deployment.environment", environment));
+            vostokTags.Add(new(SemanticConventions.AttributeDeploymentEnvironmentName, environment));
 
         resourceBuilder.AddAttributes(vostokTags);
     }

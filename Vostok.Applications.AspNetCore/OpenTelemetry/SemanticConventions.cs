@@ -4,6 +4,9 @@
 // because it was deprecated and unlisted
 internal static class SemanticConventions
 {
+    public const string AttributeHostName = "host.name";
+    public const string AttributeDeploymentEnvironmentName = "deployment.environment.name";
+
     public const string AttributeHttpRequestContentLength = "http.request.header.content-length";
     public const string AttributeHttpResponseContentLength = "http.response.header.content-length";
     public const string AttributeClientAddress = "client.address";
