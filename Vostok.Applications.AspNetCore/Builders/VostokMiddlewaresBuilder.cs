@@ -135,10 +135,10 @@ namespace Vostok.Applications.AspNetCore.Builders
             if (preVostokMiddlewares.TryGetValue(typeof(TMiddleware), out var injected))
                 middlewares.AddRange(injected);
 
+            services.Configure<TSettings>(settings => customization.Customize(settings));
+
             if (IsEnabled<TMiddleware>())
             {
-                services.Configure<TSettings>(settings => customization.Customize(settings));
-
                 middlewares.Add(typeof(TMiddleware));
             }
         }
