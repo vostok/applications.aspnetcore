@@ -1,3 +1,7 @@
+## 0.3.27 (21-11-2024):
+
+Fix TracingMiddleware not adding trace id header after ExceptionHandlerMiddleware
+
 ## 0.3.26 (21-11-2024):
 
 Update ClusterClient library.
