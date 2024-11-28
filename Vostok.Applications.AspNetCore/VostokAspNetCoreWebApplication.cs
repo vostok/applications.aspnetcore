@@ -41,6 +41,7 @@ namespace Vostok.Applications.AspNetCore
             var builder = new VostokAspNetCoreWebApplicationBuilder(environment, this, disposables);
 
             builder.SetupPingApi(PingApiSettingsSetup.Get(environment, GetType(), initialized));
+            builder.SetupDistributedContext(settings => settings.AdditionalActions.Add(DistributedContextSetup.RestoreOpenTelemetryTracingContext));
 
             await SetupAsync(builder, environment);
 
