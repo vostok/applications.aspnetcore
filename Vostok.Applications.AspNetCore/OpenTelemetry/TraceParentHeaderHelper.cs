@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 
 namespace Vostok.Applications.AspNetCore.OpenTelemetry;
 
-// note (ponomaryovigor, 28.11.2024): Partially copied from Singular.
 internal static class TraceParentHeaderHelper
 {
     private static readonly char[] Format = {'n'};
