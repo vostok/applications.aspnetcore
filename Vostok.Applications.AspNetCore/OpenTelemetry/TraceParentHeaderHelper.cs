@@ -5,7 +5,7 @@ namespace Vostok.Applications.AspNetCore.OpenTelemetry;
 
 internal static class TraceParentHeaderHelper
 {
-    private static readonly char[] Format = {'n'};
+    private const string Format = "n";
     private const int HeaderLength = 2 + 1 + 32 + 1 + 16 + 1 + 2;
 
     public static bool TryParse([CanBeNull] string traceParent, out Guid traceId, out Guid spanId)
@@ -24,9 +24,9 @@ internal static class TraceParentHeaderHelper
             return false;
 
 #if NETSTANDARD2_0
-        if (!Guid.TryParseExact(traceParent.Substring(3, 32), "n", out traceId))
+        if (!Guid.TryParseExact(traceParent.Substring(3, 32), Format, out traceId))
 #else
-        if (!Guid.TryParseExact(traceParent.AsSpan(3, 32), Format.AsSpan(), out traceId))
+        if (!Guid.TryParseExact(traceParent.AsSpan(3, 32), Format, out traceId))
 #endif
             return false;
 
@@ -35,9 +35,9 @@ internal static class TraceParentHeaderHelper
         parentSpan.Fill('0');
         parentId.CopyTo(parentSpan);
 #if NETSTANDARD2_0
-        if (!Guid.TryParseExact(parentSpan.ToString(), "N", out spanId))
+        if (!Guid.TryParseExact(parentSpan.ToString(), Format, out spanId))
 #else
-        if (!Guid.TryParseExact(parentSpan, Format.AsSpan(), out spanId))
+        if (!Guid.TryParseExact(parentSpan, Format, out spanId))
 #endif
             return false;
 
