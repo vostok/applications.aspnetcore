@@ -3,6 +3,11 @@ using JetBrains.Annotations;
 
 namespace Vostok.Applications.AspNetCore.OpenTelemetry;
 
+/// <summary>
+/// <para>Simple "traceparent" header parser to extract TraceId and SpanId for Vostok tracing.</para> 
+/// <para>Works only with 00 version, doesn't check lowercase invariants and doesn't check flags because they don't necessary for Vostok.</para>
+/// <remarks>If there will be new format versions or other problems with this solution, feel free to replace it with text propagators from OpenTelemetry.Api package.</remarks>
+/// </summary>
 internal static class TraceParentHeaderHelper
 {
     // {version}-{trace_id}-{span_id}-{trace_flags}
@@ -10,9 +15,6 @@ internal static class TraceParentHeaderHelper
 
     private const string GuidFormat = "n";
 
-    // Simple "traceparent" header parser to extract TraceId and SpanId for Vostok tracing.
-    // Works only with 00 version, doesn't check lowercase invariants and doesn't check flags because they don't necessary for Vostok.
-    // If there will be new format versions or other problems with this solution, feel free to replace it with text propagators from OpenTelemetry.Api package.
     public static bool TryParseV0([CanBeNull] string traceParent, out Guid traceId, out Guid spanId)
     {
         traceId = Guid.Empty;
