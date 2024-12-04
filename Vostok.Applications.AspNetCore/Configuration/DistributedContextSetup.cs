@@ -17,7 +17,7 @@ internal static class DistributedContextSetup
         if (!request.Headers.TryGetValue(TraceParentHeader, out var header))
             return;
 
-        if (!TraceParentHeaderHelper.TryParse(header, out var traceId, out var spanId))
+        if (!TraceParentHeaderHelper.TryParseV0(header, out var traceId, out var spanId))
             return;
 
         FlowingContext.Globals.Set(new TraceContext(traceId, spanId));

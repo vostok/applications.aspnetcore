@@ -5,15 +5,20 @@ namespace Vostok.Applications.AspNetCore.OpenTelemetry;
 
 internal static class TraceParentHeaderHelper
 {
-    private const string Format = "n";
-    private const int HeaderLength = 2 + 1 + 32 + 1 + 16 + 1 + 2;
+    // {version}-{trace_id}-{span_id}-{trace_flags}
+    private const int TraceParentLengthV0 = 2 + 1 + 32 + 1 + 16 + 1 + 2;
 
-    public static bool TryParse([CanBeNull] string traceParent, out Guid traceId, out Guid spanId)
+    private const string GuidFormat = "n";
+
+    // Simple "traceparent" header parser to extract TraceId and SpanId for Vostok tracing.
+    // Works only with 00 version, doesn't check lowercase invariants and doesn't check flags because they don't necessary for Vostok.
+    // If there will be new format versions or other problems with this solution, feel free to replace it with text propagators from OpenTelemetry.Api package.
+    public static bool TryParseV0([CanBeNull] string traceParent, out Guid traceId, out Guid spanId)
     {
         traceId = Guid.Empty;
         spanId = Guid.Empty;
 
-        if (traceParent == null || traceParent.Length != HeaderLength)
+        if (traceParent == null || traceParent.Length != TraceParentLengthV0)
             return false;
 
         if (traceParent[2] != '-' || traceParent[35] != '-' || traceParent[52] != '-')
@@ -24,9 +29,9 @@ internal static class TraceParentHeaderHelper
             return false;
 
 #if NETSTANDARD2_0
-        if (!Guid.TryParseExact(traceParent.Substring(3, 32), Format, out traceId))
+        if (!Guid.TryParseExact(traceParent.Substring(3, 32), GuidFormat, out traceId))
 #else
-        if (!Guid.TryParseExact(traceParent.AsSpan(3, 32), Format, out traceId))
+        if (!Guid.TryParseExact(traceParent.AsSpan(3, 32), GuidFormat, out traceId))
 #endif
             return false;
 
@@ -35,9 +40,9 @@ internal static class TraceParentHeaderHelper
         parentSpan.Fill('0');
         parentId.CopyTo(parentSpan);
 #if NETSTANDARD2_0
-        if (!Guid.TryParseExact(parentSpan.ToString(), Format, out spanId))
+        if (!Guid.TryParseExact(parentSpan.ToString(), GuidFormat, out spanId))
 #else
-        if (!Guid.TryParseExact(parentSpan, Format, out spanId))
+        if (!Guid.TryParseExact(parentSpan, GuidFormat, out spanId))
 #endif
             return false;
 

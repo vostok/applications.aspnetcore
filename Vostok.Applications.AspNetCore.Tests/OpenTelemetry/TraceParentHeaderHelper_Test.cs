@@ -12,7 +12,7 @@ internal class TraceParentHeaderHelper_Test
     {
         const string traceparent = "00-2db15f2b91d0f2238a6ca0ddfc39b1fe-b7fa253c6698fd10-01";
 
-        TraceParentHeaderHelper.TryParse(traceparent, out var traceId, out var spanId).Should().BeTrue();
+        TraceParentHeaderHelper.TryParseV0(traceparent, out var traceId, out var spanId).Should().BeTrue();
 
         traceId.Should().Be(Guid.Parse("2db15f2b91d0f2238a6ca0ddfc39b1fe"));
         spanId.Should().Be(Guid.Parse("b7fa253c6698fd100000000000000000"));
@@ -22,6 +22,7 @@ internal class TraceParentHeaderHelper_Test
     [TestCase("002db15f2b91d0f2238a6ca0ddfc39b1feb7fa253c6698fd1001")]
     [TestCase("00-2db15f2b91d0f2238a6ca0ddfc39b1fe-b7fa253c6698fd10")]
     [TestCase("00-2db15f2b91d0f2238a6ca0ddfc39b1fe-b7fa253c6698fd10-02462612")]
+    [TestCase("22-2db15f2b91d0f2238a6ca0ddfc39b1fe-b7fa253c6698fd10-01")]
     [TestCase("lkfgh543hg89h35948gh5g")]
     [TestCase("00-2zz15f2b91d0f2238a6ca0ddfc39b1fe-b7fa253c6698fd10-01")]
     [TestCase("00-2db15f2b91d0f2238a6ca0ddfc39b1fe-yyya253c6698fd10-01")]
@@ -34,6 +35,6 @@ internal class TraceParentHeaderHelper_Test
     [TestCase("00-00000000000000000000000000000000-0000000000000000-01")]
     public void Should_not_parse_wrong_strings(string traceParent)
     {
-        TraceParentHeaderHelper.TryParse(traceParent, out _, out _).Should().BeFalse();
+        TraceParentHeaderHelper.TryParseV0(traceParent, out _, out _).Should().BeFalse();
     }
 }
