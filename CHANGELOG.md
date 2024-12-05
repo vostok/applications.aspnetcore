@@ -1,3 +1,7 @@
+## 0.3.28 (05-12-2024):
+
+Try extract TraceContext from "traceparent" header.
+
 ## 0.3.27 (21-11-2024):
 
 Fix TracingMiddleware not adding trace id header after ExceptionHandlerMiddleware
