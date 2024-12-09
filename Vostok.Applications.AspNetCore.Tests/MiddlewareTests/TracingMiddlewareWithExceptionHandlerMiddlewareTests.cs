@@ -11,6 +11,9 @@ using Vostok.Applications.AspNetCore.Tests.Extensions;
 using Vostok.Applications.AspNetCore.Tests.TestHelpers;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Hosting.Abstractions;
+#if ASPNTCORE_HOSTING
+using Vostok.Hosting.AspNetCore.Web.Configuration;
+#endif
 using Vostok.Hosting.Setup;
 using Vostok.Tracing.Abstractions;
 
@@ -59,6 +62,21 @@ namespace Vostok.Applications.AspNetCore.Tests.MiddlewareTests
                         appBuilder.Run(httpContext =>
                             httpContext.Response.WriteAsync("Hello from ExceptionHandlerMiddleware!")))
                     .Run(_ => throw new Exception()));
+        }
+#endif
+
+#if ASPNTCORE_HOSTING
+        protected override void SetupGlobal(WebApplicationBuilder builder, IVostokMiddlewaresConfigurator middlewaresConfigurator)
+        {
+            middlewaresConfigurator.ConfigureTracing(s => s.ResponseTraceIdHeader = "Trace-Id");
+        }
+
+        protected override void SetupGlobal(WebApplication builder)
+        {
+            builder.UseExceptionHandler(appBuilder =>
+                       appBuilder.Run(httpContext =>
+                           httpContext.Response.WriteAsync("Hello from ExceptionHandlerMiddleware!")))
+                   .Run(_ => throw new Exception());
         }
 #endif
 
