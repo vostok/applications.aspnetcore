@@ -47,10 +47,14 @@ namespace Vostok.Applications.AspNetCore.Middlewares
                 options.SetAdditionalRequestDetails?.Invoke(spanBuilder, context);
 
                 SetResponseHeaderIfRequired(context, spanBuilder);
+                context.Response.OnStarting(state =>
+                {
+                    var tuple = ((HttpContext, IHttpRequestServerSpanBuilder)) state; 
+                    SetResponseHeaderIfRequired(tuple.Item1, tuple.Item2);
+                    return Task.CompletedTask;
+                }, (context, spanBuilder));
 
                 await next(context);
-
-                SetResponseHeaderIfRequired(context, spanBuilder);
 
                 spanBuilder.SetResponseDetails(context.Response.StatusCode, context.Response.ContentLength);
                 options.SetAdditionalResponseDetails?.Invoke(spanBuilder, context);

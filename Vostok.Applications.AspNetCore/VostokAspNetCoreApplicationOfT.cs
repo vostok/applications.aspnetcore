@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Hosting;
@@ -47,6 +46,7 @@ namespace Vostok.Applications.AspNetCore
             var builder = new VostokAspNetCoreApplicationBuilder<TStartup>(environment, this, disposables);
 
             builder.SetupPingApi(PingApiSettingsSetup.Get(environment, GetType(), initialized));
+            builder.SetupDistributedContext(settings => settings.AdditionalActions.Add(DistributedContextSetup.RestoreOpenTelemetryTracingContext));
 
             Setup(builder, environment);
 
