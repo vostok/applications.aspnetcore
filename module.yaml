@@ -122,6 +122,8 @@ full-build > notests:
       name: dotnet
       
 release > notests:
+  deps:
+    - force: $CURRENT_BRANCH
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
