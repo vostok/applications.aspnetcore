@@ -1,3 +1,6 @@
+## 0.3.31 (16-01-2025):
+Add `net8.0` target.
+
 ## 0.3.29 (24-12-2024):
 
 Add `ForceConfigureMiddlewaresCustomizations` that forces to configure middleware options with registered customizations even middleware is disabled.

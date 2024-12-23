@@ -13,6 +13,18 @@ namespace Vostok.Applications.AspNetCore.Middlewares
     /// <summary>
     /// Catches and logs unhandled exception on low level. Upon catching one, serves an error response.
     /// </summary>
+    /// <remarks>
+    /// Beware that DeveloperExceptionPageMiddleware might be enabled by default starting from dotnet 6.0. It behaves differently
+    /// in different versions of dotnet, and it might mess up your exception handling.
+    ///
+    /// Starting from dotnet6 it overwrites response status code with 400 if <see cref="BadHttpRequestException"/> was thrown. 
+    /// Starting from dotnet8 it overwrites response status code with 499 if request was aborted.
+    /// 
+    /// You can see it for yourself by comparing implementations:
+    /// <see href="https://github.com/dotnet/aspnetcore/blob/v5.0.17/src/Middleware/Diagnostics/src/DeveloperExceptionPage/DeveloperExceptionPageMiddleware.cs"/>
+    /// <see href="https://github.com/dotnet/aspnetcore/blob/v6.0.0/src/Middleware/Diagnostics/src/DeveloperExceptionPage/DeveloperExceptionPageMiddleware.cs"/>
+    /// <see href="https://github.com/dotnet/aspnetcore/blob/v8.0.0/src/Middleware/Diagnostics/src/DeveloperExceptionPage/DeveloperExceptionPageMiddlewareImpl.cs"/>
+    /// </remarks>
     [PublicAPI]
     public class UnhandledExceptionMiddleware
     {

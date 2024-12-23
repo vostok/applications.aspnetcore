@@ -3,12 +3,12 @@
     <Import Project="..\..\vostok.devtools\library-common-props\Main-Project.props" />
     <Import Project="..\..\vostok.devtools\git-commit-to-assembly-title\Vostok.Tools.GitCommit2AssemblyTitle.props" />
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>$(TargetFrameworks);net5.0;netcoreapp3.1</TargetFrameworks>
         <Configurations>Debug;Release</Configurations>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <PropertyGroup>
-        <VersionPrefix>0.3.30</VersionPrefix>
+        <VersionPrefix>0.3.31</VersionPrefix>
     </PropertyGroup>
     <PropertyGroup>
         <Title>Vostok.Applications.AspNetCore</Title>
@@ -31,7 +31,7 @@
         <FrameworkReference Include="Microsoft.AspNetCore.App" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
         <PackageReference Include="Microsoft.AspNetCore" Version="2.1.7" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net8.0'">
         <PackageReference Include="OpenTelemetry" Version="1.4.0" />
         <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9.14" />
         <PackageReference Include="OpenTelemetry.SemanticConventions" Version="1.0.0-rc9.9" />
