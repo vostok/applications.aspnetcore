@@ -1,3 +1,7 @@
+## 0.3.29 (24-12-2024):
+
+Add `ForceConfigureMiddlewaresCustomizations` that forces to configure middleware options with registered customizations even middleware is disabled.
+
 ## 0.3.28 (05-12-2024):
 
 Try extract TraceContext from "traceparent" header.
