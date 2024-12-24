@@ -34,6 +34,7 @@ namespace Vostok.Applications.AspNetCore.Builders
         private readonly Customization<HttpContextTweakSettings> httpContextTweaksCustomization = new Customization<HttpContextTweakSettings>();
 
         private readonly AtomicBoolean disabled = false;
+        private readonly AtomicBoolean forceConfigureMiddlewaresCustomizations = false;
         private readonly Dictionary<Type, bool> middlewareDisabled = new Dictionary<Type, bool>();
         private readonly Dictionary<Type, List<Type>> preVostokMiddlewares = new Dictionary<Type, List<Type>>();
 
@@ -45,6 +46,9 @@ namespace Vostok.Applications.AspNetCore.Builders
 
             SetDefaultCustomizations();
         }
+
+        public void ForceConfigureMiddlewaresCustomizations()
+            => forceConfigureMiddlewaresCustomizations.Value = true;
 
         public void Disable()
             => disabled.Value = true;
@@ -135,11 +139,21 @@ namespace Vostok.Applications.AspNetCore.Builders
             if (preVostokMiddlewares.TryGetValue(typeof(TMiddleware), out var injected))
                 middlewares.AddRange(injected);
 
-            if (IsEnabled<TMiddleware>())
+            if (forceConfigureMiddlewaresCustomizations)
             {
                 services.Configure<TSettings>(settings => customization.Customize(settings));
-
-                middlewares.Add(typeof(TMiddleware));
+                if (IsEnabled<TMiddleware>())
+                {
+                    middlewares.Add(typeof(TMiddleware));
+                }
+            }
+            else
+            {
+                if (IsEnabled<TMiddleware>())
+                {
+                    services.Configure<TSettings>(settings => customization.Customize(settings));
+                    middlewares.Add(typeof(TMiddleware));
+                }
             }
         }
 
