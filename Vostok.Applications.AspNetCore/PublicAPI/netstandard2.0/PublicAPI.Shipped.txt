@@ -52,6 +52,7 @@ virtual Vostok.Applications.AspNetCore.VostokAspNetCoreApplication<TStartup>.Set
 virtual Vostok.Applications.AspNetCore.VostokAspNetCoreApplication<TStartup>.WarmupAsync(Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment, System.IServiceProvider serviceProvider) -> System.Threading.Tasks.Task
 virtual Vostok.Applications.AspNetCore.VostokAspNetCoreApplication<TStartup>.WarmupServicesAsync(Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment, System.IServiceProvider serviceProvider) -> System.Threading.Tasks.Task
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
+Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.ForceConfigureMiddlewaresCustomizations() -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.DisableVostokMiddleware<TMiddleware>() -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.DisableVostokMiddlewares() -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.EnableVostokMiddleware<TMiddleware>() -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder

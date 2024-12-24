@@ -66,6 +66,7 @@ virtual Vostok.Applications.AspNetCore.VostokNetCoreApplication.InitializeAsync(
 virtual Vostok.Applications.AspNetCore.VostokNetCoreApplication.WarmupAsync(Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment, System.IServiceProvider serviceProvider) -> System.Threading.Tasks.Task
 virtual Vostok.Applications.AspNetCore.VostokNetCoreApplication.WarmupServicesAsync(Vostok.Hosting.Abstractions.IVostokHostingEnvironment environment, System.IServiceProvider serviceProvider) -> System.Threading.Tasks.Task
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
+Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.ForceConfigureMiddlewaresCustomizations() -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.DisableVostokMiddleware<TMiddleware>() -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.DisableVostokMiddlewares() -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
 Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder.DisableWebHost() -> Vostok.Applications.AspNetCore.Builders.IVostokAspNetCoreApplicationBuilder
