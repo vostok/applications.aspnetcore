@@ -18,6 +18,11 @@ namespace Vostok.Applications.AspNetCore.Builders
     public partial interface IVostokAspNetCoreApplicationBuilder
     {
         /// <summary>
+        /// <para>Forces to configure middleware options with registered customizations even middleware is disabled.</para>
+        /// </summary>
+        IVostokAspNetCoreApplicationBuilder ForceConfigureMiddlewaresCustomizations();
+
+        /// <summary>
         /// Disables all built-in Vostok middlewares. 
         /// </summary>
         IVostokAspNetCoreApplicationBuilder DisableVostokMiddlewares();

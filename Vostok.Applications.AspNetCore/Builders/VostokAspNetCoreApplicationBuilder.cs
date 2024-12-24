@@ -69,6 +69,9 @@ namespace Vostok.Applications.AspNetCore.Builders
         public IVostokAspNetCoreApplicationBuilder SetupWebHost(Action<IWebHostBuilder> setup)
             => Setup(() => webHostBuilder.Customize(setup ?? throw new ArgumentNullException(nameof(setup))));
 
+        public IVostokAspNetCoreApplicationBuilder ForceConfigureMiddlewaresCustomizations()
+            => Setup(middlewaresBuilder.ForceConfigureMiddlewaresCustomizations);
+
         public IVostokAspNetCoreApplicationBuilder DisableVostokMiddlewares()
             => Setup(middlewaresBuilder.Disable);
 

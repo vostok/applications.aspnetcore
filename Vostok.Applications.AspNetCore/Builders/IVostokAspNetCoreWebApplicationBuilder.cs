@@ -22,6 +22,11 @@ namespace Vostok.Applications.AspNetCore.Builders
         IVostokAspNetCoreWebApplicationBuilder CustomizeWebApplication([NotNull] Action<WebApplication> customization);
 
         /// <summary>
+        /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.ForceConfigureMiddlewaresCustomizations"/>
+        /// </summary>
+        IVostokAspNetCoreWebApplicationBuilder ForceConfigureMiddlewaresCustomizations();
+
+        /// <summary>
         /// <inheritdoc cref="IVostokAspNetCoreApplicationBuilder.DisableWebHost"/>
         /// </summary>
         IVostokAspNetCoreWebApplicationBuilder DisableWebHost();
