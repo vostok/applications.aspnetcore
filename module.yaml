@@ -28,15 +28,15 @@ base:
     - vostok.configuration.abstractions
     - vostok.configuration.microsoft
     - vostok.configuration.sources
-    - vostok.context
+    - vostok.context@IDD-3848-I
     - vostok.datacenters
-    - vostok.devtools
+    - vostok.devtools@IDD-3848
     - vostok.hercules.client.abstractions
     - vostok.hosting.abstractions
-    - vostok.logging.abstractions
-    - vostok.logging.context
-    - vostok.logging.microsoft
-    - vostok.logging.tracing
+    - vostok.logging.abstractions@IDD-3848-I
+    - vostok.logging.context@IDD-3848-I
+    - vostok.logging.microsoft@ID-3848-I
+    - vostok.logging.tracing@IDD-3848-I
     - vostok.metrics
     - vostok.servicediscovery.abstractions
     - vostok.throttling
@@ -122,8 +122,6 @@ full-build > notests:
       name: dotnet
       
 release > notests:
-  deps:
-    - force: $CURRENT_BRANCH
   build:
     target: Vostok.Applications.AspNetCore.sln
     configuration: NoTests
