@@ -28,15 +28,15 @@ base:
     - vostok.configuration.abstractions
     - vostok.configuration.microsoft
     - vostok.configuration.sources
-    - vostok.context@IDD-3848-I
+    - vostok.context
     - vostok.datacenters
     - vostok.devtools@IDD-3848
     - vostok.hercules.client.abstractions
     - vostok.hosting.abstractions
-    - vostok.logging.abstractions@IDD-3848-I
-    - vostok.logging.context@IDD-3848-I
-    - vostok.logging.microsoft@ID-3848-I
-    - vostok.logging.tracing@IDD-3848-I
+    - vostok.logging.abstractions
+    - vostok.logging.context
+    - vostok.logging.microsoft
+    - vostok.logging.tracing
     - vostok.metrics
     - vostok.servicediscovery.abstractions
     - vostok.throttling
@@ -99,6 +99,7 @@ v2_1 > base:
 
 full-build > notests:
   deps:
+    - force: IDD-3848-I
     - vostok.clusterconfig.client
     - vostok.hercules.client
     - vostok.hosting
