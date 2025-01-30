@@ -110,8 +110,6 @@ v2_1 > base:
 
 full-build > notests:
   deps:
-    - -vostok.devtools
-    - vostok.devtools@with-net6.0
     - vostok.clusterconfig.client
     - vostok.hercules.client
     - vostok.hosting
