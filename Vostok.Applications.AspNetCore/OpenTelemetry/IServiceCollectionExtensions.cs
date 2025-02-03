@@ -25,30 +25,30 @@ public static class IServiceCollectionExtensions
     /// <summary>
     /// <para>Adds default Vostok tags:</para>
     /// <list type="bullet">
-    ///     <item><description><see cref="SemanticConventions.AttributeClientAddress"/></description></item>
+    ///     <item><description><see cref="TraceSemanticConventions.AttributeHttpClientIp"/></description></item>
     ///     <item><description><see cref="WellKnownAnnotations.Http.Client.Name"/></description></item>
-    ///     <item><description><see cref="SemanticConventions.AttributeHttpRequestContentLength"/></description></item>
-    ///     <item><description><see cref="SemanticConventions.AttributeHttpResponseContentLength"/></description></item>
+    ///     <item><description><see cref="TraceSemanticConventions.AttributeHttpRequestContentLength"/></description></item>
+    ///     <item><description><see cref="TraceSemanticConventions.AttributeHttpResponseContentLength"/></description></item>
     /// </list>
     /// </summary>
     public static IServiceCollection ConfigureVostokAspNetCoreInstrumentation(this IServiceCollection serviceCollection, string name = null)
     {
         name ??= Options.DefaultName;
-        serviceCollection.Configure<AspNetCoreTraceInstrumentationOptions>(name, Enrich);
+        serviceCollection.Configure<AspNetCoreInstrumentationOptions>(name, Enrich);
         return serviceCollection;
 
-        static void Enrich(AspNetCoreTraceInstrumentationOptions options)
+        static void Enrich(AspNetCoreInstrumentationOptions options)
         {
             var enrichWithHttpRequest = options.EnrichWithHttpRequest;
             options.EnrichWithHttpRequest = (activity, request) =>
             {
                 enrichWithHttpRequest?.Invoke(activity, request);
-                activity.SetTag(SemanticConventions.AttributeClientAddress, request.HttpContext.Connection.RemoteIpAddress);
+                activity.SetTag(TraceSemanticConventions.AttributeHttpClientIp, request.HttpContext.Connection.RemoteIpAddress);
                 var clientName = request.Headers[HeaderNames.ApplicationIdentity].ToString();
                 if (!string.IsNullOrEmpty(clientName))
                     activity.SetTag(WellKnownAnnotations.Http.Client.Name, clientName);
                 if (request.ContentLength.HasValue)
-                    activity.SetTag(SemanticConventions.AttributeHttpRequestContentLength, request.ContentLength.Value);
+                    activity.SetTag(TraceSemanticConventions.AttributeHttpRequestContentLength, request.ContentLength.Value);
             };
 
             var enrichWithHttpResponse = options.EnrichWithHttpResponse;
@@ -56,7 +56,7 @@ public static class IServiceCollectionExtensions
             {
                 enrichWithHttpResponse?.Invoke(activity, response);
                 if (response.ContentLength.HasValue)
-                    activity.SetTag(SemanticConventions.AttributeHttpResponseContentLength, response.ContentLength.Value);
+                    activity.SetTag(TraceSemanticConventions.AttributeHttpResponseContentLength, response.ContentLength.Value);
             };
         }
     }
@@ -106,10 +106,10 @@ public static class IServiceCollectionExtensions
         resourceBuilder.AddService(serviceName: application, autoGenerateServiceInstanceId: false);
         var vostokTags = new List<KeyValuePair<string, object>>
         {
-            new(SemanticConventions.AttributeHostName, host)
+            new("host.name", host)
         };
         if (environment != null)
-            vostokTags.Add(new(SemanticConventions.AttributeDeploymentEnvironmentName, environment));
+            vostokTags.Add(new("deployment.environment", environment));
 
         resourceBuilder.AddAttributes(vostokTags);
     }
