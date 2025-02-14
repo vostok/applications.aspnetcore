@@ -1,3 +1,7 @@
+## 0.3.32 (14-02-2025):
+
+Update OpenTelemetry packages.
+
 ## 0.3.31 (16-01-2025):
 Add `net8.0` target.
 
