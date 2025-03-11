@@ -52,6 +52,18 @@ notests > base:
     tool:
       name: dotnet
 
+  install:
+    - groups:
+      - target-framework: "netstandard2.0"
+        libraries:
+          - Vostok.Applications.AspNetCore/bin/Release/netstandard2.0/Vostok.Applications.AspNetCore.dll
+      - target-framework: "net6.0"
+        libraries:
+          - Vostok.Applications.AspNetCore/bin/Release/net6.0/Vostok.Applications.AspNetCore.dll
+      - target-framework: "net8.0"
+        libraries:
+          - Vostok.Applications.AspNetCore/bin/Release/net8.0/Vostok.Applications.AspNetCore.dll
+
 v8_0 > base:
   build:
     target: Vostok.Applications.AspNetCore.sln
