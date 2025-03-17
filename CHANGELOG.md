@@ -1,3 +1,7 @@
+## 0.3.33 (17-03-2025):
+
+Update ClusterConfig.Client library.
+
 ## 0.3.32 (14-02-2025):
 
 Update OpenTelemetry packages.
