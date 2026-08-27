@@ -1,6 +1,5 @@
 ﻿#if NET6_0_OR_GREATER
 using System;
-using System.Buffers.Binary;
 using System.Text;
 using JetBrains.Annotations;
 using Vostok.Tracing;
@@ -52,7 +51,7 @@ internal class VostokContextReader
         if (bytes.Length < sizeOfInt)
             throw new InvalidOperationException("Buffer ended unexpectedly while reading string length.");
 
-        var size = BinaryPrimitives.ReadInt32LittleEndian(bytes);
+        var size = BitConverter.ToInt32(bytes);
         bytes = bytes[sizeOfInt..];
 
         if (size < 0)

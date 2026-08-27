@@ -60,6 +60,18 @@ internal class VostokContextPropagator_Tests
         error.Should().BeOfType<InvalidOperationException>();
     }
 
+    [Test]
+    public void Should_not_read_context_from_negative_string_size()
+    {
+        Exception error = null;
+        var reader = new VostokContextReader((_, exception) => error = exception);
+
+        var result = reader.Read(Convert.ToBase64String(new byte[] {255, 255, 255, 255}));
+
+        result.Should().BeNull();
+        error.Should().BeOfType<InvalidOperationException>();
+    }
+
     [TestCase("hello")]
     [TestCase("vostok.tracing.contexx")]
     public void Should_extract_trace_data_and_skip_other_fields(string stringKey)
