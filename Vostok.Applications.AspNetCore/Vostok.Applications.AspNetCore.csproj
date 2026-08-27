@@ -5,7 +5,6 @@
     <PropertyGroup>
         <TargetFrameworks>$(TargetFrameworks);net5.0;netcoreapp3.1</TargetFrameworks>
         <Configurations>Debug;Release</Configurations>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <PropertyGroup>
         <VersionPrefix>0.3.34</VersionPrefix>
