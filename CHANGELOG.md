@@ -1,3 +1,7 @@
+## 0.3.34 (27-08-2026):
+
+Remove unsafe code.
+
 ## 0.3.33 (17-03-2025):
 
 Update ClusterConfig.Client library.
