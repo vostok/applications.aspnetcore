@@ -1,5 +1,6 @@
 ﻿#if NET6_0_OR_GREATER
 using System;
+using System.Buffers.Binary;
 using System.Text;
 using JetBrains.Annotations;
 using Vostok.Tracing;
@@ -21,44 +22,19 @@ internal class VostokContextReader
     }
     
     [CanBeNull]
-    public unsafe TraceContext Read(string input)
+    public TraceContext Read(string input)
     {
         try
         {
-            var bytes = Convert.FromBase64String(input);
+            ReadOnlySpan<byte> remainingBytes = Convert.FromBase64String(input);
 
-            fixed (byte* begin = bytes)
+            while (remainingBytes.Length > 0)
             {
-                var end = begin + bytes.Length;
+                remainingBytes = ReadString(remainingBytes, out var key, DistributedGlobalName.Length);
+                remainingBytes = ReadString(remainingBytes, out var value);
 
-                var ptr = begin;
-
-                string ReadString(out int size, int? expectedSize = null)
-                {
-                    size = *(int*)ptr;
-                    if (size < 0)
-                        throw new Exception("Negative size.");
-                    if (expectedSize.HasValue && size != expectedSize)
-                        return string.Empty;
-                    if (ptr + sizeof(int) + size > end)
-                        throw new Exception("Wrong sizes.");
-                    return Encoding.UTF8.GetString(ptr + sizeof(int), size);
-                }
-
-                while (ptr < end)
-                {
-                    var key = ReadString(out var size, DistributedGlobalName.Length);
-                    if (key == DistributedGlobalName)
-                    {
-                        ptr += sizeof(int) + size;
-                        var value = ReadString(out _);
-                        return traceContextSerializer.Deserialize(value);
-                    }
-
-                    ptr += sizeof(int) + size;
-                    ReadString(out size, -1);
-                    ptr += sizeof(int) + size;
-                }
+                if (key == DistributedGlobalName)
+                    return traceContextSerializer.Deserialize(value);
             }
         }
         catch (Exception error)
@@ -67,6 +43,29 @@ internal class VostokContextReader
         }
 
         return null;
+    }
+
+    private static ReadOnlySpan<byte> ReadString(ReadOnlySpan<byte> bytes, out string value, int? expectedSize = null)
+    {
+        const int sizeOfInt = sizeof(int);
+
+        if (bytes.Length < sizeOfInt)
+            throw new InvalidOperationException("Buffer ended unexpectedly while reading string length.");
+
+        var size = BinaryPrimitives.ReadInt32LittleEndian(bytes);
+        bytes = bytes[sizeOfInt..];
+
+        if (size < 0)
+            throw new InvalidOperationException("Negative string size.");
+        if (size > bytes.Length)
+            throw new InvalidOperationException("String size exceeds remaining buffer.");
+
+        var stringBytes = bytes[..size];
+        value = !expectedSize.HasValue || size == expectedSize.Value
+            ? Encoding.UTF8.GetString(stringBytes)
+            : string.Empty;
+
+        return bytes[size..];
     }
 }
 #endif
