@@ -30,10 +30,13 @@ internal class VostokContextReader
             while (remainingBytes.Length > 0)
             {
                 remainingBytes = ReadString(remainingBytes, out var key, DistributedGlobalName.Length);
-                remainingBytes = ReadString(remainingBytes, out var value);
-
                 if (key == DistributedGlobalName)
+                {
+                    ReadString(remainingBytes, out var value);
                     return traceContextSerializer.Deserialize(value);
+                }
+
+                remainingBytes = ReadString(remainingBytes, out _, -1);
             }
         }
         catch (Exception error)
