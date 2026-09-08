@@ -1,3 +1,7 @@
+## 0.3.35 (07-09-2026):
+
+Update OpenTelemetry packages.
+
 ## 0.3.34 (27-08-2026):
 
 Remove unsafe code.
